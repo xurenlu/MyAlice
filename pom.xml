@@ -8,6 +8,7 @@
 	<modules>
 		<module>myalice-web</module>
 		<module>myalice-service</module>
+		<module>myalice-test</module>
 	</modules>
 
 	<parent>
@@ -15,7 +16,7 @@
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>1.4.2.RELEASE</version>
 	</parent>
-
+	
 	<properties>
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
