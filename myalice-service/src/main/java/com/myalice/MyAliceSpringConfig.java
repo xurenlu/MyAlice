@@ -1,19 +1,16 @@
 package com.myalice;
 
-import javax.sql.DataSource;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.boot.web.support.SpringBootServletInitializer;
 
-import org.springframework.boot.autoconfigure.jdbc.DataSourceBuilder;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-
-@Configuration
-public class MyAliceSpringConfig {
+@SpringBootApplication(scanBasePackages="com.myalice")
+public class MyAliceSpringConfig  extends SpringBootServletInitializer {
 	
-	@Bean("dataSource")
-	public DataSource getDataSource(){
-		return DataSourceBuilder.create().build();
+	@Override
+	protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
+		return application.sources(MyAliceSpringConfig.class);
 	}
-	
 	
 	
 }
