@@ -1,5 +1,6 @@
 package com.test;
 
+import com.alibaba.fastjson.JSON;
 import com.myalice.MyAliceSpringConfig;
 import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.get.GetResponse;
@@ -13,6 +14,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.context.ContextConfiguration;
@@ -29,34 +31,45 @@ import java.util.UUID;
 @SpringBootTest(webEnvironment=WebEnvironment.RANDOM_PORT)
 @ContextConfiguration( classes = MyAliceSpringConfig.class )
 public class ESTest {
-
+	@Value("${cluster-nodes}")
+	private String cluster_nodes;
+	@Value("${elasticsearch}")
+	private String elasticsearch;
+	@Value("${cluster-name}")
+	private String cluster_name;
 	private Settings settings = null;
 	private TransportClient client = null;
 	static final String index = "alice-1";
 	static final String type = "alice";
 	static final String id = "1";
-	private static LogModel log = new LogModel();
+	private LogModel log = new LogModel();
 	@Before
 	public void before() throws UnknownHostException {
 		//设置集群名称
-		settings = Settings.builder().put("cluster.name", "elasticsearch").build();
+		settings = Settings.builder().put(cluster_name, elasticsearch).build();
 		//创建client
 		client = new PreBuiltTransportClient(settings)
-				.addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName("192.168.124.168"), 9300));
+				.addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName(cluster_nodes), 9300));
 	}
 
 
 	@Test
 	public void es(){
+		/**
+		 * 创建:CREATED
+		 * 修改:OK
+		 * 查询:{"catIds":[471481195,59759181,225731217,1246770709,842294147],"desc":"中文f997d154-420a-4808-a37f-cebbaa9c3994","host":"10.0.0.1","id":6771264498184729386,"subId":1953865356,"systemName":"oa"}
+		 * 删除:OK
+		 */
 		//在这里创建我们要索引的对象     必须为对象单独指定ID
-		IndexResponse create = client.prepareIndex(index, type,id).setSource(log).execute().actionGet();
+		IndexResponse create = client.prepareIndex(index, type,id).setSource(JSON.toJSONString(new LogModel())).execute().actionGet();
 		System.out.println("创建:"+create.status());//如果存在 status == OK 否则  == CREATE
-		DeleteResponse remove = client.prepareDelete(index,type,id).execute().actionGet();
-		System.out.println("删除:"+remove.status());//如果删除成功 status == OK
-		UpdateResponse update = client.prepareUpdate(index,type,id).setDoc(log).execute().actionGet();
-		System.out.println("修改:"+update.status());//如果存在 status == OK 否则  == CREATE
+		UpdateResponse update = client.prepareUpdate(index,type,id).setDoc(JSON.toJSONString(new LogModel())).execute().actionGet();
+		System.out.println("修改:"+update.status());//如果存在 status == OK 否则  == ERROR
 		GetResponse response = client.prepareGet(index, type, id).execute().actionGet();
 		System.out.println("查询:"+response.getSourceAsString());
+		DeleteResponse remove = client.prepareDelete(index,type,id).execute().actionGet();
+		System.out.println("删除:"+remove.status());//如果删除成功 status == OK
 	}
 
 	@After
