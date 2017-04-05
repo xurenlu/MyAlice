@@ -55,6 +55,7 @@ public class ESTest {
 
 	@Test
 	public void es(){
+		System.out.println(JSON.toJSONString(new LogModel()));
 		/**
 		 * 创建:CREATED
 		 * 修改:OK
