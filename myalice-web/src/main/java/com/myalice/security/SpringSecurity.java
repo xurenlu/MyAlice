@@ -10,6 +10,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.annotation.web.configurers.FormLoginConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import org.springframework.security.provisioning.UserDetailsManager;
@@ -28,19 +29,30 @@ public class SpringSecurity extends WebSecurityConfigurerAdapter {
 	protected DataSource datasource ;
 	
 	protected void configure(HttpSecurity http) throws Exception {
-		http.csrf().csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()) ;
+		
+		CookieCsrfTokenRepository withHttpOnlyFalse = CookieCsrfTokenRepository.withHttpOnlyFalse(); 
+		
+		http.csrf().csrfTokenRepository(withHttpOnlyFalse) ;
 		
 		HeadersConfigurer<HttpSecurity> headers = http.headers();
 		headers.addHeaderWriter(new XContentTypeOptionsHeaderWriter());
 		headers.addHeaderWriter(new HstsHeaderWriter());
 		headers.addHeaderWriter(new XFrameOptionsHeaderWriter(XFrameOptionsMode.SAMEORIGIN));
 		headers.addHeaderWriter(new XXssProtectionHeaderWriter());
+		http.authorizeRequests().antMatchers("/admin/dologin" ,"/admin/js/**" ,"/admin/css/**" ,"/admin/img/**" ,"/admin/fonts/**" ).permitAll()
+		.antMatchers("/admin/**").hasAnyRole("admin");
+		
+		String loginPage = "/admin/login.html" ; 
+		FormLoginConfigurer<HttpSecurity> formLogin = http.formLogin();
+		formLogin.loginPage(loginPage).loginProcessingUrl("/admin/dologin").permitAll();
+		formLogin.successForwardUrl("/admin/list").permitAll();
+		formLogin.failureForwardUrl(loginPage+"?error=true").permitAll() ;
+		formLogin.failureUrl(loginPage+"?error=true").permitAll();
 	}
 	
 	@Override
 	public void configure(WebSecurity web) throws Exception {
-		web.ignoring().antMatchers("**/js/**", "**/css/**", "**/images/**", "**/**/favicon.ico");
-
+		web.ignoring().antMatchers("**/js/**","**/fonts/**", "**/css/**", "**/img/**", "**/**/favicon.ico");
 	}
 	
 	
