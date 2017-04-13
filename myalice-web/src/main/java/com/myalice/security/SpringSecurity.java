@@ -51,6 +51,8 @@ public class SpringSecurity extends WebSecurityConfigurerAdapter {
 		formLogin.successForwardUrl("/admin/list").permitAll();
 		formLogin.failureForwardUrl(loginPage+"?error=true").permitAll() ;
 		formLogin.failureUrl(loginPage+"?error=true").permitAll();
+		
+		http.rememberMe(); 
 	}
 	
 	@Override
