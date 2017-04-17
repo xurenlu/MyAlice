@@ -24,10 +24,10 @@
 		<javaClientGenerator targetPackage="org.myalice.websocket.mapping"
 			targetProject="MAVEN" type="ANNOTATEDMAPPER">
 		</javaClientGenerator>
-		<table tableName="assign_record" domainObjectName="AssignRecord" />
+		<!-- <table tableName="assign_record" domainObjectName="AssignRecord" />
 		<table tableName="connection_record" domainObjectName="ConnectionRecord" />
-		<table tableName="evaluation" domainObjectName="Evaluation" />
+		<table tableName="evaluation" domainObjectName="Evaluation" /> 
+		<table tableName="user" domainObjectName="User" /> -->
 		<table tableName="talk_record" domainObjectName="TalkRecord" />
-		<table tableName="user" domainObjectName="User" />
 	</context>
 </generatorConfiguration>

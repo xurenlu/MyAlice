@@ -11,8 +11,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.PostConstruct;
 
 import org.myalice.websocket.message.MessageFactory;
+import org.myalice.websocket.service.TalkService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -49,6 +51,9 @@ public class MappingManager {
 	@Value("${websocket.assign.frequence:1000}")
 	private int assignFrequence;
 	
+	//@Autowired
+	//private TalkService talkService;
+	
 	@PostConstruct
 	public void init() {
 		customerQueue = new LinkedBlockingQueue<WebSocketSession>(customerConnectionLimit);
@@ -63,7 +68,7 @@ public class MappingManager {
 		if (!customerQueue.add(session)) {
 			return false;
 		}
-		session.getAttributes().put(Constant.SESSION_KEY_UNSET_MESSAGES, 
+		session.getAttributes().put(Constant.WS_SESSION_KEY.SESSION_KEY_UNSET_MESSAGES, 
 				new ArrayBlockingQueue<TextMessage>(unsetMessageLimit));
 		if (supporterQueue.size() > 0) {
 			WebSocketSession supporterSession = supporterQueue.poll();
@@ -88,9 +93,9 @@ public class MappingManager {
 		if (!supporterQueue.add(session)) {
 			return false;
 		}
-		session.getAttributes().put(Constant.SESSION_KEY_SUPPORTER_WORKLOAD, 
+		session.getAttributes().put(Constant.WS_SESSION_KEY.SESSION_KEY_SUPPORTER_WORKLOAD, 
 				new AtomicInteger(0));
-		session.getAttributes().put(Constant.SESSION_KEY_TALKER_OF_SUPPORTER, 
+		session.getAttributes().put(Constant.WS_SESSION_KEY.SESSION_KEY_TALKER_OF_SUPPORTER, 
 				new HashMap<String, WebSocketSession>());
 		if (customerQueue.size() > 0) {
 			WebSocketSession customerSession = null;
@@ -101,9 +106,9 @@ public class MappingManager {
 			
 				if (customerSession != null && customerSession.isOpen()) {
 					assignSession(customerSession, session);
-					return true;
 				}
 			}
+			return true;
 		}
 		return false;
 	}
@@ -128,7 +133,7 @@ public class MappingManager {
 		}
 		@SuppressWarnings("unchecked")
 		Map<String, WebSocketSession> customerSessions = (Map<String, WebSocketSession>)session.
-			getAttributes().get(Constant.SESSION_KEY_TALKER_OF_SUPPORTER);
+			getAttributes().get(Constant.WS_SESSION_KEY.SESSION_KEY_TALKER_OF_SUPPORTER);
 		if (customerSessions != null && customerSessions.size() > 0) {
 			for (Entry<String, WebSocketSession> item : customerSessions.entrySet()) {
 				WebSocketSession itemValue = item.getValue();
@@ -141,8 +146,9 @@ public class MappingManager {
 	}
 	
 	@SuppressWarnings("resource")
-	synchronized public boolean assign() throws IOException {
-		if (customerQueue.size() > 0 && supporterQueue.size() > 0) {
+	synchronized public boolean assign() throws IOException, InterruptedException {
+		boolean reValue = false;
+		while (customerQueue.size() > 0 && supporterQueue.size() > 0) {
 			WebSocketSession customerSession = customerQueue.poll();
 			while (!customerSession.isOpen() && customerQueue.size() > 0) 
 				{customerSession = customerQueue.poll();}
@@ -151,18 +157,21 @@ public class MappingManager {
 				{supporterSession = supporterQueue.poll();}
 			log.info("Assign customer : " + customerSession.getId() + " to supporter : " + supporterSession.getId());
 			assignSession(customerSession, supporterSession);
-			return true;
+			if (isNotFull(supporterSession)) {
+				supporterQueue.put(supporterSession);
+			}
+			reValue = true;
 		}
-		return false;
+		return reValue;
 	}
 	
 	@Scheduled(fixedRate = 1000)
-	public void assignTask() throws IOException {
+	public void assignTask() throws IOException, InterruptedException {
 		assign();
 	}
 	
 	private boolean isNotFull(WebSocketSession supporterSession) {
-		AtomicInteger curWorkload = (AtomicInteger)supporterSession.getAttributes().get(Constant.SESSION_KEY_SUPPORTER_WORKLOAD);
+		AtomicInteger curWorkload = (AtomicInteger)supporterSession.getAttributes().get(Constant.WS_SESSION_KEY.SESSION_KEY_SUPPORTER_WORKLOAD);
 		if (curWorkload.intValue() < 0) {
 			curWorkload.set(0);
 		}
@@ -173,23 +182,24 @@ public class MappingManager {
 	private boolean assignSession(WebSocketSession customerSession, WebSocketSession supporterSession) throws IOException {
 		if (customerSession != null && customerSession.isOpen() && supporterSession != null && supporterSession.isOpen()) {
 			//设置客户和客服的映射关系
-			customerSession.getAttributes().put(Constant.SESSION_KEY_TALKER_OF_CUSTOMER, supporterSession);
+			customerSession.getAttributes().put(Constant.WS_SESSION_KEY.SESSION_KEY_TALKER_OF_CUSTOMER, supporterSession);
 			
-			((Map<String, WebSocketSession>)supporterSession.getAttributes().get(Constant.SESSION_KEY_TALKER_OF_SUPPORTER))
+			((Map<String, WebSocketSession>)supporterSession.getAttributes().get(Constant.WS_SESSION_KEY.SESSION_KEY_TALKER_OF_SUPPORTER))
 				.put(customerSession.getId(), customerSession);
-			AtomicInteger curWorkload = (AtomicInteger)supporterSession.getAttributes().get(Constant.SESSION_KEY_SUPPORTER_WORKLOAD);
+			AtomicInteger curWorkload = (AtomicInteger)supporterSession.getAttributes().get(Constant.WS_SESSION_KEY.SESSION_KEY_SUPPORTER_WORKLOAD);
 			curWorkload.incrementAndGet();
 			//向客户端发送对接消息
 			customerSession.sendMessage(MessageFactory.generateMessage(customerSession, supporterSession, MessageFactory.MESSAGE_TYPE_ASSIGN_TO_CUSTOMER, null));
 			supporterSession.sendMessage(MessageFactory.generateMessage(customerSession, supporterSession, MessageFactory.MESSAGE_TYPE_ASSIGN_TO_SUPPORTER, null));
 			//向客服发送未发送的消息
-			ArrayBlockingQueue<TextMessage> unsendMessages = (ArrayBlockingQueue<TextMessage>)customerSession.getAttributes().get(Constant.SESSION_KEY_UNSET_MESSAGES); 
+			ArrayBlockingQueue<TextMessage> unsendMessages = (ArrayBlockingQueue<TextMessage>)customerSession.getAttributes().get(Constant.WS_SESSION_KEY.SESSION_KEY_UNSET_MESSAGES); 
 			if (unsendMessages != null && unsendMessages.size() > 0) {
 				for (TextMessage message : unsendMessages) {
 					supporterSession.sendMessage(message);
 				}
 				unsendMessages.clear();
 			}
+			//talkService.assign(customerSession, supporterSession);
 			return true;
 		}
 		return false;
@@ -197,15 +207,15 @@ public class MappingManager {
 	
 	private void unassignSession(WebSocketSession customerSession) {
 		if (customerSession != null) {
-			WebSocketSession supporterSession = (WebSocketSession)customerSession.getAttributes().get(Constant.SESSION_KEY_TALKER_OF_CUSTOMER);
+			WebSocketSession supporterSession = (WebSocketSession)customerSession.getAttributes().get(Constant.WS_SESSION_KEY.SESSION_KEY_TALKER_OF_CUSTOMER);
 			
 			if (supporterSession != null && supporterSession.isOpen()) {
-				AtomicInteger curWorkload = (AtomicInteger)supporterSession.getAttributes().get(Constant.SESSION_KEY_SUPPORTER_WORKLOAD);
+				AtomicInteger curWorkload = (AtomicInteger)supporterSession.getAttributes().get(Constant.WS_SESSION_KEY.SESSION_KEY_SUPPORTER_WORKLOAD);
 				if (curWorkload.addAndGet(-1) < 0) {
 					curWorkload.set(0);
 				}
 				@SuppressWarnings("unchecked")
-				Map<String, WebSocketSession> customers = (Map<String, WebSocketSession>)supporterSession.getAttributes().get(Constant.SESSION_KEY_TALKER_OF_SUPPORTER);
+				Map<String, WebSocketSession> customers = (Map<String, WebSocketSession>)supporterSession.getAttributes().get(Constant.WS_SESSION_KEY.SESSION_KEY_TALKER_OF_SUPPORTER);
 				if (customers != null && customers.size() > 0) {
 					customers.remove(customerSession.getId());
 				}

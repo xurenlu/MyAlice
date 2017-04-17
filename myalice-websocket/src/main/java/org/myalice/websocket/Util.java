@@ -1,6 +1,7 @@
 package org.myalice.websocket;
 
 import java.io.IOException;
+import java.util.UUID;
 import java.util.concurrent.ArrayBlockingQueue;
 
 import org.apache.commons.lang3.StringUtils;
@@ -45,11 +46,19 @@ public class Util {
 		@SuppressWarnings("unchecked")
 		ArrayBlockingQueue<TextMessage> talkContent = 
 			(ArrayBlockingQueue<TextMessage>)session.getAttributes()
-			.get(Constant.SESSION_KEY_UNSET_MESSAGES);
+			.get(Constant.WS_SESSION_KEY.SESSION_KEY_UNSET_MESSAGES);
 		if (talkContent != null) {
 			while (!talkContent.offer(message)) {
 				talkContent.poll();
 			}
 		}
+	}
+	
+	/**
+	 * 创建随机 UUID
+	 * @return
+	 */
+	public static String randomUUID() {
+		return UUID.randomUUID().toString();
 	}
 }

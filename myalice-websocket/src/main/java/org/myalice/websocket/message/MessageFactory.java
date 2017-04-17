@@ -1,10 +1,13 @@
 package org.myalice.websocket.message;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.myalice.domain.websocket.TalkRecord;
 import org.myalice.websocket.Constant;
 import org.myalice.websocket.Util;
 import org.springframework.web.socket.TextMessage;
@@ -27,6 +30,8 @@ public class MessageFactory {
 	public static final String MESSAGE_TYPE_ASSIGN_TO_CUSTOMER = "customer_assign";
 	
 	public static final String MESSAGE_TYPE_ASSIGN_TO_SUPPORTER = "supporter_assign";
+	
+	public static final String MESSAGE_TYPE_HISTORY_TO_CUSTOMER = "history";
 	
 	public static TextMessage generateMessage(WebSocketSession customerSession, 
 			WebSocketSession supporterSession, String type, String message) throws JsonProcessingException {
@@ -99,11 +104,11 @@ public class MessageFactory {
 	}
 	
 	private static Map<String, String> generateAssignMessage(WebSocketSession otherSession) {
-		String userName = (String)otherSession.getAttributes().get(Constant.SESSION_KEY_USER_NAME);
+		String userName = (String)otherSession.getAttributes().get(Constant.WS_SESSION_KEY.SESSION_KEY_USER_NAME);
 		if (StringUtils.isEmpty(userName)) {
 			userName = otherSession.getId();
 		}
-		String logoUrl =  (String)otherSession.getAttributes().get(Constant.SESSION_KEY_LOGO_URL);
+		String logoUrl =  (String)otherSession.getAttributes().get(Constant.WS_SESSION_KEY.SESSION_KEY_LOGO_URL);
 		if (StringUtils.isEmpty(logoUrl)) {
 			logoUrl = Constant.USER_LOGO_DEFAULT_ADDRESS;
 		}
@@ -112,6 +117,24 @@ public class MessageFactory {
 		reValue.put(Message.CONTENT_KEY_USERNAME, userName);
 		reValue.put(Message.CONTENT_KEY_USERLOGO, logoUrl);
 		return reValue;
+	}
+	
+	public static TextMessage generateHistoryMesssage(List<TalkRecord> talks) throws JsonProcessingException {
+		if (talks == null || talks.size() == 0) {
+			return null;
+		}
+		List<SimpleTalk> reValue = new ArrayList<SimpleTalk>();
+		for (TalkRecord talk : talks) {
+			SimpleTalk item = new SimpleTalk();
+			item.setType(talk.getType());
+			item.setContent(talk.getContent());
+			reValue.add(item);
+		}
+		Message orgMessage = new Message();
+		orgMessage.setType(MESSAGE_TYPE_HISTORY_TO_CUSTOMER);
+		orgMessage.setHistory(reValue);
+		TextMessage message = new TextMessage(Util.formatMessage(orgMessage));
+		return message;
 	}
 	
 	public static void main(String[] args) throws IOException {

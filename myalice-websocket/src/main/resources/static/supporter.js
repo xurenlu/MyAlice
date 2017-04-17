@@ -12,6 +12,7 @@ function setConnected(connected) {
     }
     else {
         $("#conversation").hide();
+        $("#talkContent").html("");
     }
     $("#greetings").html("");
 }

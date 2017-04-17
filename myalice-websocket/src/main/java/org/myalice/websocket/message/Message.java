@@ -1,5 +1,6 @@
 package org.myalice.websocket.message;
 
+import java.util.List;
 import java.util.Map;
 
 public class Message {
@@ -15,6 +16,8 @@ public class Message {
 	private String type;
 	
 	private Map<String, String> content;
+	
+	private List<SimpleTalk> history;
 
 	public String getType() {
 		return type;
@@ -30,5 +33,13 @@ public class Message {
 
 	public void setContent(Map<String, String> content) {
 		this.content = content;
+	}
+
+	public List<SimpleTalk> getHistory() {
+		return history;
+	}
+
+	public void setHistory(List<SimpleTalk> history) {
+		this.history = history;
 	}
 }
