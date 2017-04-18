@@ -40,8 +40,8 @@ public class SpringSecurity extends WebSecurityConfigurerAdapter {
 		
 		HeadersConfigurer<HttpSecurity> headers = http.headers();
 		headers.addHeaderWriter(new HstsHeaderWriter());
-		headers.addHeaderWriter(new XFrameOptionsHeaderWriter(XFrameOptionsMode.SAMEORIGIN));
 		headers.addHeaderWriter(new XXssProtectionHeaderWriter());
+		headers.frameOptions().sameOrigin(); 
 		http.authorizeRequests().antMatchers("/admin/dologin" ,"/admin/js/**" ,"/admin/css/**" ,"/admin/img/**" ,"/admin/fonts/**" ).permitAll()
 		.antMatchers("/admin/**").hasAnyRole("admin");
 		
