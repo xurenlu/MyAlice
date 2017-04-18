@@ -73,17 +73,19 @@ CREATE TABLE `talk_record` (
 -- ----------------------------
 -- Table structure for user
 -- ----------------------------
-DROP TABLE IF EXISTS `user`;
-CREATE TABLE `user` (
+DROP TABLE IF EXISTS `users`;
+CREATE TABLE `users` (
   `id` varchar(36) NOT NULL,
-  `user_name` varchar(32) NOT NULL,
-  `password` varchar(64) NOT NULL,
-  `name` varchar(32) NOT NULL,
-  `email` varchar(64) NOT NULL,
-  `mobile_phone` varchar(16) NOT NULL,
-  `create_time` datetime NOT NULL,
-  `remarks` varchar(255) DEFAULT NULL,
-  `user_type` char(255) NOT NULL,
-  `portrait_url` varchar(255) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  `username` varchar(32) NOT NULL COMMENT '用户名',
+  `password` varchar(64) NOT NULL COMMENT '登录密码',
+  `name` varchar(32) NOT NULL COMMENT '昵称',
+  `email` varchar(64) NOT NULL COMMENT '邮箱',
+  `mobile_phone` varchar(16) NOT NULL COMMENT '手机号',
+  `create_time` datetime NOT NULL COMMENT '创建时间',
+  `remarks` varchar(255) DEFAULT NULL COMMENT '备注',
+  `user_type` char(255) NOT NULL COMMENT '用户类型',
+  `portrait_url` varchar(255) NOT NULL COMMENT '图片url',
+  `enabled` tinyint(1) DEFAULT NULL COMMENT '是否启用',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `user_name` (`username`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8
