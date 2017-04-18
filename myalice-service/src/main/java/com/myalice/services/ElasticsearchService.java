@@ -1,10 +1,11 @@
 package com.myalice.services;
 
-import com.myalice.domain.Elasticsearch;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.client.transport.TransportClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import com.myalice.domain.Elasticsearch;
 
 @Service
 public class ElasticsearchService {

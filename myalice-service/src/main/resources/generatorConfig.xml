@@ -30,6 +30,8 @@
 			targetProject="MAVEN" />
 		<javaClientGenerator targetPackage="com.myalice.mapping"
 			targetProject="MAVEN" type="ANNOTATEDMAPPER" />
-		<table tableName="users" domainObjectName="User" />
+		<table tableName="question_order" domainObjectName="QuestionOrder" />
+		<table tableName="question_order_attachment" domainObjectName="QuestionOrderAttachment" />
+		<table tableName="question_record" domainObjectName="QuestionRecord" />
 	</context>
 </generatorConfiguration>
