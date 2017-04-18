@@ -2,6 +2,8 @@ package com.myalice.domain;
 
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 public class Users {
     /**
      *
@@ -64,6 +66,7 @@ public class Users {
      *
      * @mbg.generated
      */
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private Date createTime;
 
     /**
