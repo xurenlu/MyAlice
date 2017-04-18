@@ -33,7 +33,7 @@ public class TalkService {
 	@Value("${websocket.lasttalk.display.limit:10}")
 	private int laskTalkNumberLimit;
 	
-	public void connectionOpen(final WebSocketSession session, String type) {
+	public void connectionOpen(WebSocketSession session, String type) {
 		if (session == null || StringUtils.isEmpty(session.getId()) 
 				|| StringUtils.isEmpty(type)) {
 			return;
@@ -51,7 +51,7 @@ public class TalkService {
 	}
 	
 	@Transactional(readOnly=false, rollbackFor=Exception.class)
-	public void connectionClose(final WebSocketSession session) {
+	public void connectionClose(WebSocketSession session) {
 		if (session == null || StringUtils.isEmpty(session.getId())) {
 			return;
 		}
@@ -63,7 +63,7 @@ public class TalkService {
 		}
 	}
 	
-	public void connectionAssign(final WebSocketSession customerSession, 
+	public void connectionAssign(WebSocketSession customerSession, 
 			final WebSocketSession supporterSession) {
 		if (customerSession == null || supporterSession == null 
 				|| StringUtils.isEmpty(customerSession.getId()) 
@@ -92,12 +92,12 @@ public class TalkService {
 		talk.setCreateTime(new Date());
 		talk.setContent(message);
 		talk.setFromIp(fromSession.getRemoteAddress().getAddress().getHostAddress());
-		talk.setFromUserId((String)fromSession.getAttributes().get(Constant.WS_SESSION_KEY.SESSION_KEY_USER_ID));
-		talk.setFromUserName((String)fromSession.getAttributes().get(Constant.WS_SESSION_KEY.SESSION_KEY_USER_NAME));
+		talk.setFromUserId(Util.getUserId(fromSession));
+		talk.setFromUserName(Util.getUserName(fromSession));
 		if (toSession != null) {
 			talk.setToIp((String)toSession.getRemoteAddress().getAddress().getHostAddress());
-			talk.setToUserId((String)toSession.getAttributes().get(Constant.WS_SESSION_KEY.SESSION_KEY_USER_ID));
-			talk.setToUserName((String)toSession.getAttributes().get(Constant.WS_SESSION_KEY.SESSION_KEY_USER_NAME));
+			talk.setToUserId(Util.getUserId(toSession));
+			talk.setToUserName(Util.getUserName(toSession));
 		}
 		talk.setType(type);
 		talkMapper.insert(talk);

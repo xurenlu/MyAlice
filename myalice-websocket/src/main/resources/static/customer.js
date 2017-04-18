@@ -1,10 +1,15 @@
 var socket = null;
 var supporterSessionId = null;
 
+var connOptions = {
+		sessionId : getUUID
+}
+
 function setConnected(connected) {
     $("#connect").prop("disabled", connected);
     $("#disconnect").prop("disabled", !connected);
     if (connected) {
+    	//$("#connName").html("This is : " + socket._generateSessionId);
         $("#conversation").show();
     }
     else {
@@ -14,7 +19,7 @@ function setConnected(connected) {
 }
 
 function connect() {
-    socket = new SockJS('http://localhost:8080/customer');
+    socket = new SockJS('http://localhost:8080/customer', undefined, connOptions);
     socket.onopen = function() {
         console.log('open');
         setConnected(true);

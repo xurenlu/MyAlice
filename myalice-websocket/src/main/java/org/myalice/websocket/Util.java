@@ -42,10 +42,10 @@ public class Util {
 	 * @param session
 	 * @param message
 	 */
-	public static void setUnsetMessage(WebSocketSession session, TextMessage message) {
+	public static void setUnsetMessage(WebSocketSession session, String message) {
 		@SuppressWarnings("unchecked")
-		ArrayBlockingQueue<TextMessage> talkContent = 
-			(ArrayBlockingQueue<TextMessage>)session.getAttributes()
+		ArrayBlockingQueue<String> talkContent = 
+			(ArrayBlockingQueue<String>)session.getAttributes()
 			.get(Constant.WS_SESSION_KEY.SESSION_KEY_UNSET_MESSAGES);
 		if (talkContent != null) {
 			while (!talkContent.offer(message)) {
@@ -59,6 +59,16 @@ public class Util {
 	 * @return
 	 */
 	public static String randomUUID() {
-		return UUID.randomUUID().toString();
+		return UUID.randomUUID().toString().replaceAll("-", "");
+	}
+	
+	public static String getUserId(WebSocketSession session) {
+		String userId = (String)session.getAttributes().get(Constant.WS_SESSION_KEY.SESSION_KEY_USER_ID);
+		return userId == null ? "" : userId;
+	}
+	
+	public static String getUserName(WebSocketSession session) {
+		String userName = (String)session.getAttributes().get(Constant.WS_SESSION_KEY.SESSION_KEY_USER_NAME);
+		return userName == null ? session.getId() : userName;
 	}
 }

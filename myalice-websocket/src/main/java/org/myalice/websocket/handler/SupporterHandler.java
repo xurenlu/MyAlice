@@ -1,10 +1,13 @@
 package org.myalice.websocket.handler;
 
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.commons.lang3.StringUtils;
+import org.myalice.websocket.AssignManager;
 import org.myalice.websocket.Constant;
-import org.myalice.websocket.MappingManager;
+import org.myalice.websocket.CustomerPool;
+import org.myalice.websocket.SupporterPool;
 import org.myalice.websocket.Util;
 import org.myalice.websocket.message.Message;
 import org.myalice.websocket.message.MessageFactory;
@@ -24,15 +27,18 @@ public class SupporterHandler extends TextWebSocketHandler {
 	private Logger log = LoggerFactory.getLogger(SupporterHandler.class);
 	
 	@Autowired
-	private MappingManager mappingManager;
+	private SupporterPool supporterPool;
 	
-	//@Autowired
-	//private TalkService talkService;
+	@Autowired
+	private CustomerPool customerPool;
+	
+	@Autowired
+	private TalkService talkService;
 	
 	@Override
 	public void afterConnectionEstablished(WebSocketSession session) throws Exception {
-		mappingManager.addSupporter(session);
-		//talkService.connectionOpen(session, Constant.DOMAIN_TYPE.CONNECTION_TYPE_SUPPORTER);
+		supporterPool.addSupporter(session);
+		talkService.connectionOpen(session, Constant.DOMAIN_TYPE.CONNECTION_TYPE_SUPPORTER);
 		log.info("Supporter " + session.getId() + " connected.");
 	}
 
@@ -54,20 +60,30 @@ public class SupporterHandler extends TextWebSocketHandler {
 				sendMessage = MessageFactory.generateMessage(talker, session, MessageFactory.MESSAGE_TYPE_TALK_TO_CUSTOMER, tb.getContent().get(Message.CONTENT_KEY_TALK_CONTENT));
 			}
 		}
-		//发送聊天信息
-		log.info("customer : " + talker + "\n" + sendMessage.getPayload());
 		
 		if (talker != null && talker.isOpen()) {
 			talker.sendMessage(sendMessage);
-			//talkService.saveTalk(session, talker, Constant.DOMAIN_TYPE.TALK_TYPE_SUPPORTER_TO_CUSTOMER, tb.getContent().get(Message.CONTENT_KEY_TALK_CONTENT));
+			//发送聊天信息
+			talkService.saveTalk(session, talker, Constant.DOMAIN_TYPE.TALK_TYPE_SUPPORTER_TO_CUSTOMER, tb.getContent().get(Message.CONTENT_KEY_TALK_CONTENT));
+			log.info(session.getId() + " To " + talker.getId() + " : " + tb.getContent().get(Message.CONTENT_KEY_TALK_CONTENT));
+		} else if (talker != null) {
+			talkers.remove(talker.getId());
+			talker.close();
 		}
 	}
 	
 	@Override
 	public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
-		mappingManager.closeSupporter(session);
-		//talkService.connectionClose(session);
-		log.info("Supporter " + session.getId() + " closed.");
+		supporterPool.removeSupporter(session);
+		@SuppressWarnings("unchecked")
+		Map<String, WebSocketSession> talkers = (Map<String, WebSocketSession>)session.getAttributes().get(Constant.WS_SESSION_KEY.SESSION_KEY_TALKER_OF_SUPPORTER);
+		if (talkers != null && talkers.size() > 0) {
+			for (Entry<String, WebSocketSession> item : talkers.entrySet()) {
+				customerPool.freeCustomer(item.getValue());
+			}
+		}
 		
+		talkService.connectionClose(session);
+		log.info("Supporter " + session.getId() + " closed.");
 	}
 }

@@ -1,14 +1,14 @@
 package org.myalice.websocket.handler;
 
-import java.util.List;
-
 import org.apache.commons.lang3.StringUtils;
-import org.myalice.domain.websocket.TalkRecord;
+import org.myalice.websocket.AssignManager;
 import org.myalice.websocket.Constant;
-import org.myalice.websocket.MappingManager;
+import org.myalice.websocket.CustomerPool;
+import org.myalice.websocket.SupporterPool;
 import org.myalice.websocket.Util;
 import org.myalice.websocket.message.Message;
 import org.myalice.websocket.message.MessageFactory;
+import org.myalice.websocket.service.TalkService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,10 +24,13 @@ public class CustomerHandler extends TextWebSocketHandler {
 	private Logger log = LoggerFactory.getLogger(CustomerHandler.class);
 	
 	@Autowired
-	private MappingManager mappingManager;
+	private CustomerPool customerPool;
 	
-	//@Autowired
-	//private TalkService talkService;
+	@Autowired
+	private SupporterPool supporterPool;
+	
+	@Autowired
+	private TalkService talkService;
 	
 	@Override
 	public void afterConnectionEstablished(WebSocketSession session) throws Exception {
@@ -36,22 +39,9 @@ public class CustomerHandler extends TextWebSocketHandler {
 		if (message != null) {
 			session.sendMessage(message);
 		}
-		String customerType = (String)session.getAttributes().get(Constant.WS_SESSION_KEY.SESSION_KEY_CUSTOMER_TYPE);
-		//发送历史信息
-		List<TalkRecord> history = null;
-		if (customerType == null || Constant.WS_SESSION_CONTENT.SESSION_CUSTOMER_TYPE_TOURIST.equals(customerType)) {
-			//history = talkService.getHistoryTalkByIp(session.getRemoteAddress().getAddress().getHostAddress());
-		} else if (Constant.WS_SESSION_CONTENT.SESSION_CUSTOMER_TYPE_USER.equals(customerType)) {
-			//history = talkService.getHistoryTalkByUserId((String)session.getAttributes().get(Constant.WS_SESSION_KEY.SESSION_KEY_USER_ID));
-		}
-		if (history != null && history.size() > 0) {
-			TextMessage historyMessage = MessageFactory.generateHistoryMesssage(history);
-			session.sendMessage(historyMessage);
-		}
-		//Customer加入分配队列管理
-		mappingManager.addCustomer(session);
-		//记录连接信息到数据库
-		//talkService.connectionOpen(session, Constant.DOMAIN_TYPE.CONNECTION_TYPE_CUSTOMER);
+		customerPool.addCustomer(session);
+		talkService.connectionOpen(session, Constant.DOMAIN_TYPE.CONNECTION_TYPE_CUSTOMER);
+		log.info("Customer " + session.getId() + " connected.");
 	}
 
 	@Override
@@ -63,35 +53,39 @@ public class CustomerHandler extends TextWebSocketHandler {
 		if (StringUtils.isNotEmpty(content)) {
 			tb = Util.parseMessage(content, Message.class);
 		}
+		if (tb == null) {
+			return;
+		}
 		//获取聊天对象
 		WebSocketSession talker = (WebSocketSession)session.getAttributes().get(Constant.WS_SESSION_KEY.SESSION_KEY_TALKER_OF_CUSTOMER);
 		//插入未发送队列
 		if (talker == null || !talker.isOpen()) {
-			Util.setUnsetMessage(session, message);
+			Util.setUnsetMessage(session, (String)tb.getContent().get(Message.CONTENT_KEY_TALK_CONTENT));
 			if (tb != null) {
-				//talkService.saveTalk(session, null, Constant.DOMAIN_TYPE.TALK_TYPE_CUSTOMER_TO_SUPPORTER, tb.getContent().get(Message.CONTENT_KEY_TALK_CONTENT));
+				talkService.saveTalk(session, null, Constant.DOMAIN_TYPE.TALK_TYPE_CUSTOMER_TO_SUPPORTER, tb.getContent().get(Message.CONTENT_KEY_TALK_CONTENT));
+				log.info(session.getId() + " To no one : " + tb.getContent().get(Message.CONTENT_KEY_TALK_CONTENT));
 			}
 		} 
 		//发送聊天内容
 		else {
-			if (tb != null) {
-				talker.sendMessage(MessageFactory.generateMessage(session, talker, 
-						MessageFactory.MESSAGE_TYPE_TALK_TO_SUPPORTER, 
-						tb.getContent().get(Message.CONTENT_KEY_TALK_CONTENT)));
-				//talkService.saveTalk(session, talker, Constant.DOMAIN_TYPE.TALK_TYPE_CUSTOMER_TO_SUPPORTER, tb.getContent().get(Message.CONTENT_KEY_TALK_CONTENT));
-				log.info(session.getId() + " To " + talker.getId() + " : " + tb.getContent().get(Message.CONTENT_KEY_TALK_CONTENT));
-			}
+			talker.sendMessage(MessageFactory.generateMessage(session, talker, 
+					MessageFactory.MESSAGE_TYPE_TALK_TO_SUPPORTER, 
+					tb.getContent().get(Message.CONTENT_KEY_TALK_CONTENT)));
+			talkService.saveTalk(session, talker, Constant.DOMAIN_TYPE.TALK_TYPE_CUSTOMER_TO_SUPPORTER, tb.getContent().get(Message.CONTENT_KEY_TALK_CONTENT));
+			log.info(session.getId() + " To " + talker.getId() + " : " + tb.getContent().get(Message.CONTENT_KEY_TALK_CONTENT));
 		}
 	}
 	
 	@Override
 	public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
+		customerPool.removeCustomer(session);
 		WebSocketSession talker = (WebSocketSession)session.getAttributes().get(Constant.WS_SESSION_KEY.SESSION_KEY_TALKER_OF_CUSTOMER);
+		supporterPool.freeSupporter(talker);
 		if (talker != null && talker.isOpen()) {
 			TextMessage message = MessageFactory.generateMessage(session, talker, MessageFactory.MESSAGE_TYPE_CLOSE_CUSTOMER_TO_SUPPORTER, "");
 			talker.sendMessage(message);
-		} 
-		mappingManager.closeCustomer(session);
-		//talkService.connectionClose(session);
+		}
+		talkService.connectionClose(session);
+		log.info("Customer " + session.getId() + " closed.");
 	}
 }

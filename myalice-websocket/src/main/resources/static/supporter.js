@@ -4,21 +4,28 @@ var append1 = "<div class='col-md-12'><table id='conversation' class='table tabl
 var append2 = "</th></tr></thead><tbody id='";
 var	append3 = "'></tbody></table></div>";
 
+var connOptions = {
+		sessionId : getUUID
+}
+
 function setConnected(connected) {
     $("#connect").prop("disabled", connected);
     $("#disconnect").prop("disabled", !connected);
     if (connected) {
+    	//$("#connName").html("This is : " + socket._generateSessionId);
         $("#conversation").show();
     }
     else {
         $("#conversation").hide();
         $("#talkContent").html("");
+        $("#customerSelect").html("");
+        $("#customerSelect").val("");
     }
     $("#greetings").html("");
 }
 
 function connect() {
-    socket = new SockJS('http://localhost:8080/supporter');
+    socket = new SockJS('http://localhost:8080/supporter', undefined, connOptions);
     socket.onopen = function() {
         console.log('open');
         setConnected(true);
