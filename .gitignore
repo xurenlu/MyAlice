@@ -23,8 +23,3 @@ Thumbs.db
 .idea/
 overlays
 bin
-
-.gitignore
-ElasticsearchClient.java
-ElasticsearchService.java
-application.properties
