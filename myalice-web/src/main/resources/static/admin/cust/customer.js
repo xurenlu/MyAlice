@@ -19,17 +19,17 @@ function loadData(url,param){
 	} , "json")
 }
 
-function btnSearch(){
+function btnSearch(page){
 	var username = $("#username").val();
 	var email = $("#email").val();
-	loadData(loadDataUrl,{pageNum:1,username:username,email:email})
+	loadData(loadDataUrl,{pageNum:page,username:username,email:email})
 }
 
 function enableUser(enable){
 	var usernames = $(".checkbox_username");	
 	var param = usernames.serialize();  
 	$.mypost("/admin/user/enable?enable="+enable , param , function(data){
-		btnSearch();
+		btnSearch($('.ui-paging-container').find(".focus").attr("data-page"));
 		bootbox.alert(data.msg); 
 	},"json")
 }
