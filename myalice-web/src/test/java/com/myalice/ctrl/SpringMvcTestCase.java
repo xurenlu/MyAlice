@@ -58,7 +58,7 @@ public class SpringMvcTestCase {
 	public void testInsertUser()throws Exception{
 	    
 		MultiValueMap<String, String> valueMap = new LinkedMultiValueMap<String, String>();
-		valueMap.put("username", Arrays.asList("hpgary11")); 
+		valueMap.put("username", Arrays.asList("")); 
 		valueMap.put("password", Arrays.asList("123456")); 
 		valueMap.put("password1", Arrays.asList("123456"));
 		valueMap.put("email", Arrays.asList("garhp@qq.com"));

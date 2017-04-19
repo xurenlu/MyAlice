@@ -7,6 +7,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageInfo;
 import com.myalice.domain.Users;
+import com.myalice.security.BindingResultUtils;
 import com.myalice.services.UsersService;
 import com.myalice.utils.ResponseMessageBody;
 import com.myalice.utils.ValidGroup;
@@ -63,8 +65,13 @@ public class AdminUserCtrl {
 	
 	@PostMapping("/user/insert")
 	@ResponseBody
-	public ResponseMessageBody insert(@Validated(value=ValidGroup.Second.class) Users user,String password1){
+	public ResponseMessageBody insert(@Validated(value=ValidGroup.Second.class) Users user,String password1,
+			BindingResult result){
 		try {
+			ResponseMessageBody msgBody = BindingResultUtils.parse(result) ;
+			if(null != msgBody){
+				return msgBody ;
+			}
 			if(null == password1 || !password1.equals(user.getPassword())){
 				return new ResponseMessageBody("两次密码输入不一致" , false);
 			}
@@ -76,11 +83,15 @@ public class AdminUserCtrl {
 		}
 	}
 	
-	
 	@PostMapping("/user/update")
 	@ResponseBody
-	public ResponseMessageBody update(@Validated(value=ValidGroup.Frist.class) Users user,String password1){
+	public ResponseMessageBody update(@Validated(value=ValidGroup.Frist.class) Users user,String password1,
+			BindingResult result){
 		try {
+			ResponseMessageBody msgBody = BindingResultUtils.parse(result) ;
+			if(null != msgBody){
+				return msgBody ;
+			}
 			if(null == password1 || !password1.equals(user.getPassword())){
 				return new ResponseMessageBody("两次密码输入不一致" , false);
 			}
