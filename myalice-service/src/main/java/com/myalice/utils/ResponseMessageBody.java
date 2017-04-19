@@ -1,11 +1,16 @@
 package com.myalice.utils;
 
+import java.util.Map;
+
 public class ResponseMessageBody {
 	
 	protected String msg ; 
 	
 	protected boolean suc ;
-
+	
+	protected Map<String,String> msgMap ;
+	
+	
 	public ResponseMessageBody() {
 	}
 
@@ -16,6 +21,13 @@ public class ResponseMessageBody {
 
 	public String getMsg() {
 		return msg;
+	}
+	public Map<String, String> getMsgMap() {
+		return msgMap;
+	}
+
+	public void setMsgMap(Map<String, String> msgMap) {
+		this.msgMap = msgMap;
 	}
 
 	public void setMsg(String msg) {
