@@ -1,11 +1,12 @@
 $.mypost = function(url , param , callfun , dataType) {
 	var token = Cookies.get("XSRF-TOKEN");
 	$.ajax({
-	    accepts: {
-	    	"XSRF-TOKEN":token
+		headers: {
+	    	"X-XSRF-TOKEN":token 
 	    },
 	    dataType:dataType,
-	    type:"POST",
+	    data:param,
+	    type:"POST",url:url,
 	    success: function(data) {
 	    	callfun( data );
 	    },error: function(XMLHttpRequest, textStatus, errorThrown){

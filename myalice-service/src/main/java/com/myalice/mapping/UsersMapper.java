@@ -4,6 +4,7 @@ import com.myalice.domain.Users;
 import java.util.List;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Result;
 import org.apache.ibatis.annotations.Results;
 import org.apache.ibatis.annotations.Select;
@@ -173,4 +174,11 @@ public interface UsersMapper {
         "where id = #{id,jdbcType=VARCHAR}"
     })
     int updateByPrimaryKey(Users record);
+    
+    @Update({
+        "update users",
+          "set enabled = #{enabled,jdbcType=BIT}",
+        "where username = #{username,jdbcType=VARCHAR}" 
+    })
+    int enableUser(@Param("username")String username , @Param("enabled")Integer enabled);
 }

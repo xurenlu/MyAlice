@@ -400,7 +400,9 @@ function showData(table,datas){
 		var data=datas[i];
 		html += "<tr>" ;
 		for(x=0;x<fields.length;x++){
-			var value = data[$(fields[x]).attr("data-field")]; 
+			var dataField=$(fields[x]).attr("data-field");
+			var value = data[dataField]; 
+			var dataType = $(fields[x]).attr("data-type");
 			var codeFun = $(fields[x]).attr("fun") ;
 			var result = value ;
 			if(null != codeFun){
@@ -409,7 +411,11 @@ function showData(table,datas){
 				result=v[value];  
 			}
 			html+="<td>";
-			html+=result;
+			if('checkbox' == dataType){
+				html+="<input class='checkbox_"+dataField+"' name='"+dataField+"' type='checkbox' value='"+value+"'/>";
+			}else{
+				html+=result;
+			}
 			html+="</td>";
 		}
 		html += "</tr>" ;

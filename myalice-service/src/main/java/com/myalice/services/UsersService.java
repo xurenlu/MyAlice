@@ -1,5 +1,7 @@
 package com.myalice.services;
 
+import java.util.stream.Stream;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -29,6 +31,15 @@ public class UsersService {
 	@Transactional
 	public int updateUser(Users users){
 		return usersMapper.updateByPrimaryKey(users) ;
+	}
+	
+	@Transactional
+	public int enableUser(String[] userNames,final Integer enabled){
+		Stream.of(userNames).parallel()
+		.forEach((userName)->{
+			usersMapper.enableUser(userName, enabled) ;
+		});
+		return 1;
 	}
 	
 	@Transactional
