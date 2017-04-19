@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Configuration;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-//@Configuration
+@Configuration
 public class ElasticsearchClient {
 
     @Value("${cluster-nodes}")
