@@ -129,14 +129,14 @@ public interface UsersMapper {
         "id, username, password, name, email, mobile_phone, create_time, remarks, user_type, ",
         "portrait_url, enabled",
         "from users"
-        , 
-        "<where>"
-        , "<if test=\"id != null \">id=#{id,jdbcType=VARCHAR}</if>"
-        , "<if test=\"userType != null \">user_type=#{userType,jdbcType=CHAR}</if>" 
-        , "<if test=\"email != null \">email=#{email,jdbcType=VARCHAR}</if>"
-        , "<if test=\"mobilePhone != null \">mobile_phone=#{mobilePhone,jdbcType=VARCHAR}</if>" 
-        , "<if test=\"username != null \">username like CONCAT('%' , #{username,jdbcType=VARCHAR} , '%')</if>" 
-        ,"</where> order by create_time desc</script>"
+        
+        , "<trim prefix=\"WHERE\" prefixOverrides=\"AND\">"
+        , "<if test=\"id != null and id != ''\">AND id=#{id,jdbcType=VARCHAR}</if>"
+        , "<if test=\"userType != null and userType != ''\">AND user_type=#{userType,jdbcType=CHAR}</if>" 
+        , "<if test=\"email != null and email != ''\">AND email=#{email,jdbcType=VARCHAR}</if>"
+        , "<if test=\"mobilePhone != null and mobilePhone != ''\">AND mobile_phone=#{mobilePhone,jdbcType=VARCHAR}</if>" 
+        , "<if test=\"username != null  and username != ''\">AND username like CONCAT('%' , #{username,jdbcType=VARCHAR} , '%')</if>" 
+        ,"</trim> order by create_time desc</script>"
     })
     @Results({
         @Result(column="id", property="id", jdbcType=JdbcType.VARCHAR, id=true),

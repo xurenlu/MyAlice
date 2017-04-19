@@ -36,8 +36,7 @@ public class AdminUserCtrl {
 	
 	@RequestMapping("/listdata")
 	@ResponseBody
-	public PageInfo<Users> listData(Integer pageNum) {
-		Users user = new Users();  
+	public PageInfo<Users> listData(Integer pageNum,Users user){
 		Page<Users> searchUsers = userService.searchUsers(pageNum , user) ; 
 		return new PageInfo<Users>(searchUsers) ;
 	}

@@ -8,20 +8,25 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import com.alibaba.fastjson.JSON;
+import com.github.pagehelper.Page;
 import com.myalice.MyAliceSpringConfig;
-import com.myalice.services.QuestionOrderService;
+import com.myalice.domain.Users;
+import com.myalice.services.UsersService;
 
-@RunWith(SpringRunner.class)
+@RunWith(SpringRunner.class)	
 @SpringBootTest(webEnvironment=WebEnvironment.RANDOM_PORT)
 @ContextConfiguration( classes = MyAliceSpringConfig.class )
 public class SpringTest {
 	
 	@Autowired
-	QuestionOrderService questionOrderService;
-
+	UsersService usersService;
+	
 	@Test
 	public void test(){
-		System.out.println("======>>>>>"+questionOrderService.list(1) ) ;
+		Users users = new Users();
+		Page<Users> searchUsers = usersService.searchUsers(1, users) ; 
+		System.out.println(JSON.toJSON(searchUsers.getResult()));
 	}
 	
 }
