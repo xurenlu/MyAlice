@@ -25,7 +25,7 @@ import org.springframework.security.web.header.writers.XXssProtectionHeaderWrite
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SpringSecurity extends WebSecurityConfigurerAdapter {
 
-	@Value("spring.security.jdbc.enable")
+	@Value("${spring.security.jdbc.enable}")
 	String securityJdbcEnable;
 
 	@Autowired
@@ -38,26 +38,20 @@ public class SpringSecurity extends WebSecurityConfigurerAdapter {
 
 		CookieCsrfTokenRepository withHttpOnlyFalse = CookieCsrfTokenRepository.withHttpOnlyFalse();
 		http.csrf().csrfTokenRepository(withHttpOnlyFalse);
-		if (!securityProperties.isEnableCsrf()) {
-			http.csrf().disable();
-		}
+
 		HeadersConfigurer<HttpSecurity> headers = http.headers();
 		headers.addHeaderWriter(new HstsHeaderWriter());
 		headers.addHeaderWriter(new XXssProtectionHeaderWriter());
 		headers.frameOptions().sameOrigin();
-		if (securityProperties.isEnableCsrf()) {
-			http.authorizeRequests()
-					.antMatchers("/admin/dologin", "/admin/js/**", "/admin/css/**", "/admin/img/**", "/admin/fonts/**")
-					.permitAll().antMatchers("/admin/**").hasAnyRole("admin");
-			String loginPage = "/admin/login.html";
-			FormLoginConfigurer<HttpSecurity> formLogin = http.formLogin();
-			formLogin.loginPage(loginPage).loginProcessingUrl("/admin/dologin").permitAll();
-			formLogin.successForwardUrl("/admin/list").permitAll();
-			formLogin.failureForwardUrl(loginPage + "?error=true").permitAll();
-			formLogin.failureUrl(loginPage + "?error=true").permitAll();
-		}else{
-			http.authorizeRequests().antMatchers("/admin/**").anonymous(); 
-		}
+		http.authorizeRequests()
+				.antMatchers("/admin/dologin", "/admin/js/**", "/admin/css/**", "/admin/img/**", "/admin/fonts/**")
+				.permitAll().antMatchers("/admin/**").hasAnyRole("admin");
+		String loginPage = "/admin/login.html";
+		FormLoginConfigurer<HttpSecurity> formLogin = http.formLogin();
+		formLogin.loginPage(loginPage).loginProcessingUrl("/admin/dologin").permitAll();
+		formLogin.successForwardUrl("/admin/list").permitAll();
+		formLogin.failureForwardUrl(loginPage + "?error=true").permitAll();
+		formLogin.failureUrl(loginPage + "?error=true").permitAll();
 	}
 
 	@Override
@@ -67,7 +61,6 @@ public class SpringSecurity extends WebSecurityConfigurerAdapter {
 
 	@Override
 	public void configure(AuthenticationManagerBuilder auth) throws Exception {
-
 		if ("1".equalsIgnoreCase(securityJdbcEnable)) {
 			/* 密码先不加密 */
 			auth.userDetailsService(jdbcUserDetailsManager());

@@ -4,6 +4,8 @@ import java.security.Principal;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.validation.Valid;
+
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -65,7 +67,8 @@ public class AdminUserCtrl {
 	
 	@PostMapping("/user/insert")
 	@ResponseBody
-	public ResponseMessageBody insert(@Validated(value=ValidGroup.Second.class) Users user,String password1,
+	@Validated(value=ValidGroup.Second.class)
+	public ResponseMessageBody insert(@Valid Users user,String password1,
 			BindingResult result){
 		try {
 			ResponseMessageBody msgBody = BindingResultUtils.parse(result) ;
