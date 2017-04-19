@@ -12,6 +12,7 @@ import com.github.pagehelper.PageHelper;
 import com.myalice.domain.Users;
 import com.myalice.mapping.UsersMapper;
 import com.myalice.utils.MyAliceConstant;
+import com.myalice.utils.Tools;
 
 @Service
 public class UsersService {
@@ -44,6 +45,7 @@ public class UsersService {
 	
 	@Transactional
 	public int insert(Users user){
+		user.setId(Tools.uuid()) ;
 		return usersMapper.insert(user); 
 	}
 	
