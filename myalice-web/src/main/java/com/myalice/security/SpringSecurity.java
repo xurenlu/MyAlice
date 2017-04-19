@@ -41,7 +41,7 @@ public class SpringSecurity extends WebSecurityConfigurerAdapter {
 		headers.addHeaderWriter(new XXssProtectionHeaderWriter());
 		headers.frameOptions().sameOrigin(); 
 		http.authorizeRequests().antMatchers("/admin/dologin" ,"/admin/js/**" ,"/admin/css/**" ,"/admin/img/**" ,"/admin/fonts/**" ).permitAll()
-		.antMatchers("/admin/**").anonymous() ;
+		.antMatchers("/admin/**").hasAnyRole("admin") ; 
 		
 		String loginPage = "/admin/login.html" ; 
 		FormLoginConfigurer<HttpSecurity> formLogin = http.formLogin();
