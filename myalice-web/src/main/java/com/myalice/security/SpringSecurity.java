@@ -75,6 +75,7 @@ public class SpringSecurity extends WebSecurityConfigurerAdapter {
 		JdbcUserDetailsManager userMan = new JdbcUserDetailsManager();
 		userMan.setDataSource(datasource);
 		userMan.setRolePrefix("ROLE_");
+		userMan.setAuthoritiesByUsernameQuery("SELECT username,IF(user_type='1','admin','other') authority FROM users WHERE username = ?");
 		return userMan;
 	}
 }
