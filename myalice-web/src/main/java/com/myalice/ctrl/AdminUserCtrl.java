@@ -68,8 +68,8 @@ public class AdminUserCtrl {
 	@PostMapping("/user/insert")
 	@ResponseBody
 	@Validated(value=ValidGroup.Second.class)
-	public ResponseMessageBody insert(@Valid Users user,String password1,
-			BindingResult result){
+	public ResponseMessageBody insert(@Valid Users user,
+			BindingResult result,String password1){
 		try {
 			ResponseMessageBody msgBody = BindingResultUtils.parse(result) ;
 			if(null != msgBody){
@@ -88,8 +88,8 @@ public class AdminUserCtrl {
 	
 	@PostMapping("/user/update")
 	@ResponseBody
-	public ResponseMessageBody update(@Validated(value=ValidGroup.Frist.class) Users user,String password1,
-			BindingResult result){
+	public ResponseMessageBody update(@Valid Users user,
+			BindingResult result,String password1){
 		try {
 			ResponseMessageBody msgBody = BindingResultUtils.parse(result) ;
 			if(null != msgBody){

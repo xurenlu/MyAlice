@@ -38,14 +38,15 @@ public class SpringSecurity extends WebSecurityConfigurerAdapter {
 
 		CookieCsrfTokenRepository withHttpOnlyFalse = CookieCsrfTokenRepository.withHttpOnlyFalse();
 		http.csrf().csrfTokenRepository(withHttpOnlyFalse);
-
+		http.csrf().disable();
 		HeadersConfigurer<HttpSecurity> headers = http.headers();
 		headers.addHeaderWriter(new HstsHeaderWriter());
 		headers.addHeaderWriter(new XXssProtectionHeaderWriter());
 		headers.frameOptions().sameOrigin();
 		http.authorizeRequests()
 				.antMatchers("/admin/dologin", "/admin/js/**", "/admin/css/**", "/admin/img/**", "/admin/fonts/**")
-				.permitAll().antMatchers("/admin/**").hasAnyRole("admin");
+				.permitAll().antMatchers("/admin/**").anonymous();
+				//.hasAnyRole("admin");
 		String loginPage = "/admin/login.html";
 		FormLoginConfigurer<HttpSecurity> formLogin = http.formLogin();
 		formLogin.loginPage(loginPage).loginProcessingUrl("/admin/dologin").permitAll();

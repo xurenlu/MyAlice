@@ -1,6 +1,8 @@
 package com.myalice.ctrl;
+import java.io.FileInputStream;
 import java.util.Arrays;
 
+import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -10,6 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextImpl;
@@ -18,6 +21,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -63,7 +67,6 @@ public class SpringMvcTestCase {
 		valueMap.put("password1", Arrays.asList("123456"));
 		valueMap.put("email", Arrays.asList("garhp@qq.com"));
 		valueMap.put("name", Arrays.asList("garhp@qq.com"));
-		
 		MvcResult andReturn = mockMvc.perform(MockMvcRequestBuilders.post("/admin/user/insert").params(valueMap)).andReturn() ;
 		System.out.println("-------------");
 		System.out.println(andReturn.getResponse().getStatus());
@@ -74,7 +77,7 @@ public class SpringMvcTestCase {
 	@Test
 	public void testUpdateUser()throws Exception{
 		MultiValueMap<String, String> valueMap = new LinkedMultiValueMap<String, String>();
-		valueMap.put("username", Arrays.asList("hpgary1")); 
+		valueMap.put("username", Arrays.asList("")); 
 		valueMap.put("password", Arrays.asList("123457")); 
 		valueMap.put("password1", Arrays.asList("123457"));
 		valueMap.put("email", Arrays.asList("garhp@qq.com"));
@@ -86,5 +89,17 @@ public class SpringMvcTestCase {
 		System.out.println("-------------");
 	}
 	
+	@Test
+	public void testAddQuestion()throws Exception{
+		MockMultipartHttpServletRequestBuilder fileUpload = MockMvcRequestBuilders.fileUpload("/admin/qr/upload"); 
+		fileUpload.file(new MockMultipartFile("attachments", "2.png", "image/png",
+				IOUtils.readFully(new FileInputStream("c:/2.png"), 45553))) ;
+		fileUpload.param("content", "有一些小问题要咨询一些呢");
+		MvcResult andReturn = mockMvc.perform(fileUpload).andReturn() ;
+		System.out.println("-------------");
+		System.out.println(andReturn.getResponse().getStatus());
+		System.out.println(andReturn.getResponse().getContentAsString());
+		System.out.println("-------------");
+	}
 	
 }

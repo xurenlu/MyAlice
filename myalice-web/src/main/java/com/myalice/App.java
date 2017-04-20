@@ -3,9 +3,13 @@ package com.myalice;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.support.SpringBootServletInitializer;
 
+import com.myalice.properties.AttachmentProperties;
+
 @SpringBootApplication(scanBasePackages="com.myalice")
+@EnableConfigurationProperties(AttachmentProperties.class)
 public class App extends SpringBootServletInitializer {
 	@Override
 	protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
