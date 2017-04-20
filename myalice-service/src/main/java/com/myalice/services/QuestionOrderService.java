@@ -30,13 +30,12 @@ public class QuestionOrderService {
 		questionOrderMapper.query(); 
 		return startPage ;
 	}
-	
-	@Transactional
+
+    @Transactional
     public void insert(final QuestionOrder record,List<String> attachmentFile) {
     	record.setId(Tools.uuid());
     	record.setCreateTime(new Date());
-        this.questionOrderMapper.insert(record); 
-        
+    	this.questionOrderMapper.insert(record); 
         attachmentFile.forEach((attachment)->{
         	 QuestionOrderAttachment questionOrderAttachment = new QuestionOrderAttachment();
         	 questionOrderAttachment.setCreateTime(new Date());
