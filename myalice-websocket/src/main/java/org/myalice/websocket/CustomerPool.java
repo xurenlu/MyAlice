@@ -52,6 +52,7 @@ public class CustomerPool {
 		return true;
 	}
 	
+	@SuppressWarnings("resource")
 	synchronized public WebSocketSession getUnassignedCustomer() {
 		if (unassignedCustomerQueue.size() > 0) {
 			WebSocketSession session = unassignedCustomerQueue.poll();

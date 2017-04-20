@@ -1,7 +1,6 @@
 package org.myalice.websocket.handler;
 
 import org.apache.commons.lang3.StringUtils;
-import org.myalice.websocket.AssignManager;
 import org.myalice.websocket.Constant;
 import org.myalice.websocket.CustomerPool;
 import org.myalice.websocket.SupporterPool;
@@ -32,15 +31,19 @@ public class CustomerHandler extends TextWebSocketHandler {
 	@Autowired
 	private TalkService talkService;
 	
+	@Autowired
+	private MessageFactory messageFactory;
+	
 	@Override
 	public void afterConnectionEstablished(WebSocketSession session) throws Exception {
-		TextMessage message = MessageFactory.generateMessage(session, 
-				null, MessageFactory.MESSAGE_TYPE_CONNECT, null);
+		TextMessage message = messageFactory.generateMessage(session, 
+				null, MessageFactory.MESSAGE_TYPE_CUSTOMER_CONNECT, null);
 		if (message != null) {
 			session.sendMessage(message);
 		}
 		customerPool.addCustomer(session);
 		talkService.connectionOpen(session, Constant.DOMAIN_TYPE.CONNECTION_TYPE_CUSTOMER);
+		//发送历史信息
 		log.info("Customer " + session.getId() + " connected.");
 	}
 
@@ -68,7 +71,7 @@ public class CustomerHandler extends TextWebSocketHandler {
 		} 
 		//发送聊天内容
 		else {
-			talker.sendMessage(MessageFactory.generateMessage(session, talker, 
+			talker.sendMessage(messageFactory.generateMessage(session, talker, 
 					MessageFactory.MESSAGE_TYPE_TALK_TO_SUPPORTER, 
 					tb.getContent().get(Message.CONTENT_KEY_TALK_CONTENT)));
 			talkService.saveTalk(session, talker, Constant.DOMAIN_TYPE.TALK_TYPE_CUSTOMER_TO_SUPPORTER, tb.getContent().get(Message.CONTENT_KEY_TALK_CONTENT));
@@ -82,7 +85,7 @@ public class CustomerHandler extends TextWebSocketHandler {
 		WebSocketSession talker = (WebSocketSession)session.getAttributes().get(Constant.WS_SESSION_KEY.SESSION_KEY_TALKER_OF_CUSTOMER);
 		supporterPool.freeSupporter(talker);
 		if (talker != null && talker.isOpen()) {
-			TextMessage message = MessageFactory.generateMessage(session, talker, MessageFactory.MESSAGE_TYPE_CLOSE_CUSTOMER_TO_SUPPORTER, "");
+			TextMessage message = messageFactory.generateMessage(session, talker, MessageFactory.MESSAGE_TYPE_CLOSE_CUSTOMER_TO_SUPPORTER, "");
 			talker.sendMessage(message);
 		}
 		talkService.connectionClose(session);

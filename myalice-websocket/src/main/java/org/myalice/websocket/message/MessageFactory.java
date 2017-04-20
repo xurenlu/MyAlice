@@ -1,6 +1,5 @@
 package org.myalice.websocket.message;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -10,14 +9,20 @@ import org.apache.commons.lang3.StringUtils;
 import org.myalice.domain.websocket.TalkRecord;
 import org.myalice.websocket.Constant;
 import org.myalice.websocket.Util;
+import org.myalice.websocket.service.TalkService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+@Component
 public class MessageFactory {
 
-	public static final String MESSAGE_TYPE_CONNECT = "connect";
+	public static final String MESSAGE_TYPE_CUSTOMER_CONNECT = "customer_connect";
+	
+	public static final String MESSAGE_TYPE_SUPPORTER_CONNECT = "supporter_connect";
 	
 	public static final String MESSAGE_TYPE_CLOSE_TO_CUSTOMER = "customer_close";
 	
@@ -33,7 +38,10 @@ public class MessageFactory {
 	
 	public static final String MESSAGE_TYPE_HISTORY_TO_CUSTOMER = "history";
 	
-	public static TextMessage generateMessage(WebSocketSession customerSession, 
+	@Autowired
+	private TalkService talkService;
+	
+	public TextMessage generateMessage(WebSocketSession customerSession, 
 			WebSocketSession supporterSession, String type, String message) throws JsonProcessingException {
 		if (StringUtils.isEmpty(type)) {
 			return null;
@@ -57,10 +65,11 @@ public class MessageFactory {
 									MESSAGE_TYPE_ASSIGN_TO_CUSTOMER)));
 		} else if (type.equals(MESSAGE_TYPE_ASSIGN_TO_SUPPORTER)) {
 			return new TextMessage(
-					Util.formatMessage(
-							createMessage(generateAssignMessage(customerSession), 
-									MESSAGE_TYPE_ASSIGN_TO_SUPPORTER)));
-		} else if (type.equals(MESSAGE_TYPE_CONNECT)) {
+					Util.formatMessage(generateAssignToSupporterMessage(customerSession, supporterSession)));
+		} else if (type.equals(MESSAGE_TYPE_CUSTOMER_CONNECT)) {
+			return new TextMessage(
+					Util.formatMessage(generateCustomerConnectMessage(customerSession)));
+		} else if (type.equals(MESSAGE_TYPE_SUPPORTER_CONNECT)) {
 			
 		} else if (type.equals(MESSAGE_TYPE_CLOSE_TO_CUSTOMER)) {
 			return new TextMessage(
@@ -76,7 +85,7 @@ public class MessageFactory {
 		return null;
 	}
 	
-	private static Message createMessage(Map<String, String> bean, String type) {
+	private Message createMessage(Map<String, String> bean, String type) {
 		if (bean == null || StringUtils.isEmpty(type)) {
 			return null;
 		}
@@ -86,7 +95,7 @@ public class MessageFactory {
 		return reValue;
 	}
 	
-	private static Map<String, String> generateCloseMessage(WebSocketSession session) {
+	private Map<String, String> generateCloseMessage(WebSocketSession session) {
 		if (session != null) {
 			Map<String, String> reValue = new HashMap<String, String>();
 			reValue.put(Message.CONTENT_KEY_SESSIONID, session.getId());
@@ -95,7 +104,7 @@ public class MessageFactory {
 		return null;
 	}
 	
-	private static Map<String, String> generateTalkMessage(WebSocketSession session, 
+	private Map<String, String> generateTalkMessage(WebSocketSession session, 
 			String message) {
 		Map<String, String> reValue = new HashMap<String, String>();
 		reValue.put(Message.CONTENT_KEY_SESSIONID, session.getId());
@@ -103,7 +112,7 @@ public class MessageFactory {
 		return reValue;
 	}
 	
-	private static Map<String, String> generateAssignMessage(WebSocketSession otherSession) {
+	private Map<String, String> generateAssignMessage(WebSocketSession otherSession) {
 		String userName = (String)otherSession.getAttributes().get(Constant.WS_SESSION_KEY.SESSION_KEY_USER_NAME);
 		if (StringUtils.isEmpty(userName)) {
 			userName = otherSession.getId();
@@ -119,34 +128,56 @@ public class MessageFactory {
 		return reValue;
 	}
 	
-	public static TextMessage generateHistoryMesssage(List<TalkRecord> talks) throws JsonProcessingException {
-		if (talks == null || talks.size() == 0) {
-			return null;
+	private Message generateAssignToSupporterMessage(WebSocketSession customerSession, WebSocketSession supporterSession) {
+		String userName = (String)customerSession.getAttributes().get(Constant.WS_SESSION_KEY.SESSION_KEY_USER_NAME);
+		if (StringUtils.isEmpty(userName)) {
+			userName = customerSession.getId();
 		}
-		List<SimpleTalk> reValue = new ArrayList<SimpleTalk>();
-		for (TalkRecord talk : talks) {
-			SimpleTalk item = new SimpleTalk();
-			item.setType(talk.getType());
-			item.setContent(talk.getContent());
-			reValue.add(item);
+		String logoUrl =  (String)customerSession.getAttributes().get(Constant.WS_SESSION_KEY.SESSION_KEY_LOGO_URL);
+		if (StringUtils.isEmpty(logoUrl)) {
+			logoUrl = Constant.USER_LOGO_DEFAULT_ADDRESS;
 		}
-		Message orgMessage = new Message();
-		orgMessage.setType(MESSAGE_TYPE_HISTORY_TO_CUSTOMER);
-		orgMessage.setHistory(reValue);
-		TextMessage message = new TextMessage(Util.formatMessage(orgMessage));
+		Message message = new Message();
+		message.setType(MESSAGE_TYPE_ASSIGN_TO_SUPPORTER);
+		
+		Map<String, String> reMap = new HashMap<String, String>();
+		reMap.put(Message.CONTENT_KEY_SESSIONID, customerSession.getId());
+		reMap.put(Message.CONTENT_KEY_USERNAME, userName);
+		reMap.put(Message.CONTENT_KEY_USERLOGO, logoUrl);
+		message.setContent(reMap);
+		
+		List<TalkRecord> historyTalk = talkService.getHistoryTalk(customerSession);
+		if (historyTalk != null && historyTalk.size() > 0) {
+			List<SimpleTalk> reHistory = new ArrayList<SimpleTalk>();
+			for (TalkRecord talk : historyTalk) {
+				SimpleTalk item = new SimpleTalk();
+				item.setType(talk.getType());
+				item.setContent(talk.getContent());
+				reHistory.add(item);
+			}
+			message.setHistory(reHistory);
+		}
 		return message;
 	}
 	
-	public static void main(String[] args) throws IOException {
-		Map<String, String> cMap = new HashMap<String, String>();
-		cMap.put(Message.CONTENT_KEY_SESSIONID, "123456");
-		cMap.put(Message.CONTENT_KEY_USERNAME, "hehe");
-		cMap.put(Message.CONTENT_KEY_USERLOGO, null);
-		String string = Util.formatMessage(createMessage(cMap, MessageFactory.MESSAGE_TYPE_ASSIGN_TO_CUSTOMER));
-		System.out.println(string);
-		Message message = Util.parseMessage(string, Message.class);
-		System.out.println(message);
-		System.out.println(message.getContent());
-		System.out.println(message.getType());
+	public Message generateCustomerConnectMessage(WebSocketSession customerSession) throws JsonProcessingException {
+		if (customerSession == null) {
+			return null;
+		}
+		List<TalkRecord> historyTalk = talkService.getHistoryTalk(customerSession);
+		if (historyTalk != null && historyTalk.size() > 0) {
+			List<SimpleTalk> reValue = new ArrayList<SimpleTalk>();
+			for (TalkRecord talk : historyTalk) {
+				SimpleTalk item = new SimpleTalk();
+				item.setType(talk.getType());
+				item.setContent(talk.getContent());
+				reValue.add(item);
+			}
+			Message orgMessage = new Message();
+			orgMessage.setType(MESSAGE_TYPE_CUSTOMER_CONNECT);
+			orgMessage.setHistory(reValue);
+			return orgMessage;
+		} 
+		return null;
 	}
 }

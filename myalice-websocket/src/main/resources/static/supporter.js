@@ -37,6 +37,8 @@ function connect() {
         	if (content.type=="supporter_assign") {
         		$("#customerSelect").append("<option id='option_" + content.content.sessionId + "' value='" + content.content.sessionId + "'>" + content.content.sessionId + "</option>");
         		$("#talkContent").append(append1 + content.content.userName + append2 + content.content.sessionId + append3);
+        		console.log('history', content.history);
+        		showHistory(content.content.sessionId, content.history);
         	} if (content.type=="supporter_talk") {
         		showOther(content.content.sessionId, content.content.talkContent);
         	} if (content.type=="customer_of_supporter_close") {
@@ -63,6 +65,16 @@ function sendName() {
 
 function createMessage() {
 	return JSON.stringify({'type':'customer_talk', 'content':{'sessionId':$('#customerSelect').val(), 'talkContent': $('#name').val()}})
+}
+
+function showHistory(key, histories) {
+	$.each(histories, function (n, value) {
+        if (value.type == "0") {
+        	showOther(key, value.content);
+        } else if (value.type == "1") {
+        	showSelf(key, value.content);
+        }
+    });
 }
 
 function showOther(key, message) {

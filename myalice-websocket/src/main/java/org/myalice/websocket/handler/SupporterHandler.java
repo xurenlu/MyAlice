@@ -4,7 +4,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.commons.lang3.StringUtils;
-import org.myalice.websocket.AssignManager;
 import org.myalice.websocket.Constant;
 import org.myalice.websocket.CustomerPool;
 import org.myalice.websocket.SupporterPool;
@@ -35,6 +34,9 @@ public class SupporterHandler extends TextWebSocketHandler {
 	@Autowired
 	private TalkService talkService;
 	
+	@Autowired
+	private MessageFactory messageFactory;
+	
 	@Override
 	public void afterConnectionEstablished(WebSocketSession session) throws Exception {
 		supporterPool.addSupporter(session);
@@ -57,7 +59,7 @@ public class SupporterHandler extends TextWebSocketHandler {
 			String sessionId = tb.getContent().get(Message.CONTENT_KEY_SESSIONID);
 			if (StringUtils.isNotEmpty(sessionId)) {
 				talker = talkers.get(sessionId);
-				sendMessage = MessageFactory.generateMessage(talker, session, MessageFactory.MESSAGE_TYPE_TALK_TO_CUSTOMER, tb.getContent().get(Message.CONTENT_KEY_TALK_CONTENT));
+				sendMessage = messageFactory.generateMessage(talker, session, MessageFactory.MESSAGE_TYPE_TALK_TO_CUSTOMER, tb.getContent().get(Message.CONTENT_KEY_TALK_CONTENT));
 			}
 		}
 		

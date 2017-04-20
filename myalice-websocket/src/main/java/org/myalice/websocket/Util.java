@@ -5,7 +5,8 @@ import java.util.UUID;
 import java.util.concurrent.ArrayBlockingQueue;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.web.socket.TextMessage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.socket.WebSocketSession;
 
 import com.fasterxml.jackson.core.JsonParseException;
@@ -14,6 +15,9 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class Util {
+	
+	@SuppressWarnings("unused")
+	private static Logger log = LoggerFactory.getLogger(Util.class);
 
 	private static ObjectMapper mapper = new ObjectMapper(); 
 	
@@ -62,13 +66,55 @@ public class Util {
 		return UUID.randomUUID().toString().replaceAll("-", "");
 	}
 	
+	/**
+	 * 获取用户ID
+	 * @param session
+	 * @return
+	 */
 	public static String getUserId(WebSocketSession session) {
+		if (session == null) {
+			return null;
+		}
 		String userId = (String)session.getAttributes().get(Constant.WS_SESSION_KEY.SESSION_KEY_USER_ID);
 		return userId == null ? "" : userId;
 	}
 	
+	/**
+	 * 获取用户名
+	 * @param session
+	 * @return
+	 */
 	public static String getUserName(WebSocketSession session) {
+		if (session == null) {
+			return null;
+		}
 		String userName = (String)session.getAttributes().get(Constant.WS_SESSION_KEY.SESSION_KEY_USER_NAME);
 		return userName == null ? session.getId() : userName;
+	}
+	
+	/**
+	 * 获取客户端IP地址
+	 * @param session
+	 * @return
+	 */
+	public static String getRemoteIp(WebSocketSession session) {
+		if (session == null) {
+			return null;
+		}
+		String remoteIp = session.getRemoteAddress().getAddress().getHostAddress();
+		return remoteIp == null ? "" : remoteIp;
+	}
+	
+	/**
+	 * 获取服务端IP地址
+	 * @param session
+	 * @return
+	 */
+	public static String getLocalIp(WebSocketSession session) {
+		if (session == null) {
+			return null;
+		}
+		String localIp = session.getLocalAddress().getAddress().getHostAddress();
+		return localIp == null ? "" : localIp;
 	}
 }

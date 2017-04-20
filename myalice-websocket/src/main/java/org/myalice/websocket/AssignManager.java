@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.LinkedBlockingDeque;
 
 import org.myalice.websocket.message.MessageFactory;
 import org.myalice.websocket.service.TalkService;
@@ -43,6 +42,9 @@ public class AssignManager {
 	@Autowired
 	private TalkService talkService;
 	
+	@Autowired
+	private MessageFactory messageFactory;
+	
 	@Scheduled(fixedRate = 1000)
 	public void assignTask() throws IOException, InterruptedException {
 		assignSession();
@@ -60,27 +62,34 @@ public class AssignManager {
 	}
 	
 	private void assignSession() throws IOException, InterruptedException {
-		WebSocketSession customer = customerPool.getUnassignedCustomer();
-		while (customer != null && customer.isOpen()) {
-			WebSocketSession supporter = supporterPool.getFreeSupporter();
-			//在找不到空闲的客服人员时，客户继续等待
-			if (supporter == null) {
-				customerPool.freeCustomer(customer);
-				break;
+		try {
+			WebSocketSession customer = customerPool.getUnassignedCustomer();
+			while (customer != null && customer.isOpen()) {
+				WebSocketSession supporter = supporterPool.getFreeSupporter();
+				//在找不到空闲的客服人员时，客户继续等待
+				if (supporter == null) {
+					customerPool.freeCustomer(customer);
+					break;
+				}
+				
+				//设置客户、客服关联关系
+				setMapping(customer, supporter);
+				//发送分配消息
+				sendAssignMessage(customer, supporter);
+				//发送历史信息
+				//sendHistory(customer, supporter);
+				
+				//向客服发送未接收的信息
+				sendUnsetMessage(customer, supporter);
+				
+				/*assignCustomerInfo.put(customer);
+				assignSupporterInfo.put(supporter);*/
+				talkService.assign(customer, supporter);
+				
+				customer = customerPool.getUnassignedCustomer();
 			}
-			
-			//设置客户、客服关联关系
-			setMapping(customer, supporter);
-			//发送分配消息
-			sendAssignMessage(customer, supporter);
-			//向客服发送未接收的信息
-			sendUnsetMessage(customer, supporter);
-			
-			/*assignCustomerInfo.put(customer);
-			assignSupporterInfo.put(supporter);*/
-			talkService.assign(customer, supporter);
-			
-			customer = customerPool.getUnassignedCustomer();
+		} catch (Exception e) {
+			log.error("Assign error!", e);
 		}
 	}
 	
@@ -92,8 +101,9 @@ public class AssignManager {
 	 * @throws IOException
 	 */
 	private void sendAssignMessage(WebSocketSession customer, WebSocketSession supporter) throws JsonProcessingException, IOException {
-		TextMessage customerMessage = MessageFactory.generateMessage(customer, supporter, MessageFactory.MESSAGE_TYPE_ASSIGN_TO_CUSTOMER, null); 
-		TextMessage supporterMessage = MessageFactory.generateMessage(customer, supporter, MessageFactory.MESSAGE_TYPE_ASSIGN_TO_SUPPORTER, null);
+		TextMessage customerMessage = messageFactory.generateMessage(customer, supporter, MessageFactory.MESSAGE_TYPE_ASSIGN_TO_CUSTOMER, null); 
+		TextMessage supporterMessage = messageFactory.generateMessage(customer, supporter, MessageFactory.MESSAGE_TYPE_ASSIGN_TO_SUPPORTER, null);
+		
 		customer.sendMessage(customerMessage);
 		supporter.sendMessage(supporterMessage);
 		log.info("ASSIGN CUSTOMER  : " + customerMessage.getPayload());
@@ -128,7 +138,7 @@ public class AssignManager {
 		if (unsendMessages != null && unsendMessages.size() > 0) {
 			for (String message : unsendMessages) {
 				try {
-					supporterSession.sendMessage(MessageFactory.generateMessage(customerSession, supporterSession, MessageFactory.MESSAGE_TYPE_TALK_TO_SUPPORTER, message));
+					supporterSession.sendMessage(messageFactory.generateMessage(customerSession, supporterSession, MessageFactory.MESSAGE_TYPE_TALK_TO_SUPPORTER, message));
 				} catch (IOException e) {
 					log.error("Send unset messsage error : from " + customerSession.getId() 
 						+ " to " + supporterSession.getId(), e);

@@ -104,14 +104,30 @@ public class TalkService {
 		return;
 	}
 	
-	public List<TalkRecord> getHistoryTalkByIp(String ip) {
+	public List<TalkRecord> getHistoryTalk(WebSocketSession session) {
+		if (session == null) {
+			return null;
+		}
+		String userId = Util.getUserId(session);
+		if (StringUtils.isNotEmpty(userId)) {
+			return this.getHistoryTalkByUserId(userId);
+		} else {
+			String remoteIp = Util.getRemoteIp(session);
+			if (StringUtils.isNotEmpty(remoteIp)) {
+				return this.getHistoryTalkByIp(remoteIp);
+			}
+			return null;
+		}
+	}
+	
+	private List<TalkRecord> getHistoryTalkByIp(String ip) {
 		if (StringUtils.isEmpty(ip)) {
 			return null;
 		}
 		return talkMapper.selectLastTalkByIp(ip, laskTalkNumberLimit);
 	}
 	
-	public List<TalkRecord> getHistoryTalkByUserId(String userId) {
+	private List<TalkRecord> getHistoryTalkByUserId(String userId) {
 		if (StringUtils.isEmpty(userId)) {
 			return null;
 		}
