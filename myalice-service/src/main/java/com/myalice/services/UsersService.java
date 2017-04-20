@@ -1,5 +1,7 @@
 package com.myalice.services;
 
+import java.util.stream.Stream;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -10,6 +12,7 @@ import com.github.pagehelper.PageHelper;
 import com.myalice.domain.Users;
 import com.myalice.mapping.UsersMapper;
 import com.myalice.utils.MyAliceConstant;
+import com.myalice.utils.Tools;
 
 @Service
 public class UsersService {
@@ -32,7 +35,17 @@ public class UsersService {
 	}
 	
 	@Transactional
+	public int enableUser(String[] userNames,final Integer enabled){
+		Stream.of(userNames).parallel()
+		.forEach((userName)->{
+			usersMapper.enableUser(userName, enabled) ;
+		});
+		return 1;
+	}
+	
+	@Transactional
 	public int insert(Users user){
+		user.setId(Tools.uuid()) ;
 		return usersMapper.insert(user); 
 	}
 	

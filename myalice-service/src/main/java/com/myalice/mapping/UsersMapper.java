@@ -4,6 +4,7 @@ import com.myalice.domain.Users;
 import java.util.List;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Result;
 import org.apache.ibatis.annotations.Results;
 import org.apache.ibatis.annotations.Select;
@@ -129,14 +130,14 @@ public interface UsersMapper {
         "id, username, password, name, email, mobile_phone, create_time, remarks, user_type, ",
         "portrait_url, enabled",
         "from users"
-        , 
-        "<where>"
-        , "<if test=\"id != null \">id=#{id,jdbcType=VARCHAR}</if>"
-        , "<if test=\"userType != null \">user_type=#{userType,jdbcType=CHAR}</if>" 
-        , "<if test=\"email != null \">email=#{email,jdbcType=VARCHAR}</if>"
-        , "<if test=\"mobilePhone != null \">mobile_phone=#{mobilePhone,jdbcType=VARCHAR}</if>" 
-        , "<if test=\"username != null \">username like CONCAT('%' , #{username,jdbcType=VARCHAR} , '%')</if>" 
-        ,"</where> order by create_time desc</script>"
+        
+        , "<trim prefix=\"WHERE\" prefixOverrides=\"AND\">"
+        , "<if test=\"id != null and id != ''\">AND id=#{id,jdbcType=VARCHAR}</if>"
+        , "<if test=\"userType != null and userType != ''\">AND user_type=#{userType,jdbcType=CHAR}</if>" 
+        , "<if test=\"email != null and email != ''\">AND email=#{email,jdbcType=VARCHAR}</if>"
+        , "<if test=\"mobilePhone != null and mobilePhone != ''\">AND mobile_phone=#{mobilePhone,jdbcType=VARCHAR}</if>" 
+        , "<if test=\"username != null  and username != ''\">AND username like CONCAT('%' , #{username,jdbcType=VARCHAR} , '%')</if>" 
+        ,"</trim> order by create_time desc</script>"
     })
     @Results({
         @Result(column="id", property="id", jdbcType=JdbcType.VARCHAR, id=true),
@@ -173,4 +174,11 @@ public interface UsersMapper {
         "where id = #{id,jdbcType=VARCHAR}"
     })
     int updateByPrimaryKey(Users record);
+    
+    @Update({
+        "update users",
+          "set enabled = #{enabled,jdbcType=BIT}",
+        "where username = #{username,jdbcType=VARCHAR}" 
+    })
+    int enableUser(@Param("username")String username , @Param("enabled")Integer enabled);
 }
