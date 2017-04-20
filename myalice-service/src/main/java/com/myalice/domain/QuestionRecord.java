@@ -2,6 +2,11 @@ package com.myalice.domain;
 
 import java.util.Date;
 
+import org.hibernate.validator.constraints.Length;
+import org.hibernate.validator.constraints.NotBlank;
+
+import com.myalice.utils.ValidGroup;
+
 public class QuestionRecord extends BaseDomain{
     
 	private static final long serialVersionUID = 1L;
@@ -24,6 +29,8 @@ public class QuestionRecord extends BaseDomain{
      *
      * @mbg.generated
      */
+    @NotBlank(message = "{qr.content.null}" , groups={ValidGroup.Second.class , ValidGroup.Frist.class})
+    @Length(min=15 , message= "{qr.content.min}", groups={ValidGroup.Second.class , ValidGroup.Frist.class})
     private String content;
 
     /**
