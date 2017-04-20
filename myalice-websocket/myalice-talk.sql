@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50629
 File Encoding         : 65001
 
-Date: 2017-04-17 10:33:27
+Date: 2017-04-20 09:04:49
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -63,29 +63,17 @@ DROP TABLE IF EXISTS `talk_record`;
 CREATE TABLE `talk_record` (
   `id` varchar(36) NOT NULL COMMENT '主键',
   `content` varchar(255) NOT NULL COMMENT '聊天内容',
-  `user_id` varchar(36) DEFAULT NULL COMMENT '用户ID',
-  `user_type` char(255) NOT NULL COMMENT '用户类型（0：客户，1：客服）',
+  `from_user_id` varchar(36) DEFAULT NULL COMMENT '用户ID',
+  `from_user_name` varchar(32) NOT NULL,
+  `to_user_id` varchar(36) DEFAULT NULL,
+  `to_user_name` varchar(32) DEFAULT NULL,
+  `type` char(255) NOT NULL COMMENT '用户类型（0：客户，1：客服）',
   `create_time` datetime NOT NULL COMMENT '创建时间',
   `connection_id` varchar(36) NOT NULL COMMENT '连接ID',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- ----------------------------
--- Table structure for user
--- ----------------------------
-DROP TABLE IF EXISTS `users`;
-CREATE TABLE `users` (
-  `id` varchar(36) NOT NULL,
-  `username` varchar(32) NOT NULL COMMENT '用户名',
-  `password` varchar(64) NOT NULL COMMENT '登录密码',
-  `name` varchar(32) NOT NULL COMMENT '昵称',
-  `email` varchar(64) NOT NULL COMMENT '邮箱',
-  `mobile_phone` varchar(16) NOT NULL COMMENT '手机号',
-  `create_time` datetime NOT NULL COMMENT '创建时间',
-  `remarks` varchar(255) DEFAULT NULL COMMENT '备注',
-  `user_type` char(255) NOT NULL COMMENT '用户类型',
-  `portrait_url` varchar(255) NOT NULL COMMENT '图片url',
-  `enabled` tinyint(1) DEFAULT NULL COMMENT '是否启用',
+  `from_ip` varchar(128) NOT NULL,
+  `to_ip` varchar(128) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `user_name` (`username`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8
+  KEY `from_user_id` (`from_user_id`),
+  KEY `to_user_id` (`to_user_id`) USING BTREE,
+  KEY `create_time` (`create_time`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;

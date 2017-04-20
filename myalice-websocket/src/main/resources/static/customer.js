@@ -33,6 +33,8 @@ function connect() {
         	} else if (content.type=="customer_assign") {
         		supporterSessionId = content.content.sessionId;
         		showOther(content.content.userName + " as your with.");
+        	} else if (content.type=="customer_connect") {
+        		showHistory(content.history);
         	}
         }
         
@@ -55,6 +57,16 @@ function sendName() {
 
 function createMessage() {
 	return JSON.stringify({'type':'supporter_talk', 'content':{'sessionId':$('#customerSelect').val(), 'talkContent': $('#name').val()}})
+}
+
+function showHistory(histories) {
+	$.each(histories, function (n, value) {
+        if (value.type == "0") {
+        	showSelf(value.content);
+        } else if (value.type == "1") {
+        	showOther(value.content);
+        }
+    });
 }
 
 function showOther(message) {
