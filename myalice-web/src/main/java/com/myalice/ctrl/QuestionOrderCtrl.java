@@ -2,6 +2,7 @@ package com.myalice.ctrl;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.security.Principal;
 import java.util.List;
 import java.util.Vector;
 
@@ -34,7 +35,7 @@ public class QuestionOrderCtrl {
 	
 	@RequestMapping("upload")
 	public ResponseMessageBody upload(@Valid QuestionOrder order ,BindingResult result , 
-			 @RequestParam(value = "attachments") MultipartFile[] attachments){
+			 @RequestParam(value = "attachments") MultipartFile[] attachments,Principal principal){
 		
 		String headpath = attachmentProperties.getCurrentPath() ; 
 		try {
@@ -53,8 +54,10 @@ public class QuestionOrderCtrl {
 					IOUtils.closeQuietly(out); 
 				}
 			}
+			if(null != principal){
+				order.setCreateUser(principal.getName());
+			}
 			questionOrderService.insert(order, attachmentFile);
-			
 			return new ResponseMessageBody("工单创建成功" , true) ;
 		} catch (Exception e) {
 			logger.error( "/admin/qr/upload", e ); 
