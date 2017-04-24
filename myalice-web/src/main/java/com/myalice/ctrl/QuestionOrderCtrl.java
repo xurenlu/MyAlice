@@ -35,9 +35,9 @@ public class QuestionOrderCtrl {
 	@Autowired
 	protected QuestionOrderService questionOrderService  ;
 	
-	@RequestMapping("list")
-	public Page<QuestionOrder> list(Integer pageId,QuestionOrder qo,Date sTime , Date eTime){
-		return questionOrderService.list(pageId , qo,sTime,eTime) ;
+	@RequestMapping("listData")
+	public Page<QuestionOrder> list(Integer pageNum,QuestionOrder qo,Date sTime , Date eTime){
+		return questionOrderService.list(pageNum , qo,sTime,eTime) ;
 	}
 	
 	@RequestMapping("upload")
