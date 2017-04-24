@@ -25,9 +25,9 @@ public class QuestionOrderService {
     @Autowired
     QuestionOrderAttachmentMapper orderAttachmentMapper ;
 	
-	public Page<QuestionOrder> list(int pageId){
+	public Page<QuestionOrder> list(int pageId,QuestionOrder qo,Date sTime,Date eTime){
 		Page<QuestionOrder> startPage = PageHelper.startPage(pageId, 10);
-		questionOrderMapper.query(); 
+		questionOrderMapper.query(qo,sTime,eTime);
 		return startPage ;
 	}
 
