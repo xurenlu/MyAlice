@@ -6,7 +6,10 @@ $(function(){
 	if(page!=""){
 		pageNum=page; 
 	}
-	loadData(loadDataUrl,{pageNum:pageNum})
+	
+	loadDict( function(){
+		loadData(loadDataUrl,{pageNum:pageNum})
+	})
 })
 
 function loadData(url,param){
@@ -19,4 +22,18 @@ function loadData(url,param){
 			loadData(loadDataUrl , {pageNum:page});   
 		}});
 	} , "json")
+}
+
+function loadDict(callback){
+	$.ajax({url:"/pub/orderTypes" ,
+				traditional:true,
+				dataType:"json" ,
+			data:{dtypes:["orderType","orderState"]}
+	,success:function(json){
+		//$("#questionTypeTd").attr("fun" , html);  
+		for(v in json){
+			$("#td_" + v).attr("fun" , json[v]); 
+		}
+		callback();
+	} } )
 }

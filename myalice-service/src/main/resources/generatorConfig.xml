@@ -33,5 +33,6 @@
 		<table tableName="users" domainObjectName="Users" />
 		<table tableName="question_order_attachment" domainObjectName="QuestionOrderAttachment" />
 		<table tableName="question_record" domainObjectName="QuestionRecord" />
+		<table tableName="sys_dictionaries" domainObjectName="SysDictionaries" />
 	</context>
 </generatorConfiguration>
