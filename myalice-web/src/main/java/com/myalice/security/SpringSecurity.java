@@ -46,10 +46,11 @@ public class SpringSecurity extends WebSecurityConfigurerAdapter {
 		http.authorizeRequests()
 				.antMatchers("/admin/dologin", "/admin/js/**", "/admin/css/**", "/admin/img/**", "/admin/fonts/**")
 				.permitAll().antMatchers("/admin/**")//.anonymous();
-				.hasAnyRole("admin");
+				.hasAnyRole("admin").antMatchers("/qo/**").authenticated();
 		String loginPage = "/admin/login.html";
 		FormLoginConfigurer<HttpSecurity> formLogin = http.formLogin();
 		formLogin.loginPage(loginPage).loginProcessingUrl("/admin/dologin").permitAll();
+		
 		formLogin.successForwardUrl("/admin/list").permitAll();
 		formLogin.failureForwardUrl(loginPage + "?error=true").permitAll();
 		formLogin.failureUrl(loginPage + "?error=true").permitAll();

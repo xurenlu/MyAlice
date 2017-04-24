@@ -3,6 +3,7 @@ package com.myalice.ctrl;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.security.Principal;
+import java.util.Date;
 import java.util.List;
 import java.util.Vector;
 
@@ -17,12 +18,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.github.pagehelper.Page;
 import com.myalice.domain.QuestionOrder;
 import com.myalice.properties.AttachmentProperties;
 import com.myalice.services.QuestionOrderService;
 import com.myalice.utils.ResponseMessageBody;
 
-@RequestMapping("/admin/qr/")
+@RequestMapping("/qo/")
 @RestController
 public class QuestionOrderCtrl {
 	protected static Logger logger = org.slf4j.LoggerFactory.getLogger("QuestionRecord") ; 
@@ -32,6 +34,11 @@ public class QuestionOrderCtrl {
 	
 	@Autowired
 	protected QuestionOrderService questionOrderService  ;
+	
+	@RequestMapping("list")
+	public Page<QuestionOrder> list(Integer pageId,QuestionOrder qo,Date sTime , Date eTime){
+		return questionOrderService.list(pageId , qo,sTime,eTime) ;
+	}
 	
 	@RequestMapping("upload")
 	public ResponseMessageBody upload(@Valid QuestionOrder order ,BindingResult result , 
