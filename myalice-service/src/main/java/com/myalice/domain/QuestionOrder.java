@@ -2,6 +2,8 @@ package com.myalice.domain;
 
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 public class QuestionOrder extends BaseDomain{
     
 	private static final long serialVersionUID = 1L;
@@ -22,6 +24,7 @@ public class QuestionOrder extends BaseDomain{
      *
      * @mbg.generated
      */
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private Date createTime;
 
     /**
@@ -40,6 +43,7 @@ public class QuestionOrder extends BaseDomain{
      *
      * @mbg.generated
      */
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private Date solvedTime;
 
     /**
