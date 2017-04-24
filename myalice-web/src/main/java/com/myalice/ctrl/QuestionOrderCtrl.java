@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.github.pagehelper.Page;
+import com.github.pagehelper.PageInfo;
 import com.myalice.domain.QuestionOrder;
 import com.myalice.properties.AttachmentProperties;
 import com.myalice.services.QuestionOrderService;
@@ -36,8 +36,8 @@ public class QuestionOrderCtrl {
 	protected QuestionOrderService questionOrderService  ;
 	
 	@RequestMapping("listData")
-	public Page<QuestionOrder> list(Integer pageNum,QuestionOrder qo,Date sTime , Date eTime){
-		return questionOrderService.list(pageNum , qo,sTime,eTime) ;
+	public PageInfo<QuestionOrder> list(Integer pageNum,QuestionOrder qo,Date sTime , Date eTime){
+		return  new PageInfo<QuestionOrder>(questionOrderService.list(pageNum , qo,sTime,eTime));
 	}
 	
 	@RequestMapping("upload")

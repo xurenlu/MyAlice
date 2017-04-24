@@ -11,6 +11,7 @@ $(function(){
 
 function loadData(url,param){
 	$.get(url, param , function(data){
+		
 		showData($("#qoData"),data.list) ; 
 		$('#pageToolbar').html(""); 
 		$('#pageToolbar').Paging({current:data.pageNum,pagesize:data.pageSize,count:data.total,callback:function(page,size,count){
