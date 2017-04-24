@@ -16,6 +16,11 @@
 <script>
 	$(function(){
 		init();
+		
+		$(".navContent li").click(function(){
+			$(".navContent li").removeClass("active");
+			$(this).addClass("active");
+		});
 	})
 	function init(){
     	var height = document.body.scrollHeight - 90 ; 
