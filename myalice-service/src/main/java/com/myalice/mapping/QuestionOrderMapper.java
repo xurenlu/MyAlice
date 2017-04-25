@@ -83,6 +83,8 @@ public interface QuestionOrderMapper {
         "from question_order" ,
         "<trim prefix=\"WHERE\" prefixOverrides=\"AND\">" 
        , "<if test=\"qo.id != null and qo.id != ''\">AND id=#{qo.id,jdbcType=VARCHAR}</if>"
+       , "<if test=\"qo.createUser != null and qo.createUser != ''\">AND create_user=#{qo.createUser,jdbcType=VARCHAR}</if>" 
+       , "<if test=\"qo.questionContent != null and qo.questionContent != ''\">AND question_content like CONCAT('%' , #{qo.questionContent,jdbcType=VARCHAR} , '%')</if>"
        , "<if test=\"sTime != null\">AND create_time &gt; #{eTime,jdbcType=DATETIME}</if>"
        , "<if test=\"eTime != null\">AND create_time &lt; #{eTime,jdbcType=DATETIME}</if>"
         ,  "</trim>" , 
