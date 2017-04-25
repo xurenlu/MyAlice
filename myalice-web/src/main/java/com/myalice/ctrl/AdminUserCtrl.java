@@ -34,7 +34,7 @@ public class AdminUserCtrl {
 	
 	@RequestMapping("/list")
 	public String list() {
-		return "redirect:/admin/index.html";
+		return "redirect:/index.html";
 	}
 	
 	@RequestMapping("/loadUserinfo")

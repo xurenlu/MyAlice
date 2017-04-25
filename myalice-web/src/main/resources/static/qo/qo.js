@@ -8,13 +8,18 @@ $(function(){
 	}
 	
 	loadDict( function(){
-		loadData(loadDataUrl,{pageNum:pageNum})
+		btnSearch(pageNum);
 	})
 })
 
+function btnSearch(pageNum){
+	var questionContent=$("#questionContent").val();
+	var id=$("#id").val();
+	loadData(loadDataUrl,{pageNum:pageNum,id:id,questionContent:questionContent})
+}
+
 function loadData(url,param){
 	$.get(url, param , function(data){
-		
 		showData($("#qoData"),data.list) ; 
 		$('#pageToolbar').html(""); 
 		$('#pageToolbar').Paging({current:data.pageNum,pagesize:data.pageSize,count:data.total,callback:function(page,size,count){
