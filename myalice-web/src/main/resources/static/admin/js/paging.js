@@ -391,10 +391,9 @@
 });
 
 
-/*将数据显示在表单上面*/
+/*将数据显示在表单上面, table 显示数据的表单，datas显示的数据json */
 function showData(table,datas){
-	var fields = table.find("*[data-field]") ;  
-	
+	var fields = table.find("*[data-field]") ;
 	var html = "" ;
 	for(i=0;i<datas.length;i++){
 		var data=datas[i];
@@ -410,18 +409,31 @@ function showData(table,datas){
 				var v = eval("("  + codeFun + ")");
 				result=v[value];  
 			}
-			html+="<td>";
-			if('checkbox' == dataType){
-				html+="<input class='checkbox_"+dataField+"' name='"+dataField+"' type='checkbox' value='"+value+"'/>";
-			}else{
-				if(result==null){
-					result="";
-				}
-				html+=result;
-			}
-			html+="</td>";
+			html+="<td>" ;
+			html+=mkdirControl( $(fields[x]) , result , dataField);
+			html+="</td>" ;
 		}
 		html += "</tr>" ;
 	}
 	table.find(".data").html( html ) ; 
+}
+
+/*根据列头，创建对应的控件，目前只支持 checkbox 和button按钮*/
+function mkdirControl(td , value , dataField){
+	var html="";
+	var checkbox = td.attr("checkbox") 
+	var handlerType = td.attr("handlerType") 
+	if("true" == checkbox){
+		html="<input class='checkbox_"+dataField+"' name='"+dataField+"' type='checkbox' value='"+value+"'/>";
+	}else if("" != handlerType && null != handlerType){
+		var array = handlerType.split("\\|");
+		for(var x=0;x<array.length;x++){
+			var item=array[x];
+			var data=eval("(" + td.attr(item) + ")"); 
+			html+="<button onclick='"+data['fun']+"(\""+value+"\")' class=\"btn btn-default\" type='button'>" + data['text'] + "</button>" ; 
+		}
+	}else{
+		html= value ;
+	} 
+	return html;
 }

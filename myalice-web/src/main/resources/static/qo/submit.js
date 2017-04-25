@@ -1,6 +1,8 @@
 var canUpload = ['jpg', 'jpeg', 'bmp', 'png', 'gif']
 $( function(){
+	/*加载select下拉框数据*/
 	loadOrderType();
+	/*提交表单数据*/
 	$("#btnSubmit").click( function(){
 		var formData = new FormData($('#subForm')[0]); 
 		var token = Cookies.get("XSRF-TOKEN");
