@@ -17,6 +17,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -70,17 +71,19 @@ public class QuestionOrderCtrl {
 		try {
 			List<String>attachmentFile = new Vector<>();
 			for(MultipartFile attachment:attachments){
-				String fileName = attachmentProperties.getNewFileName(attachment.getOriginalFilename()) ; 
-				File file = new File(headpath);
-				file.mkdirs();
-				FileOutputStream out = new FileOutputStream(headpath+"/" + fileName) ;
-				String addFile = attachmentProperties.getCurrentDate() + "/" + fileName ;
-				logger.debug("上传文件:" + addFile) ; 
-				try {
-					IOUtils.copy(attachment.getInputStream(), out) ;
-					attachmentFile.add( addFile ) ; 
-				} finally {
-					IOUtils.closeQuietly(out); 
+				if(!StringUtils.isEmpty(attachment.getOriginalFilename())){
+					String fileName = attachmentProperties.getNewFileName(attachment.getOriginalFilename()) ; 
+					File file = new File(headpath);
+					file.mkdirs();
+					FileOutputStream out = new FileOutputStream(headpath+"/" + fileName) ;
+					String addFile = attachmentProperties.getCurrentDate() + "/" + fileName ;
+					logger.debug("上传文件:" + addFile) ; 
+					try {
+						IOUtils.copy(attachment.getInputStream(), out) ;
+						attachmentFile.add( addFile ) ; 
+					} finally {
+						IOUtils.closeQuietly(out); 
+					}
 				}
 			}
 			if(null != principal){
