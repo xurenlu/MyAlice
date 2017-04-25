@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -22,8 +23,11 @@ public class PubCtrl {
 	protected SysDictionariesService dictionariesService;
 
 	@RequestMapping("/orderType")
-	public Map<Integer, String> list() {
-		List<SysDictionaries> selectForDType = dictionariesService.selectForDType("orderType");
+	public Map<Integer, String> list(String type) {
+		if(StringUtils.isEmpty(type)){
+			type="orderType";
+		}
+		List<SysDictionaries> selectForDType = dictionariesService.selectForDType(type); 
 		if (null != selectForDType) {
 			Map<Integer, String> collect = selectForDType.parallelStream().collect(HashMap<Integer, String>::new,
 					(map, item) -> {

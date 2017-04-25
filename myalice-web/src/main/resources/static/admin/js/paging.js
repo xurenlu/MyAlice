@@ -414,6 +414,9 @@ function showData(table,datas){
 			if('checkbox' == dataType){
 				html+="<input class='checkbox_"+dataField+"' name='"+dataField+"' type='checkbox' value='"+value+"'/>";
 			}else{
+				if(result==null){
+					result="";
+				}
 				html+=result;
 			}
 			html+="</td>";

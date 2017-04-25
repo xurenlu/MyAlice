@@ -36,11 +36,11 @@ public interface QuestionOrderMapper {
         "insert into question_order (id, create_time, ",
         "create_user, solved_time, ",
         "state, question_type, ",
-        "question_summary, question_content)",
+        "question_summary, question_content,email)",
         "values (#{id,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, ",
         "#{createUser,jdbcType=VARCHAR}, #{solvedTime,jdbcType=TIMESTAMP}, ",
         "#{state,jdbcType=TINYINT}, #{questionType,jdbcType=TINYINT}, ",
-        "#{questionSummary,jdbcType=VARCHAR}, #{questionContent,jdbcType=VARCHAR})"
+        "#{questionSummary,jdbcType=VARCHAR}, #{questionContent,jdbcType=VARCHAR}, #{email,jdbcType=VARCHAR})"
     })
     int insert(QuestionOrder record);
 
@@ -53,7 +53,7 @@ public interface QuestionOrderMapper {
     @Select({
         "select",
         "id, create_time, create_user, solved_time, state, question_type, question_summary, ",
-        "question_content",
+        "question_content,email",
         "from question_order",
         "where id = #{id,jdbcType=VARCHAR}"
     })
@@ -65,7 +65,8 @@ public interface QuestionOrderMapper {
         @Result(column="state", property="state", jdbcType=JdbcType.TINYINT),
         @Result(column="question_type", property="questionType", jdbcType=JdbcType.TINYINT),
         @Result(column="question_summary", property="questionSummary", jdbcType=JdbcType.VARCHAR),
-        @Result(column="question_content", property="questionContent", jdbcType=JdbcType.VARCHAR)
+        @Result(column="question_content", property="questionContent", jdbcType=JdbcType.VARCHAR),
+        @Result(column="email", property="email", jdbcType=JdbcType.VARCHAR)
     })
     QuestionOrder selectByPrimaryKey(String id);
 
@@ -79,11 +80,12 @@ public interface QuestionOrderMapper {
     	"<script>" ,
         "select",
         "id, create_time, create_user, solved_time, state, question_type, question_summary, ",
-        "question_content",
+        "question_content,email",
         "from question_order" ,
         "<trim prefix=\"WHERE\" prefixOverrides=\"AND\">" 
        , "<if test=\"qo.id != null and qo.id != ''\">AND id=#{qo.id,jdbcType=VARCHAR}</if>"
        , "<if test=\"qo.createUser != null and qo.createUser != ''\">AND create_user=#{qo.createUser,jdbcType=VARCHAR}</if>" 
+       , "<if test=\"qo.email != null and qo.email != ''\">AND email=#{qo.email,jdbcType=VARCHAR}</if>" 
        , "<if test=\"qo.questionContent != null and qo.questionContent != ''\">AND question_content like CONCAT('%' , #{qo.questionContent,jdbcType=VARCHAR} , '%')</if>"
        , "<if test=\"sTime != null\">AND create_time &gt; #{eTime,jdbcType=DATETIME}</if>"
        , "<if test=\"eTime != null\">AND create_time &lt; #{eTime,jdbcType=DATETIME}</if>"
@@ -98,7 +100,8 @@ public interface QuestionOrderMapper {
         @Result(column="state", property="state", jdbcType=JdbcType.TINYINT),
         @Result(column="question_type", property="questionType", jdbcType=JdbcType.TINYINT),
         @Result(column="question_summary", property="questionSummary", jdbcType=JdbcType.VARCHAR),
-        @Result(column="question_content", property="questionContent", jdbcType=JdbcType.VARCHAR)
+        @Result(column="question_content", property="questionContent", jdbcType=JdbcType.VARCHAR),
+        @Result(column="email", property="email", jdbcType=JdbcType.VARCHAR)
     })
     List<QuestionOrder> query(@Param("qo")QuestionOrder qo,@Param("sTime") Date sTime,@Param("eTime") Date eTime);
 
@@ -116,7 +119,8 @@ public interface QuestionOrderMapper {
           "state = #{state,jdbcType=TINYINT},",
           "question_type = #{questionType,jdbcType=TINYINT},",
           "question_summary = #{questionSummary,jdbcType=VARCHAR},",
-          "question_content = #{questionContent,jdbcType=VARCHAR}",
+          "question_content = #{questionContent,jdbcType=VARCHAR},",
+          "email = #{email,jdbcType=VARCHAR}",
         "where id = #{id,jdbcType=VARCHAR}"
     })
     int updateByPrimaryKey(QuestionOrder record);
