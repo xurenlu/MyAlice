@@ -5,6 +5,7 @@ import java.util.Date;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotBlank;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.myalice.utils.ValidGroup;
 
 public class QuestionRecord extends BaseDomain{
@@ -20,6 +21,7 @@ public class QuestionRecord extends BaseDomain{
      *
      * @mbg.generated
      */
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date createTime;
 
     /**

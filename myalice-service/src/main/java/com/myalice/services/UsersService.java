@@ -29,6 +29,12 @@ public class UsersService {
 		return startPage ; 
 	}
 	
+	
+	@Transactional(propagation = Propagation.SUPPORTS)
+	public Users selectUser(String userName){
+		return usersMapper.selectUser(userName);
+	}
+	
 	@Transactional
 	public int updateUser(Users users){
 		return usersMapper.updateByPrimaryKey(users) ;

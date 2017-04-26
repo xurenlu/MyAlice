@@ -25,10 +25,10 @@ public class PubCtrl {
 	@RequestMapping("/orderType")
 	public Map<Integer, String> list(String type) {
 		if(StringUtils.isEmpty(type)){
-			type="orderType";
+			type="orderType" ;
 		}
-		List<SysDictionaries> selectForDType = dictionariesService.selectForDType(type); 
-		if (null != selectForDType) {
+		List<SysDictionaries> selectForDType = dictionariesService.selectForDType(type);
+		if (null != selectForDType){
 			Map<Integer, String> collect = selectForDType.parallelStream().collect(HashMap<Integer, String>::new,
 					(map, item) -> {
 						map.put(item.getTindex(), item.getTname());

@@ -16,6 +16,7 @@
 	<script src="/admin/js/paging.js"></script>
 	<script src="/admin/js/js.cookie.js"></script> 
 	<script src="/admin/js/bootbox.min.js"></script>
+	<script src="/qo/view.js"></script>
 </head>
 
 <body>
@@ -33,101 +34,45 @@
 						<h4>工单详情</h4>
 					</div>
                 </div>
-                  <ul class="nav nav-pills nav-justified step step-arrow">
-                      <li class="active">
-                          <a>已受理</a>
-                      </li>
-                      <li>
-                          <a>已处理</a>
-                      </li>
-                      <li>
-                          <a>已确认</a>
-                      </li>
-                      <li>
-                          <a>待您评价</a>
-                      </li>
+                  <ul class="nav nav-pills nav-justified step step-arrow" id="flow">
+                    
                   </ul>
-
+                  
+                   <div class="panel panel-default">
+                      <div class="panel-heading">工单内容</div>
+		                      <div class="panel-body">
+		                  		<div class="media">
+			                        <div class="media-left media-middle">
+			                          <a href="#">
+			                            <img class="media-object" style="width:32px;height:32px;"  src="/img/record-2.png" alt=""/>
+			                          </a>
+			                        </div>
+			                        <div class="media-body sender" id="qo_content">
+			                        <!-- 工单问题记录 -->
+			                        </div>
+		                    	</div>
+	                    </div>
+                    </div>
+                    
                     <div class="panel panel-default">
                       <div class="panel-heading">沟通记录</div>
                       <div class="panel-body">
-                          <div class="media">
-                            <div class="media-left media-middle">
-                              <a href="#">
-                                <img class="media-object" src="./img/avatar-1.png" alt="...">
-                              </a>
-                            </div>
-                            <div class="media-body sender">
-                              <h4 class="media-heading">adm***@rymco.com.cn :   问题描述 ： 我想变更下支付宝账号，绑定错了，弄成我自己的了，我需要换成公司的  </h4>
-                              2016-04-01 10:32:40
-                            </div>
-                          </div>
-                          <div class="media">
-                            <div class="media-left media-middle">
-                              <a href="#">
-                                <img class="media-object" src="./img/avatar.png" alt="...">
-                              </a>
-                            </div>
-                            <div class="media-body replyer">
-                              <h4 class="media-heading">售后工程师 :    您的问题我们已收到，会尽快为您查看。请您耐心等待，谢谢  </h4>
-                              2016-04-01 10:40:03
-                            </div>
-                          </div>
-                          <div class="media">
-                            <div class="media-left media-middle">
-                              <a href="#">
-                                <img class="media-object" src="./img/avatar.png" alt="...">
-                              </a>
-                            </div>
-                            <div class="media-body replyer">
-                              <h4 class="media-heading">售后工程师 :    您好，您的问题已经转交相关专员继续处理，请您暂时不要关闭工单，等待我们的进一步答复，谢谢！  </h4>
-                              2016-04-01 10:40:03
-                            </div>
-                          </div>
-                          <div class="media">
-                            <div class="media-left media-middle">
-                              <a href="#">
-                                <img class="media-object" src="./img/avatar.png" alt="...">
-                              </a>
-                            </div>
-                            <div class="media-body replyer">
-                              <h4 class="media-heading">售后工程师 :    您好，您是否要更换代扣支付宝账号，需要先为您解绑您再重新绑定。请提供本单位最新颁发的工商营业执照副本（国家事业单位法人请提供组织机构代码证）原件的扫描件。谢谢！  </h4>
-                              2016-04-01 10:40:03
-                            </div>
+                          <div id="qo_data">
+                          	
                           </div>
                       </div>
                     </div>
 
-
                     <div class="panel panel-default">
-                      <div class="panel-heading">待您评价 :</div>
+                      <div class="panel-heading">我要反馈:</div>
                       <div class="panel-body">
                         <form class="form-horizontal form-horizontal-mg">
-                        <div class="form-group">
-                            <label class="col-md-1 control-label text-center" style="padding: 20px 0px;">整体评价:</label>
-                            <div class="col-md-7">
-                                <input id="input-id" type="number" class="rating" min=0 max=5 step=1 data-size="md" >
-                            </div>
-                          </div>
-                          <div class="form-group">
-                            <label class="col-md-1 control-label text-center">问题是否解决:</label>
-                            <div class="col-md-7">
-                              <label class="checkbox-inline">
-                                <input type="radio" name="rdo" value="option1" checked="true"> 已解决
-                              </label>
-                              <label class="checkbox-inline">
-                                <input type="radio" name="rdo" value="option2" > 解决
-                              </label>
-                            </div>
-                          </div>
                            <div class="form-group">
-                            <label class="col-md-1 control-label text-center">我要反馈:</label>
+                            <label class="col-md-1 control-label text-center">内容:</label>
                             <div class="col-md-7">
-                              <textarea class="form-control" rows="3"></textarea>
+                              <textarea class="form-control" id="content" name="content" rows="3"></textarea>
                             </div>
                           </div>
-
-
                           <div class="form-group">
                             <div class="col-sm-offset-1 col-sm-10">
                               <button type="submit" class="btn btn-primary">提交</button>
@@ -136,14 +81,27 @@
                         </form>
                       </div>
                     </div>
-
-                    </div>
-                    </div>
+                </div>
+             </div>
           </div>
         </div>
       </ui-layout>
    </div>
   </section>
+  </div>
+  <!-- 评论内容html -->
+  <div style="display:none;" id="qo_record">
+  	<div class="media">
+      <div class="media-left media-middle">
+        <a href="javascript:void(-1)">
+          <img class="media-object" style="width:32px;height:32px;" src="/img/avatar.png" />
+        </a>
+      </div>
+      <div class="media-body replyer">
+        <h4 class="media-heading">{commitUser}：{content}</h4>
+        {createTime}
+      </div>
+   </div>
   </div>
 </body>
 </html>

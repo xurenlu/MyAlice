@@ -5,7 +5,9 @@ import java.io.FileOutputStream;
 import java.security.Principal;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 
 import javax.validation.Valid;
@@ -19,6 +21,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -26,77 +29,135 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.github.pagehelper.PageInfo;
 import com.myalice.domain.QuestionOrder;
+import com.myalice.domain.QuestionRecord;
 import com.myalice.properties.AttachmentProperties;
 import com.myalice.services.QuestionOrderService;
+import com.myalice.services.QuestionRecordService;
+import com.myalice.services.UsersService;
 import com.myalice.utils.ResponseMessageBody;
+import com.myalice.utils.Tools;
 
 @RequestMapping("/qo/")
 @RestController
 public class QuestionOrderCtrl {
-	protected static Logger logger = org.slf4j.LoggerFactory.getLogger("QuestionRecord") ; 
-	
+	protected static Logger logger = org.slf4j.LoggerFactory.getLogger("QuestionRecord");
+
 	@Autowired
 	protected AttachmentProperties attachmentProperties;
 	
 	@Autowired
-	protected QuestionOrderService questionOrderService  ;
+	protected UsersService usersService ;
 	
+	@Autowired
+	protected QuestionOrderService questionOrderService;
+
+	@Autowired
+	protected QuestionRecordService questionRecordService;
+	
+	@RequestMapping("queryOrder")
+	public Map<String, Object> queryOrder(String id) {
+		Map<String, Object> resultMap = new HashMap<>();
+		try {
+			QuestionOrder questionOrder = questionOrderService.selectByPrimaryKey(id);
+			List<QuestionRecord> records = questionRecordService.selectRecord(id);
+			resultMap.put("questionOrder", questionOrder);
+			resultMap.put("user", usersService.selectUser(questionOrder.getCreateUser())); 
+			resultMap.put("records", records);
+		} catch (Exception e){
+			logger.error("/qo/queryOrder", e);
+		}
+		return resultMap;
+	}
+
 	@RequestMapping("listData")
-	public PageInfo<QuestionOrder> list(Integer pageNum,QuestionOrder qo,Date sTime , Date eTime){
-		if(null == qo){
+	public PageInfo<QuestionOrder> list(Integer pageNum, QuestionOrder qo, Date sTime, Date eTime) {
+		if (null == qo) {
 			qo = new QuestionOrder();
 		}
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication() ;
-		Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities() ;
-		boolean isAdmin = false ; 
-		if(!CollectionUtils.isEmpty(authorities)){
-			for(GrantedAuthority authority:authorities){
-				isAdmin = authority.getAuthority().indexOf("admin") > 0 ;
-				if(isAdmin){
-					break ; 
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
+		boolean isAdmin = isAdmin(authorities);
+		if (!isAdmin) {
+			qo.setCreateUser(authentication.getName());
+		}
+		return new PageInfo<QuestionOrder>(questionOrderService.list(pageNum, qo, sTime, eTime));
+	}
+
+	private boolean isAdmin(Collection<? extends GrantedAuthority> authorities) {
+		boolean isAdmin = false;
+		if (!CollectionUtils.isEmpty(authorities)) {
+			for (GrantedAuthority authority : authorities) {
+				isAdmin = authority.getAuthority().indexOf("admin") > 0;
+				if (isAdmin) {
+					break;
 				}
 			}
 		}
-		if(!isAdmin){
-			qo.setCreateUser(authentication.getName()); 
-		}
-		return  new PageInfo<QuestionOrder>(questionOrderService.list(pageNum , qo,sTime,eTime));
+		return isAdmin;
 	}
 	
-	@RequestMapping("upload")
-	public ResponseMessageBody upload(@Valid QuestionOrder order ,BindingResult result , 
-			 @RequestParam(value = "attachments") MultipartFile[] attachments,Principal principal){
-		
-		String headpath = attachmentProperties.getCurrentPath() ; 
+	@PostMapping("addRecord")
+	public ResponseMessageBody addRecord(String questionOrderId,String content,Authentication authentication){
 		try {
-			List<String>attachmentFile = new Vector<>();
-			for(MultipartFile attachment:attachments){
-				if(!StringUtils.isEmpty(attachment.getOriginalFilename())){
-					String fileName = attachmentProperties.getNewFileName(attachment.getOriginalFilename()) ; 
+			if(StringUtils.isEmpty(questionOrderId)){
+				return new ResponseMessageBody("订单编号不能为空" , false ) ;
+			}
+			
+			if(StringUtils.isEmpty(content)){
+				return new ResponseMessageBody("反馈内容不能为空" , false ) ;
+			}
+			
+			QuestionRecord questionRecord = new QuestionRecord();
+			questionRecord.setCommitUser( authentication.getName() );
+			questionRecord.setContent( content );
+			questionRecord.setQuestionOrderId( questionOrderId );
+			questionRecord.setUsertype( isAdmin( authentication.getAuthorities() ) ? Tools.ONE : Tools.ZORE );
+			questionRecord.setCreateTime( Tools.currentDate() ) ;
+			questionRecord.setId( Tools.uuid() );
+			
+			questionRecordService.insert( questionRecord ) ;
+			return new ResponseMessageBody("保存成功" , true ) ; 
+		} catch (Exception e) {
+			logger.error("/qo/addRecord reson:" + e.getMessage(), e);
+			return new ResponseMessageBody("保存成功" , true);
+		}
+	}
+	/**
+	 * 创建工单，并上传附件
+	 * */
+	@RequestMapping("upload")
+	public ResponseMessageBody upload(@Valid QuestionOrder order, BindingResult result,
+			@RequestParam(value = "attachments") MultipartFile[] attachments, Principal principal) {
+
+		String headpath = attachmentProperties.getCurrentPath();
+		try {
+			List<String> attachmentFile = new Vector<>();
+			for (MultipartFile attachment : attachments) {
+				if (!StringUtils.isEmpty(attachment.getOriginalFilename())) {
+					String fileName = attachmentProperties.getNewFileName(attachment.getOriginalFilename());
 					File file = new File(headpath);
 					file.mkdirs();
-					FileOutputStream out = new FileOutputStream(headpath+"/" + fileName) ;
-					String addFile = attachmentProperties.getCurrentDate() + "/" + fileName ;
-					logger.debug("上传文件:" + addFile) ; 
+					FileOutputStream out = new FileOutputStream(headpath + "/" + fileName);
+					String addFile = attachmentProperties.getCurrentDate() + "/" + fileName;
+					logger.debug("上传文件:" + addFile);
 					try {
-						IOUtils.copy(attachment.getInputStream(), out) ;
-						attachmentFile.add( addFile ) ; 
+						IOUtils.copy(attachment.getInputStream(), out);
+						attachmentFile.add(addFile);
 					} finally {
-						IOUtils.closeQuietly(out); 
+						IOUtils.closeQuietly(out);
 					}
 				}
 			}
-			if(null != principal){
+			if (null != principal) {
 				order.setCreateUser(principal.getName());
 			}
 			order.setQuestionSummary("");
-			order.setState((byte) 1);
+			order.setState(Tools.ONE);
 			questionOrderService.insert(order, attachmentFile);
-			return new ResponseMessageBody("工单创建成功" , true) ;
+			return new ResponseMessageBody("工单创建成功", true);
 		} catch (Exception e) {
-			logger.error( "/admin/qr/upload", e ); 
-			return new ResponseMessageBody("工单创建失败,原因："
-					+ e.getMessage() , true) ;
+			logger.error("/qo/upload", e);
+			return new ResponseMessageBody("工单创建失败,原因：" + e.getMessage(), true);
 		}
 	}
 }
