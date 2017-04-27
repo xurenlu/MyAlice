@@ -1,6 +1,8 @@
 $(function(){
 	var q = new Qo();
 	q.init( );
+	
+	
 })
 
 var Qo = function(){}
@@ -16,15 +18,18 @@ Qo.prototype = {
 			
 			/*显示工单进度*/
 			var state = json.questionOrder.state ; 
+			if(state == 3){
+				$("#reply_are").hide();
+			}
 			var isHave = false ;
 			var lis = $("#flow").find("*[key]"); 
 			for(var x=0;x<lis.length;x++){
 				var li = lis[x];
 				var key = $(li).attr("key");
-				$(li).addClass("active"); 
+				$(li).addClass("active");
 				if(key == state){
 					isHave=true;
-					break ;
+					break;
 				} 
 			}
 			if(!isHave){$(lis).removeClass("active");}
@@ -57,5 +62,33 @@ Qo.prototype = {
 			$("#flow").html(html); 
 			_this.loadRecord();
 		},"json"); 
+		
+		$("#btnSubmitContent").click(_this.postSubmit);
+		$("#closeOrder").click(_this.closeOrder); 
+	},
+	postSubmit:function(){
+		var content = $("#content").val();
+		var id = $.getParam("id");
+		var postThis = this;
+		$.mypost("/qo/addRecord" , {questionOrderId:id ,content:content} , function(json){
+			if(!json.suc){
+				bootbox.alert( json.msg ) ;
+				return ;
+			}
+			window.location=window.location;
+		},"json")
+	},closeOrder:function(){
+		var itemThis = this ;  
+		var id = $.getParam("id"); 
+		$.mypost("/qo/changeState" , {"state":3,id:id} , function(json){
+			if(json.suc){
+				window.location=window.location;
+			}else{
+				bootbox.alert( json.msg );
+			}
+		} , "json");
+	},
+	reloadPage : function(){
+		window.location=window.location;
 	}
 }

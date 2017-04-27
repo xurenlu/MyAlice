@@ -48,3 +48,12 @@ function loadDict(callback){
 function show(id){
 	window.location="/qo/view.html?id=" + id ; 
 }
+
+function accept(id){
+	$.mypost("/qo/changeState" , {"state":2,id:id} , function(json){
+		if(json.suc){
+			btnSearch( $.getWellParam("page") );
+		}
+		bootbox.alert( json.msg );
+	} , "json")
+}

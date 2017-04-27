@@ -31,13 +31,19 @@
           <div class="info-center">
                     <div class="page-header">
                       <div class="pull-left">
-						<h4>工单详情</h4>
+						<h4>工单详情 &nbsp;<a class="text-info" href="/qo/list.html">返回工单</a></h4> 
 					</div>
                 </div>
                   <ul class="nav nav-pills nav-justified step step-arrow" id="flow">
                     
                   </ul>
-                  
+                  <div class="panel panel-default">
+                    	<div class="panel-heading" style="text-align:right;">
+                    		<a id="closeOrder" href="javascript:void(-1)">关闭工单</a>
+                    	</div>
+                   </div>
+                   
+                   
                    <div class="panel panel-default">
                       <div class="panel-heading">工单内容</div>
 		                      <div class="panel-body">
@@ -63,7 +69,7 @@
                       </div>
                     </div>
 
-                    <div class="panel panel-default">
+                    <div class="panel panel-default" id="reply_are">
                       <div class="panel-heading">我要反馈:</div>
                       <div class="panel-body">
                         <form class="form-horizontal form-horizontal-mg">
@@ -75,7 +81,7 @@
                           </div>
                           <div class="form-group">
                             <div class="col-sm-offset-1 col-sm-10">
-                              <button type="submit" class="btn btn-primary">提交</button>
+                              <button type="button" id="btnSubmitContent" class="btn btn-primary">提交</button>
                             </div>
                           </div>
                         </form>

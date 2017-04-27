@@ -28,6 +28,7 @@ public class QuestionOrder extends BaseDomain {
 	private Date createTime;
 
 	private String email;
+	private String accept;
 
 	/**
 	 *
@@ -119,6 +120,14 @@ public class QuestionOrder extends BaseDomain {
 	 */
 	public Date getCreateTime() {
 		return createTime;
+	}
+
+	public String getAccept() {
+		return accept;
+	}
+
+	public void setAccept(String accept) {
+		this.accept = accept;
 	}
 
 	/**

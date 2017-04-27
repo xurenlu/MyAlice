@@ -87,7 +87,7 @@ public interface QuestionRecordMapper {
     @Select({
         "select",
         "id, create_time, content, commit_user, userType, question_order_id",
-        "from question_record where question_order_id= #{orderId,jdbcType=VARCHAR}"
+        "from question_record where question_order_id= #{orderId,jdbcType=VARCHAR} order by create_time asc"
     })
     @Results({
         @Result(column="id", property="id", jdbcType=JdbcType.VARCHAR, id=true),

@@ -426,7 +426,7 @@ function mkdirControl(td , value , dataField){
 	if("true" == checkbox){
 		html="<input class='checkbox_"+dataField+"' name='"+dataField+"' type='checkbox' value='"+value+"'/>";
 	}else if("" != handlerType && null != handlerType){
-		var array = handlerType.split("\\|");
+		var array = handlerType.split("|");
 		for(var x=0;x<array.length;x++){
 			var item=array[x];
 			var data=eval("(" + td.attr(item) + ")"); 

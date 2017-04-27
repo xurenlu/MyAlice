@@ -2,7 +2,6 @@ package com.myalice.ctrl;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.security.Principal;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -44,16 +43,16 @@ public class QuestionOrderCtrl {
 
 	@Autowired
 	protected AttachmentProperties attachmentProperties;
-	
+
 	@Autowired
-	protected UsersService usersService ;
-	
+	protected UsersService usersService;
+
 	@Autowired
 	protected QuestionOrderService questionOrderService;
 
 	@Autowired
 	protected QuestionRecordService questionRecordService;
-	
+
 	@RequestMapping("queryOrder")
 	public Map<String, Object> queryOrder(String id) {
 		Map<String, Object> resultMap = new HashMap<>();
@@ -61,9 +60,9 @@ public class QuestionOrderCtrl {
 			QuestionOrder questionOrder = questionOrderService.selectByPrimaryKey(id);
 			List<QuestionRecord> records = questionRecordService.selectRecord(id);
 			resultMap.put("questionOrder", questionOrder);
-			resultMap.put("user", usersService.selectUser(questionOrder.getCreateUser())); 
+			resultMap.put("user", usersService.selectUser(questionOrder.getCreateUser()));
 			resultMap.put("records", records);
-		} catch (Exception e){
+		} catch (Exception e) {
 			logger.error("/qo/queryOrder", e);
 		}
 		return resultMap;
@@ -80,6 +79,7 @@ public class QuestionOrderCtrl {
 		if (!isAdmin) {
 			qo.setCreateUser(authentication.getName());
 		}
+		pageNum=null==pageNum?1:pageNum;
 		return new PageInfo<QuestionOrder>(questionOrderService.list(pageNum, qo, sTime, eTime));
 	}
 
@@ -95,39 +95,40 @@ public class QuestionOrderCtrl {
 		}
 		return isAdmin;
 	}
-	
+
 	@PostMapping("addRecord")
-	public ResponseMessageBody addRecord(String questionOrderId,String content,Authentication authentication){
+	public ResponseMessageBody addRecord(String questionOrderId, String content, Authentication authentication) {
 		try {
-			if(StringUtils.isEmpty(questionOrderId)){
-				return new ResponseMessageBody("订单编号不能为空" , false ) ;
+			if (StringUtils.isEmpty(questionOrderId)) {
+				return new ResponseMessageBody("订单编号不能为空", false);
 			}
-			
-			if(StringUtils.isEmpty(content)){
-				return new ResponseMessageBody("反馈内容不能为空" , false ) ;
+
+			if (StringUtils.isEmpty(content)) {
+				return new ResponseMessageBody("反馈内容不能为空", false);
 			}
-			
+
 			QuestionRecord questionRecord = new QuestionRecord();
-			questionRecord.setCommitUser( authentication.getName() );
-			questionRecord.setContent( content );
-			questionRecord.setQuestionOrderId( questionOrderId );
-			questionRecord.setUsertype( isAdmin( authentication.getAuthorities() ) ? Tools.ONE : Tools.ZORE );
-			questionRecord.setCreateTime( Tools.currentDate() ) ;
-			questionRecord.setId( Tools.uuid() );
-			
-			questionRecordService.insert( questionRecord ) ;
-			return new ResponseMessageBody("保存成功" , true ) ; 
+			questionRecord.setCommitUser(authentication.getName());
+			questionRecord.setContent(content);
+			questionRecord.setQuestionOrderId(questionOrderId);
+			questionRecord.setUsertype(isAdmin(authentication.getAuthorities()) ? Tools.ONE : Tools.ZORE);
+			questionRecord.setCreateTime(Tools.currentDate());
+			questionRecord.setId(Tools.uuid());
+
+			questionRecordService.insert(questionRecord);
+			return new ResponseMessageBody("保存成功", true);
 		} catch (Exception e) {
 			logger.error("/qo/addRecord reson:" + e.getMessage(), e);
-			return new ResponseMessageBody("保存成功" , true);
+			return new ResponseMessageBody("保存成功", true);
 		}
 	}
+
 	/**
 	 * 创建工单，并上传附件
-	 * */
-	@RequestMapping("upload")
+	 */
+	@PostMapping("upload")
 	public ResponseMessageBody upload(@Valid QuestionOrder order, BindingResult result,
-			@RequestParam(value = "attachments") MultipartFile[] attachments, Principal principal) {
+			@RequestParam(value = "attachments") MultipartFile[] attachments, Authentication authentication) {
 
 		String headpath = attachmentProperties.getCurrentPath();
 		try {
@@ -148,8 +149,8 @@ public class QuestionOrderCtrl {
 					}
 				}
 			}
-			if (null != principal) {
-				order.setCreateUser(principal.getName());
+			if (null != authentication) {
+				order.setCreateUser(authentication.getName());
 			}
 			order.setQuestionSummary("");
 			order.setState(Tools.ONE);
@@ -158,6 +159,44 @@ public class QuestionOrderCtrl {
 		} catch (Exception e) {
 			logger.error("/qo/upload", e);
 			return new ResponseMessageBody("工单创建失败,原因：" + e.getMessage(), true);
+		}
+	}
+
+	@PostMapping("/changeState")
+	public ResponseMessageBody changeState(QuestionOrder order, Authentication authentication) {
+		String msg = "受理";
+		try {
+			if (order.getState() == null) {
+				return new ResponseMessageBody("参数获取失败", false);
+			}
+			QuestionOrder questionOrder = questionOrderService.selectByPrimaryKey(order.getId());
+			if(null == questionOrder){
+				return new ResponseMessageBody("获取订单为空", false);
+			}
+			if (order.getState() == 2) {
+				
+				if(!isAdmin(authentication.getAuthorities())){
+					return new ResponseMessageBody("非管理员不能受理", false);
+				} 
+				order.setAccept(authentication.getName());
+				if (null != questionOrder.getState() && questionOrder.getState() != 1) {
+					return new ResponseMessageBody("不是待受理状态", false);
+				}
+			}
+			if (order.getState() == 3) {
+				msg="关闭";
+				order.setSolvedTime(Tools.currentDate());
+				
+				if(!authentication.getName().equalsIgnoreCase(questionOrder.getCreateUser())){
+					return new ResponseMessageBody(String.format("不是工单创建人，不能关闭工单", msg), true);
+				}
+			}
+			order.setAccept(questionOrder.getAccept());
+			questionOrderService.updateOrderState( order );
+			return new ResponseMessageBody(String.format("%s成功", msg), true);
+		} catch (Exception e) {
+			logger.error("/qo/changeState", e);
+			return new ResponseMessageBody(String.format("%s失败", msg), true);
 		}
 	}
 }

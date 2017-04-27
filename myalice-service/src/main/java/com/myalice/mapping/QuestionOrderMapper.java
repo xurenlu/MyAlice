@@ -90,7 +90,7 @@ public interface QuestionOrderMapper {
        , "<if test=\"sTime != null\">AND create_time &gt; #{eTime,jdbcType=DATETIME}</if>"
        , "<if test=\"eTime != null\">AND create_time &lt; #{eTime,jdbcType=DATETIME}</if>"
         ,  "</trim>" , 
-    	"</script>"
+    	"order by create_time desc </script>"
     })
     @Results({
         @Result(column="id", property="id", jdbcType=JdbcType.VARCHAR, id=true),
@@ -124,4 +124,13 @@ public interface QuestionOrderMapper {
         "where id = #{id,jdbcType=VARCHAR}"
     })
     int updateByPrimaryKey(QuestionOrder record);
+    
+    @Update({
+        "update question_order", 
+          "set solved_time = #{solvedTime,jdbcType=TIMESTAMP}," ,
+          "state = #{state,jdbcType=TINYINT},", 
+          "accept = #{accept,jdbcType=VARCHAR}", 
+        "where id = #{id,jdbcType=VARCHAR}"
+    })
+    int updateOrderState(QuestionOrder record) ;
 }

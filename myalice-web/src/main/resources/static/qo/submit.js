@@ -67,6 +67,7 @@ $( function(){
 	        		bootbox.alert(responseText.msg); 
 	        	}else{
 	        		bootbox.alert(responseText.msg);
+	        		window.location = '/qo/list.html' ; 
 	        	}
 	        },
 	        error:function(e){

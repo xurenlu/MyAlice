@@ -18,38 +18,44 @@ import com.myalice.utils.Tools;
 
 @Service
 public class QuestionOrderService {
-	
+
 	@Autowired
-	protected QuestionOrderMapper questionOrderMapper ;
-	
+	protected QuestionOrderMapper questionOrderMapper;
 
-    @Autowired
-    QuestionOrderAttachmentMapper orderAttachmentMapper ;
-	
-	public Page<QuestionOrder> list(int pageId,QuestionOrder qo,Date sTime,Date eTime){
+	@Autowired
+	QuestionOrderAttachmentMapper orderAttachmentMapper;
+
+	public Page<QuestionOrder> list(int pageId, QuestionOrder qo, Date sTime, Date eTime) {
 		Page<QuestionOrder> startPage = PageHelper.startPage(pageId, 10);
-		questionOrderMapper.query(qo,sTime,eTime);
-		return startPage ;
-	}
-	
-	@Transactional(propagation = Propagation.SUPPORTS)
-	public QuestionOrder selectByPrimaryKey(String id){
-		return questionOrderMapper.selectByPrimaryKey(id) ;
+		questionOrderMapper.query(qo, sTime, eTime);
+		return startPage;
 	}
 
-    @Transactional
-    public void insert(final QuestionOrder record,List<String> attachmentFile) {
-    	record.setId(Tools.uuid());
-    	record.setCreateTime(new Date());
-    	this.questionOrderMapper.insert(record); 
-        attachmentFile.forEach((attachment)->{
-        	 QuestionOrderAttachment questionOrderAttachment = new QuestionOrderAttachment();
-        	 questionOrderAttachment.setCreateTime(new Date());
-        	 questionOrderAttachment.setQuestionOrderId(record.getId());
-        	 questionOrderAttachment.setStatus((byte)1);
-        	 questionOrderAttachment.setId(Tools.uuid()); ;
-        	 questionOrderAttachment.setUrl( attachment );
-             orderAttachmentMapper.insert( questionOrderAttachment ) ; 
-        });
-    }
+	@Transactional(propagation = Propagation.SUPPORTS)
+	public QuestionOrder selectByPrimaryKey(String id) {
+		return questionOrderMapper.selectByPrimaryKey(id);
+	}
+
+	@Transactional
+	public void insert(final QuestionOrder record, List<String> attachmentFile) {
+		record.setId(Tools.uuid());
+		record.setCreateTime(new Date());
+		this.questionOrderMapper.insert(record);
+		attachmentFile.forEach((attachment) -> {
+			QuestionOrderAttachment questionOrderAttachment = new QuestionOrderAttachment();
+			questionOrderAttachment.setCreateTime(new Date());
+			questionOrderAttachment.setQuestionOrderId(record.getId());
+			questionOrderAttachment.setStatus((byte) 1);
+			questionOrderAttachment.setId(Tools.uuid());
+			;
+			questionOrderAttachment.setUrl(attachment);
+			orderAttachmentMapper.insert(questionOrderAttachment);
+		});
+	}
+
+	@Transactional
+	public int updateOrderState(QuestionOrder record) {
+		return questionOrderMapper.updateOrderState(record);
+
+	}
 }
