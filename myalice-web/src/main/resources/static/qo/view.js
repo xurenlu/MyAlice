@@ -35,7 +35,12 @@ Qo.prototype = {
 			var recordHtml = "" ;
 			for(var x=0;x<records.length;x++){
 				var newHtml = qo_record_html;
-				newHtml = newHtml.replace("\{commitUser\}",records[x].commitUser);
+				var usertype = records[x].usertype; 
+				if(usertype==1){
+					newHtml = newHtml.replace("\{commitUser\}","<span>系统管理员&nbsp;&nbsp;</span>"+records[x].commitUser);
+				}else{
+					newHtml = newHtml.replace("\{commitUser\}",records[x].commitUser);
+				}
 				newHtml = newHtml.replace("\{content\}",records[x].content);
 				newHtml = newHtml.replace("\{createTime\}",records[x].createTime);
 				recordHtml+=newHtml;
