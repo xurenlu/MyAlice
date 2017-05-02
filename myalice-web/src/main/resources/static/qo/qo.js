@@ -10,12 +10,22 @@ $(function(){
 	loadDict( function(){
 		btnSearch(pageNum);
 	})
+	
+	
+	$.mypost("/pub/orderType" , {type:"orderState"} , function(data){
+		var html = "<option value=''>请选择</option>" ;
+		for(key in data){
+			html += "<option value='"+key+"'>"+data[key]+"</option>" ;
+		}
+		$("#state").html(html);
+	} , "json")
 })
 /*加载页面数据函数，搜索调用方法*/
 function btnSearch(pageNum){
 	var questionContent=$("#questionContent").val();
 	var id=$("#id").val();
-	loadData(loadDataUrl,{pageNum:pageNum,id:id,questionContent:questionContent})
+	var state=$("#state").val();
+	loadData(loadDataUrl,{pageNum:pageNum,id:id,questionContent:questionContent,state:state})
 }
 /*直接读取数据*/
 function loadData(url,param){

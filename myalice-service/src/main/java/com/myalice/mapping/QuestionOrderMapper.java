@@ -86,6 +86,7 @@ public interface QuestionOrderMapper {
        , "<if test=\"qo.id != null and qo.id != ''\">AND id=#{qo.id,jdbcType=VARCHAR}</if>"
        , "<if test=\"qo.createUser != null and qo.createUser != ''\">AND create_user=#{qo.createUser,jdbcType=VARCHAR}</if>" 
        , "<if test=\"qo.email != null and qo.email != ''\">AND email=#{qo.email,jdbcType=VARCHAR}</if>" 
+       , "<if test=\"qo.state != null and qo.state != 0\">AND state=#{qo.state,jdbcType=VARCHAR}</if>" 
        , "<if test=\"qo.questionContent != null and qo.questionContent != ''\">AND question_content like CONCAT('%' , #{qo.questionContent,jdbcType=VARCHAR} , '%')</if>"
        , "<if test=\"sTime != null\">AND create_time &gt; #{eTime,jdbcType=DATETIME}</if>"
        , "<if test=\"eTime != null\">AND create_time &lt; #{eTime,jdbcType=DATETIME}</if>"
