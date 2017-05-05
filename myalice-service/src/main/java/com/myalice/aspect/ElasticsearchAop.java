@@ -12,8 +12,8 @@ import org.springframework.stereotype.Component;
 @Aspect
 public class ElasticsearchAop {
     Logger logger = LoggerFactory.getLogger(ElasticsearchAop.class);
-    @Value("${elasticsearch.enabled}")
-    private boolean elasticsearchEnabled;
+    @Value("${alice.elasticsearch.enabled}")
+    private boolean enabled;
 
     @Pointcut("execution(* com.myalice.services.QuestionRecordService.*(..))")
     public void executeService() {
@@ -23,7 +23,8 @@ public class ElasticsearchAop {
     @After("executeService()")
     public void doAfter() throws Throwable {
         logger.info("[切面操作] - [后置通知]");
-        if (elasticsearchEnabled) {
+        if (enabled) {
+            System.out.println("[切面操作ES搜索......]");
             logger.info("[切面操作ES搜索......]");
         }
     }
