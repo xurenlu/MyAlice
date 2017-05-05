@@ -1,8 +1,8 @@
 package com.myalice.properties;
 
-import java.util.Date;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
-import org.apache.http.client.utils.DateUtils;
 import org.springframework.boot.autoconfigure.security.SecurityPrerequisite;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -10,6 +10,8 @@ import com.myalice.utils.Tools;
 
 @ConfigurationProperties(prefix = "spring.upload")
 public class AttachmentProperties  implements SecurityPrerequisite {
+	
+	
 	
 	private String path ; 
 	
@@ -22,7 +24,9 @@ public class AttachmentProperties  implements SecurityPrerequisite {
 	}
 
 	public String getCurrentDate() {
-		currentDate = DateUtils.formatDate(new Date(), dateformat);
+		DateTimeFormatter dtf = DateTimeFormatter.ofPattern(dateformat);
+		LocalDateTime dateTime = LocalDateTime.now() ;
+		currentDate = dtf.format(dateTime) ; 
 		return currentDate;
 	}
 
