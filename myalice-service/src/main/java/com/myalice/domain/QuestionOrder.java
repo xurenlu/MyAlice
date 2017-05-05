@@ -1,8 +1,8 @@
 package com.myalice.domain;
 
-import java.util.Date;
-
 import com.fasterxml.jackson.annotation.JsonFormat;
+
+import java.util.Date;
 
 public class QuestionOrder extends BaseDomain {
 

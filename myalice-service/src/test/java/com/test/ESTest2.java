@@ -2,7 +2,7 @@ package com.test;
 
 import com.myalice.MyAliceSpringConfig;
 import com.myalice.domain.Elasticsearch;
-import com.myalice.services.ElasticsearchService;
+import com.myalice.services.elasticsearch.ESQuestionOrderService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +16,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 public class ESTest2 {
 
     @Autowired
-    ElasticsearchService service;
+    ESQuestionOrderService service;
 
     @Test
     public void es(){

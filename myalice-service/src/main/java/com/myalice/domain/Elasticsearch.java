@@ -4,11 +4,11 @@ package com.myalice.domain;
  * @author  唐亚峰
  * @desc  ES的基础实体类
  */
-public class Elasticsearch extends  BaseDomain {
+public class Elasticsearch extends BaseDomain {
     private static final long serialVersionUID = -6503868296240621491L;
 
-    private String index;
     private String id;
+    private String index;
     private String type;
     private String data;
 
@@ -62,7 +62,7 @@ public class Elasticsearch extends  BaseDomain {
 
     @Override
     public String toString() {
-        return "Elasticsearch{" +
+        return "ElasticsearchVO{" +
                 "index='" + index + '\'' +
                 ", id='" + id + '\'' +
                 ", type='" + type + '\'' +
