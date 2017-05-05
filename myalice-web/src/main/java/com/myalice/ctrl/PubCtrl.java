@@ -4,6 +4,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
@@ -20,6 +23,7 @@ import com.myalice.domain.Users;
 import com.myalice.security.BindingResultUtils;
 import com.myalice.services.SysDictionariesService;
 import com.myalice.services.UsersService;
+import com.myalice.util.VerifyCodeUtils;
 import com.myalice.utils.ResponseMessageBody;
 import com.myalice.utils.Tools;
 import com.myalice.utils.ValidGroup;
@@ -57,7 +61,7 @@ public class PubCtrl {
 	@PostMapping("/user/insert")
 	@ResponseBody 
 	public ResponseMessageBody insert(@Validated(value=ValidGroup.Second.class) Users user,
-			BindingResult result,String password1){
+			BindingResult result,String password1 , HttpServletRequest request,String code){
 		try {
 			ResponseMessageBody msgBody = BindingResultUtils.parse(result) ;
 			if(null != msgBody){
@@ -66,6 +70,12 @@ public class PubCtrl {
 			}
 			if(null == password1 || !password1.equals(user.getPassword())){
 				return new ResponseMessageBody("两次密码输入不一致" , false);
+			}
+			
+			Object verifyCodeObj = request.getSession().getAttribute("VerifyCode");
+			String verifyCode = null==verifyCodeObj?"":verifyCodeObj.toString() ;
+			if(!verifyCode.equalsIgnoreCase(code)){
+				return new ResponseMessageBody("验证码输入不正确" , false);
 			}
 			
 			if(userService.selectUser(user.getUsername()) != null){
@@ -116,4 +126,20 @@ public class PubCtrl {
 		return returnResult;
 	}
 
+	@RequestMapping("/validateCode")
+	public void validateCode(HttpServletRequest request , HttpServletResponse response){
+		try {
+			response.setHeader("Pragma","No-cache");
+			response.setHeader("Cache-Control","no-cache");
+			response.setHeader("Cache-Control","no-cache");
+			response.setHeader("Content-Type","image/png");
+			response.setDateHeader("Expires", 0); 
+			String code = VerifyCodeUtils.generateVerifyCode(4) ;
+			request.getSession().setAttribute("VerifyCode", code) ;
+			VerifyCodeUtils.outputImage(80, 40, response.getOutputStream(), code) ; 
+		} catch (Exception e) {
+			logger.error("/pub/validateCode resion:" + e.getMessage() , e);
+		}
+	}
+	
 }
