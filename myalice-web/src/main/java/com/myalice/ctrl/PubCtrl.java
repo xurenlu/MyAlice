@@ -7,18 +7,31 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.myalice.domain.SysDictionaries;
+import com.myalice.domain.Users;
+import com.myalice.security.BindingResultUtils;
 import com.myalice.services.SysDictionariesService;
+import com.myalice.services.UsersService;
+import com.myalice.utils.ResponseMessageBody;
+import com.myalice.utils.Tools;
+import com.myalice.utils.ValidGroup;
 
 @RequestMapping("/pub")
 @RestController
 public class PubCtrl {
 	protected static Logger logger = org.slf4j.LoggerFactory.getLogger("ctrl") ; 
-
+	
+	@Autowired
+	UsersService userService;
+	
 	@Autowired
 	protected SysDictionariesService dictionariesService;
 
@@ -38,6 +51,39 @@ public class PubCtrl {
 			return collect;
 		}
 		return null;
+	}
+	
+	
+	@PostMapping("/user/insert")
+	@ResponseBody 
+	public ResponseMessageBody insert(@Validated(value=ValidGroup.Second.class) Users user,
+			BindingResult result,String password1){
+		try {
+			ResponseMessageBody msgBody = BindingResultUtils.parse(result) ;
+			if(null != msgBody){
+				msgBody.setMsg("验证有误");
+				return msgBody ;
+			}
+			if(null == password1 || !password1.equals(user.getPassword())){
+				return new ResponseMessageBody("两次密码输入不一致" , false);
+			}
+			
+			if(userService.selectUser(user.getUsername()) != null){
+				return new ResponseMessageBody(String.format("账号%s已经注册" , user.getUsername()), false);
+			}
+			user.setUserType("0");
+			user.setRemarks("");
+			user.setMobilePhone("");
+			user.setEnabled(true); 
+			user.setPortraitUrl("");
+			user.setName(user.getUsername()); 
+			user.setCreateTime(Tools.currentDate());
+			int insertCount = userService.insert( user );
+			return new ResponseMessageBody("新增账号成功" , insertCount>0) ; 
+		} catch (Exception e) {
+			return new ResponseMessageBody("新增账号失败,原因：" 
+					+ e.getMessage() , false) ;
+		}
 	}
 
 	@RequestMapping("/orderTypes")
