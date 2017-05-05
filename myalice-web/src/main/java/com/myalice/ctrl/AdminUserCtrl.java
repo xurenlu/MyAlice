@@ -21,6 +21,7 @@ import com.myalice.domain.Users;
 import com.myalice.security.BindingResultUtils;
 import com.myalice.services.UsersService;
 import com.myalice.utils.ResponseMessageBody;
+import com.myalice.utils.Tools;
 import com.myalice.utils.ValidGroup;
 
 @Controller
@@ -78,6 +79,15 @@ public class AdminUserCtrl {
 			if(null == password1 || !password1.equals(user.getPassword())){
 				return new ResponseMessageBody("两次密码输入不一致" , false);
 			}
+			if(userService.selectUser(user.getUsername()) != null){
+				return new ResponseMessageBody(String.format("账号%s已经注册" , user.getUsername()), false);
+			}
+			user.setRemarks("");
+			user.setEnabled(true);
+			user.setPortraitUrl("");
+			user.setName(user.getUsername());
+			user.setMobilePhone("");
+			user.setCreateTime(Tools.currentDate());
 			int insertCount = userService.insert( user );
 			return new ResponseMessageBody("新增账号成功" , insertCount>0) ; 
 		} catch (Exception e) {
