@@ -18,7 +18,7 @@ public class ElasticsearchAop {
 	@Autowired
 	protected ElasticsearchProporties elasticsearchProporties;
 
-	@After("execution(* com.myalice.es.IElasticsearch.*(..)) ")
+	@After("execution(* com.myalice.services.ESQuestionService.*(..)) ")
 	public void doAfter() throws Throwable {
 		TransportClient transportClient = elasticsearchProporties.getTransportClient();
 		if (null != transportClient) {
