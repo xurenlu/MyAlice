@@ -15,8 +15,27 @@ public class ElasticsearchData {
 	private QueryBuilder builder;
 
 	private String index;
+	
+	private int from ;
+	private int size ;
 
 	private String type;
+	
+	public int getFrom() {
+		return from;
+	}
+
+	public int getSize() {
+		return size;
+	}
+
+	public void setSize(int size) {
+		this.size = size;
+	}
+
+	public void setFrom(int from) {
+		this.from = from;
+	}
 
 	public long getDocCount() {
 		return docCount;

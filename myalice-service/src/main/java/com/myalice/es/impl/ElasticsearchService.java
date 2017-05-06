@@ -2,13 +2,17 @@ package com.myalice.es.impl;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Vector;
 import java.util.stream.Stream;
 
 import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexResponse;
+import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.rest.RestStatus;
+import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.SearchHits;
 import org.springframework.util.StringUtils;
 
 import com.myalice.config.ElasticsearchProporties;
@@ -73,7 +77,17 @@ public class ElasticsearchService implements IElasticsearch {
 
 	@Override
 	public void query(ElasticsearchData searchData) {
-
+		TransportClient client = elasticsearchProporties.createTransportClient();
+		SearchResponse response = client.prepareSearch(index).setFrom(searchData.getFrom())
+				.setSize(searchData.getSize()).setQuery(searchData.getBuilder()).execute().actionGet();
+		SearchHits hits = response.getHits();
+		List<Map<String, Object>> docs = new Vector<>();
+		for (SearchHit hit : hits.getHits()) {
+			Map<String, Object> source = hit.getSource();
+			source.put("id", hit.getId());
+			docs.add( source ) ;
+		}
+		searchData.setDocs(docs); 
 	}
 
 	public String getIndex() {
