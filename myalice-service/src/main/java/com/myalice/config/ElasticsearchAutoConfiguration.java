@@ -9,6 +9,10 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import com.myalice.es.IElasticsearch;
+import com.myalice.es.impl.ElasticsearchService;
+
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
@@ -19,7 +23,7 @@ public class ElasticsearchAutoConfiguration {
 
 	@Autowired
 	private ElasticsearchProporties elasticsearchProporties;
-
+	
 	protected PreBuiltTransportClient transportClient;
 
 	@Bean
@@ -32,4 +36,14 @@ public class ElasticsearchAutoConfiguration {
 						elasticsearchProporties.getClusterPort()));
 	}
 
+	@Bean(name="questionEs")
+	public IElasticsearch questionEs(TransportClient client){
+		return new ElasticsearchService(client, "myalice", "question") ; 
+	}
+	
+	
+	@Bean(name="answerEs")
+	public IElasticsearch answerEs(TransportClient client){
+		return new ElasticsearchService(client, "myalice", "answer") ; 
+	}
 }

@@ -11,9 +11,12 @@ public interface IElasticsearch {
 
 	public boolean adds(List<Map<String, Object>> datas);
 
-	public boolean remove(String index);
+	public boolean remove(String id);
 
-	public boolean removes(String... index);
+	public boolean removes(String... ids);
 	
 	public void query(ElasticsearchData searchData);
+	
+	
+	public Map<String,Object> get(String id );
 }

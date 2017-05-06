@@ -25,7 +25,7 @@ public class ESQuestionOrderService {
         IndexResponse create = client.prepareIndex(es.getIndex(), es.getType(), es.getId()).setSource(es.getData()).execute().actionGet();
         logger.debug("[索引创建]  [{}]", create.status());
         client.close();
-    }	
+    }
 
     public void findQuestionOrderByVague(String vague) {
         SearchRequestBuilder builder =  client.prepareSearch();
