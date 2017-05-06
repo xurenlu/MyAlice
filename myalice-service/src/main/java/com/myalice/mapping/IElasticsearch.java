@@ -5,7 +5,7 @@ import java.util.Map;
 
 import com.myalice.domain.ElasticsearchData;
 
-public interface ElasticsearchService {
+public interface IElasticsearch {
 	
 	public boolean add(Map<String, Object> data);
 
