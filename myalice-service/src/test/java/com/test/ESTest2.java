@@ -1,8 +1,8 @@
 package com.test;
 
-import com.myalice.MyAliceSpringConfig;
-import com.myalice.domain.Elasticsearch;
-import com.myalice.services.elasticsearch.ESQuestionOrderService;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,20 +10,23 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import com.myalice.MyAliceSpringConfig;
+import com.myalice.services.ESQuestionService;
+
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment= SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ContextConfiguration( classes = MyAliceSpringConfig.class )
 public class ESTest2 {
 
+    
     @Autowired
-    ESQuestionOrderService service;
+    ESQuestionService questionService ;
 
     @Test
-    public void es(){
-        String data = "{\"catIds\":[652076342,767412682,1536510176,642803755,103804452],\"desc\":\"中文490d5f09-88e9-4da1-911f-28bc3ec97bb4\",\"host\":\"10.0.0.1\",\"id\":3877169727794526009,\"subId\":278566723,\"systemName\":\"oa\"}\n";
-        Elasticsearch elasticsearch = new Elasticsearch("index-1","1","alice",data);
-        service.createIndex(elasticsearch);
+    public void test01(){
+    	Map<String,Object> data = new HashMap<>();
+    	data.put("title", "如何开始学习Mycat"); 
+    	data.put("state", "1");
+    	questionService.add(data);
     }
-
-
 }
