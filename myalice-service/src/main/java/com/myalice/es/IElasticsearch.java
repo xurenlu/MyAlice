@@ -1,4 +1,4 @@
-package com.myalice.mapping;
+package com.myalice.es;
 
 import java.util.List;
 import java.util.Map;

@@ -17,16 +17,19 @@ import java.net.UnknownHostException;
 @ConditionalOnProperty(name = "alice.elasticsearch.enabled")
 public class ElasticsearchAutoConfiguration {
 
-    @Autowired
-    private ElasticsearchProporties elasticsearchProporties;
+	@Autowired
+	private ElasticsearchProporties elasticsearchProporties;
 
-    @Bean
-    public TransportClient transportClient() throws UnknownHostException {
-        Settings settings = Settings.builder().put(elasticsearchProporties.getClusterName(), elasticsearchProporties.getElasticsearch()).build();
-        TransportClient client = new PreBuiltTransportClient(settings)
-                .addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName(elasticsearchProporties.getClusterNodes()), elasticsearchProporties.getClusterPort()));
-        return client;
-    }
+	protected PreBuiltTransportClient transportClient;
 
+	@Bean
+	public TransportClient transportClient() throws UnknownHostException {
+		Settings settings = Settings.builder()
+				.put(elasticsearchProporties.getClusterName(), elasticsearchProporties.getElasticsearch()).build();
+		transportClient = new PreBuiltTransportClient(settings);
+		return transportClient.addTransportAddress(
+				new InetSocketTransportAddress(InetAddress.getByName(elasticsearchProporties.getClusterNodes()),
+						elasticsearchProporties.getClusterPort()));
+	}
 
 }
