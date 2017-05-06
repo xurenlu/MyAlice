@@ -33,7 +33,7 @@ public class ESQuestionOrderService {
         //QueryBuilder queryBuilder = new QueryBuilder();
         builder.setQuery(queryBuilder);
         System.out.println(builder.get());
-
+        
         client.close();
     }
 
