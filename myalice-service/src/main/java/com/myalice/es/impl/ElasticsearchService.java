@@ -11,9 +11,11 @@ import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.rest.RestStatus;
 import org.springframework.util.StringUtils;
 
+import com.myalice.config.ElasticsearchProporties;
 import com.myalice.domain.ElasticsearchData;
 import com.myalice.es.IElasticsearch;
 import com.myalice.utils.MyAliceStringUtils;
+import com.myalice.utils.Tools;
 
 public class ElasticsearchService implements IElasticsearch {
 
@@ -21,19 +23,22 @@ public class ElasticsearchService implements IElasticsearch {
 
 	protected String type;
 
-	protected TransportClient client;
+	protected ElasticsearchProporties elasticsearchProporties;
 
-	public ElasticsearchService(TransportClient client ,String index, String type) {
-		this.client = client ; 
+	public ElasticsearchService() {
+	}
+
+	public ElasticsearchService(String index, String type) {
 		this.index = index;
 		this.type = type;
 	}
 
 	@Override
 	public boolean add(Map<String, Object> data) {
+		TransportClient client = elasticsearchProporties.createTransportClient();
 		String id = MyAliceStringUtils.toString(data.get("id"));
 		if (StringUtils.isEmpty(id)) {
-			throw new NullPointerException("data without id value");
+			id = Tools.uuid();
 		}
 		IndexResponse actionGet = client.prepareIndex(index, type, id).setSource(data).execute().actionGet();
 		return actionGet.status() == RestStatus.OK;
@@ -47,13 +52,15 @@ public class ElasticsearchService implements IElasticsearch {
 
 	@Override
 	public Map<String, Object> get(String id) {
-		GetResponse actionGet = client.prepareGet(index,type,id).execute().actionGet();
-		
-		return actionGet.getSource() ; 
+		TransportClient client = elasticsearchProporties.createTransportClient();
+		GetResponse actionGet = client.prepareGet(index, type, id).execute().actionGet();
+
+		return actionGet.getSource();
 	}
-	
+
 	@Override
 	public boolean remove(String id) {
+		TransportClient client = elasticsearchProporties.createTransportClient();
 		DeleteResponse actionGet = client.prepareDelete(index, type, id).execute().actionGet();
 		return actionGet.status() == RestStatus.OK;
 	}
@@ -63,9 +70,33 @@ public class ElasticsearchService implements IElasticsearch {
 		Stream.of(ids).forEach(id -> remove(id));
 		return true;
 	}
-	
+
 	@Override
 	public void query(ElasticsearchData searchData) {
-		
+
+	}
+
+	public String getIndex() {
+		return index;
+	}
+
+	public ElasticsearchProporties getElasticsearchProporties() {
+		return elasticsearchProporties;
+	}
+
+	public void setElasticsearchProporties(ElasticsearchProporties elasticsearchProporties) {
+		this.elasticsearchProporties = elasticsearchProporties;
+	}
+
+	public void setIndex(String index) {
+		this.index = index;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
 	}
 }
