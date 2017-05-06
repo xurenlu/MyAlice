@@ -40,8 +40,6 @@ public class ESTest2 {
 	public void test03() {
 		try {
 			
-			
-			
 			Files.readAllLines(Paths.get("1.txt"))
 			.forEach(line -> {
 				System.out.println( line); 
@@ -58,10 +56,10 @@ public class ESTest2 {
 	@Test
 	public void test02() {
 		ElasticsearchData searchData = new ElasticsearchData();
-		searchData.setFrom(0);
+		searchData.setFrom(10);
 		searchData.setSize(10);
 		// QueryBuilder builder =
-		QueryBuilder builder = QueryBuilders.matchQuery("title", "Mycat");
+		QueryBuilder builder = QueryBuilders.matchQuery("title", "刹车片马瑞利");
 		searchData.setBuilder(builder);
 		questionService.query(searchData);
 
