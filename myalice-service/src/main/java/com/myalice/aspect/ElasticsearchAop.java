@@ -2,7 +2,6 @@ package com.myalice.aspect;
 
 import org.aspectj.lang.annotation.After;
 import org.aspectj.lang.annotation.Aspect;
-import org.elasticsearch.client.transport.TransportClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,12 +19,6 @@ public class ElasticsearchAop {
 
 	@After("execution(* com.myalice.services.ESQuestionService.*(..)) ")
 	public void doAfter() throws Throwable {
-		TransportClient transportClient = elasticsearchProporties.getTransportClient();
-		if (null != transportClient) {
-			try {
-				transportClient.close();
-			} catch (Exception e) {
-			}
-		}
+		
 	}
 }

@@ -39,7 +39,7 @@ public class ElasticsearchService implements IElasticsearch {
 
 	@Override
 	public boolean add(Map<String, Object> data) {
-		TransportClient client = elasticsearchProporties.createTransportClient();
+		TransportClient client = elasticsearchProporties.createTransportClient(); 
 		String id = MyAliceStringUtils.toString(data.get("id"));
 		if (StringUtils.isEmpty(id)) {
 			id = Tools.uuid();
@@ -81,6 +81,7 @@ public class ElasticsearchService implements IElasticsearch {
 		SearchResponse response = client.prepareSearch(index).setFrom(searchData.getFrom())
 				.setSize(searchData.getSize()).setQuery(searchData.getBuilder()).execute().actionGet();
 		SearchHits hits = response.getHits();
+		searchData.setDocCount(hits.getTotalHits());
 		List<Map<String, Object>> docs = new Vector<>();
 		for (SearchHit hit : hits.getHits()) {
 			Map<String, Object> source = hit.getSource();

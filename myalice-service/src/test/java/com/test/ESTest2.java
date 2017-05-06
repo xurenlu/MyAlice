@@ -1,5 +1,8 @@
 package com.test;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -30,8 +33,28 @@ public class ESTest2 {
 		data.put("title", "如何开始学习Mycat");
 		data.put("state", 1);
 		questionService.add(data);
+		questionService.remove("1") ;
 	}
 
+	@Test
+	public void test03() {
+		try {
+			
+			
+			
+			Files.readAllLines(Paths.get("1.txt"))
+			.forEach(line -> {
+				System.out.println( line); 
+				Map<String, Object> data = new HashMap<>();
+				data.put("title", line );
+				data.put("state", 1);
+				questionService.add(data);
+			});
+		} catch (IOException e) {
+			
+		}
+	}
+	
 	@Test
 	public void test02() {
 		ElasticsearchData searchData = new ElasticsearchData();
