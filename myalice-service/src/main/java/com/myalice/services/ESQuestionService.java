@@ -1,6 +1,5 @@
 package com.myalice.services;
 
-import java.util.List;
 import java.util.Map;
 
 import org.springframework.stereotype.Service;
@@ -12,37 +11,36 @@ import com.myalice.es.impl.ElasticsearchService;
 @Service
 public class ESQuestionService {
 
-	protected ElasticsearchProporties elasticsearchProporties;
-
-	protected ElasticsearchService elasticsearchService;
+	protected ElasticsearchService questionEsService;
+	protected ElasticsearchService anwserEsService;
 
 	public ESQuestionService(ElasticsearchProporties elasticsearchProporties) {
-		this.elasticsearchProporties = elasticsearchProporties;
-		elasticsearchService = new ElasticsearchService("myalice", "question");
-		elasticsearchService.setElasticsearchProporties(elasticsearchProporties);
+		questionEsService = new ElasticsearchService("myalice", "question");
+		questionEsService.setElasticsearchProporties(elasticsearchProporties);
+
+		anwserEsService = new ElasticsearchService("myalice", "anwser");
+		anwserEsService.setElasticsearchProporties(elasticsearchProporties);
+	}
+
+	public void addQuestion(Map<String, Object> question, Map<String, Object> anwser) {
+		questionEsService.add( question ) ; 
+		anwser.put("question_id", question.get("id") );
+		anwserEsService.add( anwser ) ; 
 	}
 
 	public boolean add(Map<String, Object> data) {
-		return elasticsearchService.add(data);
-	}
-
-	public boolean adds(List<Map<String, Object>> datas) {
-		return elasticsearchService.adds(datas);
+		return questionEsService.add(data);
 	}
 
 	public boolean remove(String id) {
-		return elasticsearchService.remove(id);
-	}
-
-	public boolean removes(String... ids) {
-		return elasticsearchService.removes(ids);
+		return questionEsService.remove(id);
 	}
 
 	public void query(ElasticsearchData searchData) {
-		elasticsearchService.query(searchData);
+		questionEsService.query(searchData);
 	}
 
 	public Map<String, Object> get(String id) {
-		return elasticsearchService.get(id);
+		return questionEsService.get(id);
 	}
 }

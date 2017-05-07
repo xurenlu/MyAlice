@@ -17,11 +17,14 @@ public class ElasticsearchData {
 	private String index;
 	
 	private int from ;
+	private int pageId ;
 	private int size ;
 
 	private String type;
 	
 	public int getFrom() {
+		pageId = pageId < 1 ? 1 : pageId ;
+		from = (pageId-1) * size ;
 		return from;
 	}
 
@@ -29,14 +32,14 @@ public class ElasticsearchData {
 		return size;
 	}
 
+
 	public void setSize(int size) {
 		this.size = size;
 	}
 
-	public void setFrom(int from) {
-		this.from = from;
+	public void setPageId(int pageId) {
+		this.pageId = pageId;
 	}
-
 	public long getDocCount() {
 		return docCount;
 	}
