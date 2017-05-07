@@ -56,13 +56,15 @@ public class ESTest2 {
 	@Test
 	public void test02() {
 		ElasticsearchData searchData = new ElasticsearchData();
-		searchData.setFrom(10);
+		searchData.setPageId(2);
 		searchData.setSize(10);
 		// QueryBuilder builder =
-		QueryBuilder builder = QueryBuilders.matchQuery("title", "刹车片马瑞利");
+		QueryBuilder builder = QueryBuilders.boolQuery().must(QueryBuilders.matchQuery("title", "刹车片马瑞利"))
+				.must(QueryBuilders.matchQuery("state", 1)) ; 
+		
 		searchData.setBuilder(builder);
 		questionService.query(searchData);
-
+		
 		searchData.getDocs().forEach(action -> System.out.println(action));
 	}
 }
