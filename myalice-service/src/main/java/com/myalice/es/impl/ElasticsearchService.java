@@ -12,6 +12,7 @@ import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.transport.TransportClient;
+import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.rest.RestStatus;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
@@ -47,6 +48,7 @@ public class ElasticsearchService implements IElasticsearch {
 			id = Tools.uuid();
 		}
 		IndexResponse actionGet = client.prepareIndex(index, type, id).setSource(data).execute().actionGet();
+		data.put("id", id);
 		return actionGet.status() == RestStatus.OK;
 	}
 
@@ -96,6 +98,22 @@ public class ElasticsearchService implements IElasticsearch {
 			docs.add(source);
 		}
 		searchData.setDocs(docs);
+	}
+	
+	@Override
+	public List<Map<String, Object>> queryList(QueryBuilder builder) {
+		TransportClient client = elasticsearchProporties.createTransportClient(); 
+		SearchRequestBuilder requestBuilder = client.prepareSearch(index).setTypes(type).setSearchType(SearchType.DFS_QUERY_THEN_FETCH) ;
+		requestBuilder.setQuery(builder) ;
+		SearchResponse response = requestBuilder.execute().actionGet();
+		SearchHits hits = response.getHits();
+		List<Map<String, Object>> docs = new Vector<>();
+		for (SearchHit hit : hits.getHits()) {
+			Map<String, Object> source = hit.getSource();
+			source.put("id", hit.getId());
+			docs.add(source);
+		}
+		return docs ;
 	}
 
 	public String getIndex() {

@@ -1,7 +1,9 @@
 package com.myalice.services;
 
+import java.util.List;
 import java.util.Map;
 
+import org.elasticsearch.index.query.QueryBuilder;
 import org.springframework.stereotype.Service;
 
 import com.myalice.config.ElasticsearchProporties;
@@ -23,9 +25,9 @@ public class ESQuestionService {
 	}
 
 	public void addQuestion(Map<String, Object> question, Map<String, Object> anwser) {
-		questionEsService.add( question ) ; 
-		anwser.put("question_id", question.get("id") );
-		anwserEsService.add( anwser ) ; 
+		questionEsService.add(question);
+		anwser.put("question_id", question.get("id"));
+		anwserEsService.add(anwser);
 	}
 
 	public boolean add(Map<String, Object> data) {
@@ -42,5 +44,10 @@ public class ESQuestionService {
 
 	public Map<String, Object> get(String id) {
 		return questionEsService.get(id);
+	}
+
+	public List<Map<String, Object>> queryAnswer(QueryBuilder builder) {
+		List<Map<String, Object>> datas = anwserEsService.queryList(builder) ;
+		return datas ;
 	}
 }

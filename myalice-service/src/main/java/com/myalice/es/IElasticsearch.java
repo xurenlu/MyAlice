@@ -3,6 +3,8 @@ package com.myalice.es;
 import java.util.List;
 import java.util.Map;
 
+import org.elasticsearch.index.query.QueryBuilder;
+
 import com.myalice.domain.ElasticsearchData;
 
 public interface IElasticsearch {
@@ -19,4 +21,7 @@ public interface IElasticsearch {
 	
 	
 	public Map<String,Object> get(String id );
+	
+	
+	public  List<Map<String, Object>>  queryList(QueryBuilder builder) ;
 }
