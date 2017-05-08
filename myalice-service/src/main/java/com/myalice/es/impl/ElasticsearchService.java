@@ -80,8 +80,8 @@ public class ElasticsearchService implements IElasticsearch {
 	@Override
 	public void query(ElasticsearchData searchData) {
 		TransportClient client = elasticsearchProporties.createTransportClient();
-
-		SearchRequestBuilder requestBuilder = client.prepareSearch(index).setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
+		
+		SearchRequestBuilder requestBuilder = client.prepareSearch(index).setTypes(type).setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
 				.setFrom(searchData.getFrom()).setSize(searchData.getSize());
 		if (null != searchData.getBuilder()) {
 			requestBuilder.setQuery(searchData.getBuilder());

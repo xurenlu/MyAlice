@@ -15,7 +15,7 @@ Question.prototype = {
 		var _this = this ;
 		var title = $("#title").val();
 		var id = $("#id").val();
-		$.mypost("/admin/question/list" , {title : title , id:id , pageId:pageId} , function( json ){
+		$.mypost("/admin/question/list" , {title : title , id:id , pageId:pageId,ztime:new Date().getTime() } , function( json ){
 			_this.loadPageBtn( json ); 
 			showData($("#questionTable"),json.docs) ; 
 		} , "json") 

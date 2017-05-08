@@ -65,8 +65,8 @@ public class AdminQuestionCtrl {
 		questionMap.put("title", question);
 		questionMap.put("state", 1); 
 		questionMap.put("orderType", orderType); 
-		questionMap.put("carete_user", authentication.getName() ) ; 
-		questionMap.put("create_time", Tools.currentDate()); 
+		questionMap.put("create_user", authentication.getName() ) ; 
+		questionMap.put("create_date", Tools.currentDate()); 
 		
 		Map<String,Object> anwserMap = new HashMap<>() ;
 		anwserMap.put("anwser", anwser); 
