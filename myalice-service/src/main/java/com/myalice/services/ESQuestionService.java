@@ -4,11 +4,14 @@ import java.util.List;
 import java.util.Map;
 
 import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import com.myalice.config.ElasticsearchProporties;
 import com.myalice.domain.ElasticsearchData;
 import com.myalice.es.impl.ElasticsearchService;
+import com.myalice.utils.MyAliceUtils;
 
 @Service
 public class ESQuestionService {
@@ -49,5 +52,28 @@ public class ESQuestionService {
 	public List<Map<String, Object>> queryAnswer(QueryBuilder builder) {
 		List<Map<String, Object>> datas = anwserEsService.queryList(builder) ;
 		return datas ;
+	}
+	
+	/**
+	 * @desc:根据问题搜索对应答案方法
+	 * @param: question 问题内容
+	 * @return Map<String, Object>
+	 * 	  anwser 答案内容
+	 * 	  create_time 创建日期
+	 * 	  question_id 问题id
+	 *    id 答案id
+	 *    source 评分
+	 * */
+	public Map<String, Object> searchAnswer(String question){
+		List<Map<String, Object>> datas = questionEsService.queryList(QueryBuilders.boolQuery().must(QueryBuilders.matchQuery("title", question))) ;
+		if(!CollectionUtils.isEmpty(datas)){
+			Map<String, Object> data = datas.get( 0 ) ;
+			String id = MyAliceUtils.toString(data.get("id"));
+			List<Map<String, Object>> answers = queryAnswer(QueryBuilders.boolQuery().must(QueryBuilders.matchQuery("question_id", id))); 
+			if(!CollectionUtils.isEmpty(answers)){
+				return answers.get(0);
+			}
+		}
+		return null ;
 	}
 }

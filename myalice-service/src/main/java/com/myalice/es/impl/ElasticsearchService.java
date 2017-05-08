@@ -103,7 +103,7 @@ public class ElasticsearchService implements IElasticsearch {
 	@Override
 	public List<Map<String, Object>> queryList(QueryBuilder builder) {
 		TransportClient client = elasticsearchProporties.createTransportClient(); 
-		SearchRequestBuilder requestBuilder = client.prepareSearch(index).setTypes(type).setSearchType(SearchType.DFS_QUERY_THEN_FETCH) ;
+		SearchRequestBuilder requestBuilder = client.prepareSearch(index).setTypes(type).setFrom(0).setSize(5).setSearchType(SearchType.DFS_QUERY_THEN_FETCH) ;
 		requestBuilder.setQuery(builder) ;
 		SearchResponse response = requestBuilder.execute().actionGet();
 		SearchHits hits = response.getHits();
