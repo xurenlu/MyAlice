@@ -45,6 +45,9 @@ public class ElasticsearchData {
 		this.pageId = pageId;
 	}
 	public long getDocCount() {
+		
+		docCount = docCount > 10000 ? 10000 : docCount;
+		
 		return docCount;
 	}
 
