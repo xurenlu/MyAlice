@@ -18,6 +18,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import com.myalice.MyAliceSpringConfig;
 import com.myalice.domain.ElasticsearchData;
 import com.myalice.services.ESQuestionService;
+import com.myalice.utils.Tools;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -37,7 +38,7 @@ public class ESTest2 {
 	}
 
 	@Test
-	public void test03() {
+	public void test03() {	
 		try {
 			
 			Files.readAllLines(Paths.get("1.txt"))
@@ -46,6 +47,8 @@ public class ESTest2 {
 				Map<String, Object> data = new HashMap<>();
 				data.put("title", line );
 				data.put("state", 1);
+				data.put("create_user", "admin");
+				data.put("create_date", Tools.currentDate());
 				questionService.add(data);
 			});
 		} catch (IOException e) {

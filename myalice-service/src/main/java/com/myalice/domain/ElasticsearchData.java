@@ -33,6 +33,10 @@ public class ElasticsearchData {
 	}
 
 
+	public int getPageId() {
+		return pageId;
+	}
+
 	public void setSize(int size) {
 		this.size = size;
 	}
