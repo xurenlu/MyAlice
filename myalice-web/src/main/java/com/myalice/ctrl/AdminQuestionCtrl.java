@@ -39,7 +39,7 @@ public class AdminQuestionCtrl {
 		}
 		
 		if (!StringUtils.isEmpty(id)) { 
-			queryBuilder.must(QueryBuilders.matchQuery("id", id));
+			queryBuilder.must(QueryBuilders.idsQuery().addIds(id));
 		}
 		searchData.setBuilder(queryBuilder);
 		
