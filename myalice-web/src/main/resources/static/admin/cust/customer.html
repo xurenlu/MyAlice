@@ -57,7 +57,8 @@
                 <th data-field="remarks"  >备注</th>
                 <th data-field="userType"  fun="{1:'管理员' , 0:'普通账号'}">用户类型</th>
                 <th data-field="enabled" fun="{true:'启用',false:'禁用'}">是否启用</th>
-              </tr>
+                <th data-field="username" handlerType="authorize|cancel" cancel="{fun:'cancel',text:'取消管理'}" authorize="{fun:'authorize',text:'设置管理'}" >操作</th>
+              </tr> 
               <tbody class="data"></tbody>
               <tr>
               	<td colspan="8">

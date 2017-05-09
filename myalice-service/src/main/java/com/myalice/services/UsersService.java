@@ -24,6 +24,7 @@ public class UsersService {
 	
 	@Transactional(propagation = Propagation.SUPPORTS)
 	public Page<Users> searchUsers(Integer pageNum , Users users){
+		pageNum=null==pageNum?1:pageNum;
 		Page<Users> startPage = PageHelper.startPage(pageNum, pageSize) ;
 		usersMapper.searchUsers(users);
 		return startPage ; 
@@ -33,6 +34,10 @@ public class UsersService {
 	@Transactional(propagation = Propagation.SUPPORTS)
 	public Users selectUser(String userName){
 		return usersMapper.selectUser(userName);
+	}
+	
+	public boolean updateUserType(String username ,String userType){
+		return usersMapper.updateUserType(username, userType) > 0;
 	}
 	
 	@Transactional

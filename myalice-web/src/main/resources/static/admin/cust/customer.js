@@ -9,7 +9,7 @@ $(function(){
 })
 
 function loadData(url,param){
-	$.get(url, param , function(data){
+	$.mypost(url, param , function(data){
 		showData($("#cstData"),data.list) ; 
 		$('#pageToolbar').html(""); 
 		$('#pageToolbar').Paging({current:data.pageNum,pagesize:data.pageSize,count:data.total,callback:function(page,size,count){
@@ -32,4 +32,20 @@ function enableUser(enable){
 		btnSearch($('.ui-paging-container').find(".focus").attr("data-page"));
 		bootbox.alert(data.msg); 
 	},"json")
+}
+function authorize(username){
+	authorizeUser(username,1); 
+}
+
+function cancel(username){
+	authorizeUser(username,0); 
+}
+/*设置管理*/
+function authorizeUser(username,userType){
+	$.mypost("/admin/user/authorize" , {username:username , userType:userType} , function( json ){
+		if(json.suc){
+			btnSearch($.getWellParam("page"));
+		}
+		bootbox.alert(json.msg);
+	} , "json" )
 }

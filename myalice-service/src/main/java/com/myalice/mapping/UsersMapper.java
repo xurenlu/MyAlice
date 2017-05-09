@@ -175,6 +175,15 @@ public interface UsersMapper {
     })
     int updateByPrimaryKey(Users record);
     
+    
+    @Update({
+        "update users",
+        "set " ,
+          "user_type = #{userType,jdbcType=CHAR} " ,
+        "where username = #{username,jdbcType=VARCHAR}" 
+    })
+    int updateUserType(@Param("username") String username , @Param("userType") String userType);
+    
     @Update({
         "update users",
           "set enabled = #{enabled,jdbcType=BIT}",
