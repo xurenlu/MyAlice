@@ -51,7 +51,16 @@ Qo.prototype = {
 				recordHtml+=newHtml;
 			}
 			$("#qo_data").html( recordHtml );
-		},"json")
+			
+			
+			/* 显示附件*/
+			var attachments = json.attachments; 
+			var attachmentHtml = "" ;
+			for(var x=0;x<attachments.length;x++){
+				attachmentHtml+="<a href='/pub/showImg?imgPath="+attachments[x].url+"' target='_blank'><img style='width:50px;height:50px;' src='/pub/showImg?imgPath="+attachments[x].url+"'/></a>" ; 
+			}  
+			$("#qo_order").html( attachmentHtml ); 
+		},"json")  
 	},init:function(){
 		var _this = this ;
 		$.mypost("/pub/orderType" , {type:"orderState"} , function(json){

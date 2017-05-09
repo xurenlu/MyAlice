@@ -28,8 +28,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.github.pagehelper.PageInfo;
 import com.myalice.domain.QuestionOrder;
+import com.myalice.domain.QuestionOrderAttachment;
 import com.myalice.domain.QuestionRecord;
 import com.myalice.properties.AttachmentProperties;
+import com.myalice.services.QuestionOrderAttachmentService;
 import com.myalice.services.QuestionOrderService;
 import com.myalice.services.QuestionRecordService;
 import com.myalice.services.UsersService;
@@ -53,15 +55,20 @@ public class QuestionOrderCtrl {
 	@Autowired
 	protected QuestionRecordService questionRecordService;
 
+	@Autowired
+	protected QuestionOrderAttachmentService qrderAttachmentService;
+
 	@RequestMapping("queryOrder")
 	public Map<String, Object> queryOrder(String id) {
 		Map<String, Object> resultMap = new HashMap<>();
 		try {
 			QuestionOrder questionOrder = questionOrderService.selectByPrimaryKey(id);
 			List<QuestionRecord> records = questionRecordService.selectRecord(id);
-			resultMap.put("questionOrder", questionOrder);
-			resultMap.put("user", usersService.selectUser(questionOrder.getCreateUser()));
-			resultMap.put("records", records);
+			List<QuestionOrderAttachment> attachments = qrderAttachmentService.selectAttachments( id );
+			resultMap.put( "questionOrder" , questionOrder );
+			resultMap.put( "attachments" , attachments );
+			resultMap.put( "user" , usersService.selectUser( questionOrder.getCreateUser() ) );
+			resultMap.put( "records" , records );
 		} catch (Exception e) {
 			logger.error("/qo/queryOrder", e);
 		}
@@ -79,7 +86,7 @@ public class QuestionOrderCtrl {
 		if (!isAdmin) {
 			qo.setCreateUser(authentication.getName());
 		}
-		pageNum=null==pageNum?1:pageNum;
+		pageNum = null == pageNum ? 1 : pageNum;
 		return new PageInfo<QuestionOrder>(questionOrderService.list(pageNum, qo, sTime, eTime));
 	}
 
@@ -170,29 +177,29 @@ public class QuestionOrderCtrl {
 				return new ResponseMessageBody("参数获取失败", false);
 			}
 			QuestionOrder questionOrder = questionOrderService.selectByPrimaryKey(order.getId());
-			if(null == questionOrder){
+			if (null == questionOrder) {
 				return new ResponseMessageBody("获取订单为空", false);
 			}
 			if (order.getState() == 2) {
-				
-				if(!isAdmin(authentication.getAuthorities())){
+
+				if (!isAdmin(authentication.getAuthorities())) {
 					return new ResponseMessageBody("非管理员不能受理", false);
-				} 
+				}
 				order.setAccept(authentication.getName());
 				if (null != questionOrder.getState() && questionOrder.getState() != 1) {
 					return new ResponseMessageBody("不是待受理状态", false);
 				}
 			}
 			if (order.getState() == 3) {
-				msg="关闭";
+				msg = "关闭";
 				order.setSolvedTime(Tools.currentDate());
-				
-				if(!authentication.getName().equalsIgnoreCase(questionOrder.getCreateUser())){
+
+				if (!authentication.getName().equalsIgnoreCase(questionOrder.getCreateUser())) {
 					return new ResponseMessageBody(String.format("不是工单创建人，不能关闭工单", msg), true);
 				}
 			}
 			order.setAccept(questionOrder.getAccept());
-			questionOrderService.updateOrderState( order );
+			questionOrderService.updateOrderState(order);
 			return new ResponseMessageBody(String.format("%s成功", msg), true);
 		} catch (Exception e) {
 			logger.error("/qo/changeState", e);

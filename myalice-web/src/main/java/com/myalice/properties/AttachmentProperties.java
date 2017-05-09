@@ -46,6 +46,9 @@ public class AttachmentProperties  implements SecurityPrerequisite {
 	public String getCurrentPath(){
 		return String.format("%s/%s", path , getCurrentDate() ) ;
 	}
+	public String getFilePath(String path){
+		return String.format("%s/%s", this.path , path ) ; 
+	}
 	
 	
 	public String getNewFileName(String originalFilename){

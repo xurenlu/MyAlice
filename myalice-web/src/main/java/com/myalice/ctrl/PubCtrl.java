@@ -1,5 +1,7 @@
 package com.myalice.ctrl;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -7,6 +9,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
@@ -20,10 +23,12 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.myalice.domain.SysDictionaries;
 import com.myalice.domain.Users;
+import com.myalice.properties.AttachmentProperties;
 import com.myalice.security.BindingResultUtils;
 import com.myalice.services.SysDictionariesService;
 import com.myalice.services.UsersService;
 import com.myalice.util.VerifyCodeUtils;
+import com.myalice.utils.MyAliceUtils;
 import com.myalice.utils.ResponseMessageBody;
 import com.myalice.utils.Tools;
 import com.myalice.utils.ValidGroup;
@@ -32,7 +37,9 @@ import com.myalice.utils.ValidGroup;
 @RestController
 public class PubCtrl {
 	protected static Logger logger = org.slf4j.LoggerFactory.getLogger("ctrl") ; 
-	
+
+	@Autowired
+	protected AttachmentProperties attachmentProperties;
 	@Autowired
 	UsersService userService;
 	
@@ -139,6 +146,31 @@ public class PubCtrl {
 			VerifyCodeUtils.outputImage(80, 40, response.getOutputStream(), code) ; 
 		} catch (Exception e) {
 			logger.error("/pub/validateCode resion:" + e.getMessage() , e);
+		}
+	}
+	
+	
+	@RequestMapping("/showImg")
+	public void showImg(HttpServletRequest request , HttpServletResponse response){
+		FileInputStream is = null ;
+		try {
+			String imgPath = MyAliceUtils.toString(request.getParameter("imgPath")) ; 
+			response.setHeader("Pragma","No-cache");
+			response.setHeader("Cache-Control","no-cache");
+			response.setHeader("Cache-Control","no-cache");
+			response.setHeader("Content-Type","image/png");
+			response.setDateHeader("Expires", 0); 
+			String filePath = attachmentProperties.getFilePath(imgPath) ; 
+			if(new File(filePath).exists()){
+				is = new FileInputStream(filePath);
+				IOUtils.copy(is, response.getOutputStream()) ; 
+			}
+		} catch (Exception e) {
+			logger.error("/pub/validateCode resion:" + e.getMessage() , e);
+		}finally {
+			if(is!=null){
+				IOUtils.closeQuietly(is);
+			}
 		}
 	}
 	
