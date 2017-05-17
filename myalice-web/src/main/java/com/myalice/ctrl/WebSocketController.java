@@ -1,6 +1,8 @@
 package com.myalice.ctrl;
 
 import java.security.Principal;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -8,18 +10,23 @@ import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 
+import com.alibaba.fastjson.JSON;
 import com.myalice.beans.Message;
 import com.myalice.beans.Response;
+import com.myalice.services.ESQuestionService;
+import com.myalice.utils.Tools;
 
 @Controller
 public class WebSocketController {
 	
 	@Autowired
-	private SimpMessagingTemplate messagingTemplate;
-
-	// http://localhost:8080/ws
-	@MessageMapping("/welcome") // 浏览器发送请求通过@messageMapping 映射/welcome 这个地址。
-	@SendTo("/topic/getResponse") // 服务器端有消息时,会订阅@SendTo 中的路径的浏览器发送消息。
+	protected SimpMessagingTemplate messagingTemplate;
+	
+	@Autowired
+	protected ESQuestionService questionService ;
+	
+	@MessageMapping("/welcome")
+	@SendTo("/topic/getResponse")
 	public Response say(Message message) throws Exception {
 		Thread.sleep(1000);
 		return new Response("Welcome, " + message.getName() + "!");
@@ -28,10 +35,32 @@ public class WebSocketController {
 	@MessageMapping("/chat")
 	// 在springmvc 中可以直接获得principal,principal 中包含当前用户的信息
 	public void handleChat(Principal principal, Message message) {
-		/**
-		 * 此处是一段硬编码。如果发送人是admin 则发送给 basara 如果发送人是basara 就发送给 admin。
-		 * 通过当前用户,然后查找消息,如果查找到未读消息,则发送给当前用户。
-		 */
+		
+		Map<String, Object> answer = questionService.searchAnswer(message.getName()) ;
+		
+		{
+			Map<String,Object> responseMsg = new HashMap<>() ;
+			responseMsg.put("date", Tools.currentDate());
+			responseMsg.put("clazz", "even");
+			responseMsg.put("anwser", message.getName());
+			messagingTemplate.convertAndSendToUser(principal.getName()
+					, "/queue/notifications",JSON.toJSONStringWithDateFormat(responseMsg, "yyyy-MM-dd HH:mm:ss") );
+		}
+		
+		Map<String,Object> responseMsg = new HashMap<>() ;
+		responseMsg.put("date", Tools.currentDate());
+		responseMsg.put("clazz", "odd");
+		
+		if(null != answer){
+			responseMsg.put("anwser", answer.get("anwser"));
+			messagingTemplate.convertAndSendToUser(principal.getName()
+				, "/queue/notifications",JSON.toJSONStringWithDateFormat(responseMsg, "yyyy-MM-dd HH:mm:ss") );
+		}else{
+			responseMsg.put("anwser", "请重新描述您的问题");
+			messagingTemplate.convertAndSendToUser(principal.getName()
+					, "/queue/notifications",JSON.toJSONStringWithDateFormat(responseMsg, "yyyy-MM-dd HH:mm:ss") );   
+		}
+		/*
 		if (principal.getName().equals("admin")) {
 			// 通过convertAndSendToUser 向用户发送信息,
 			// 第一个参数是接收消息的用户,第二个参数是浏览器订阅的地址,第三个参数是消息本身
@@ -41,5 +70,6 @@ public class WebSocketController {
 			messagingTemplate.convertAndSendToUser("admin", "/queue/notifications",
 					principal.getName() + "-send:" + message.getName());
 		}
+		*/
 	}
 }
