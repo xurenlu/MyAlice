@@ -28,14 +28,15 @@ $(function(){
 function handleNotification(message){
 	var body = message.body ; 
 	var json = eval("("  + body + ")") ;
-	appendContent(json.clazz, json.date , json.anwser); 
+	appendContent(json.clazz, json.date , json.anwser , json.name); 
 } 
 
-function appendContent(clazz , date , anwser){
+function appendContent(clazz , date , anwser , name){
 	var oddItemHtml = $("#odd_item").html();
 	oddItemHtml = oddItemHtml.replace("\{class\}" , clazz);
 	oddItemHtml = oddItemHtml.replace("\{date\}" , date);
 	oddItemHtml = oddItemHtml.replace("\{content\}" , anwser);
+	oddItemHtml = oddItemHtml.replace("\{name\}" , anwser);
 	$("#online_content").append(oddItemHtml);
 	$("#nurse").scrollTop( $("#nurse")[0].scrollHeight ) ; 
 }

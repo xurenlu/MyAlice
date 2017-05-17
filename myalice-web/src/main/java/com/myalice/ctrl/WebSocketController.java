@@ -42,6 +42,7 @@ public class WebSocketController {
 			Map<String,Object> responseMsg = new HashMap<>() ;
 			responseMsg.put("date", Tools.currentDate());
 			responseMsg.put("clazz", "even");
+			responseMsg.put("name", principal.getName() ); 
 			responseMsg.put("anwser", message.getName());
 			messagingTemplate.convertAndSendToUser(principal.getName()
 					, "/queue/notifications",JSON.toJSONStringWithDateFormat(responseMsg, "yyyy-MM-dd HH:mm:ss") );
@@ -50,7 +51,7 @@ public class WebSocketController {
 		Map<String,Object> responseMsg = new HashMap<>() ;
 		responseMsg.put("date", Tools.currentDate());
 		responseMsg.put("clazz", "odd");
-		
+		responseMsg.put("name", "系统管理员" );
 		if(null != answer){
 			responseMsg.put("anwser", answer.get("anwser"));
 			messagingTemplate.convertAndSendToUser(principal.getName()
