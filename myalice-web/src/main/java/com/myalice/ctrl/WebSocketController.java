@@ -54,6 +54,7 @@ public class WebSocketController {
 			messagingTemplate.convertAndSendToUser(principal.getName()
 					, "/queue/notifications",JSON.toJSONStringWithDateFormat(responseMsg, "yyyy-MM-dd HH:mm:ss") );
 		}
+		record.setUserId(principal.getName());
 		record.setUserType("");
 		record.setConnectionId("");
 		Map<String,Object> responseMsg = new HashMap<>() ;
