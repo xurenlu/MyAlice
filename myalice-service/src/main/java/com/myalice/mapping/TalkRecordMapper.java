@@ -32,10 +32,10 @@ public interface TalkRecordMapper {
     @Insert({
         "insert into talk_record (id, content, ",
         "user_id, user_type, create_time, ",
-        "connection_id, reply)",
+        "connection_id, reply,replyType)",
         "values (#{id,jdbcType=VARCHAR}, #{content,jdbcType=VARCHAR}, ",
         "#{userId,jdbcType=VARCHAR}, #{userType,jdbcType=CHAR}, #{createTime,jdbcType=TIMESTAMP}, ",
-        "#{connectionId,jdbcType=VARCHAR}, #{reply,jdbcType=VARCHAR})"
+        "#{connectionId,jdbcType=VARCHAR}, #{reply,jdbcType=VARCHAR},#{replyType,jdbcType=INTEGER})"
     })
     int insert(TalkRecord record);
 
@@ -97,7 +97,8 @@ public interface TalkRecordMapper {
           "user_type = #{userType,jdbcType=CHAR},",
           "create_time = #{createTime,jdbcType=TIMESTAMP},",
           "connection_id = #{connectionId,jdbcType=VARCHAR},",
-          "reply = #{reply,jdbcType=VARCHAR}",
+          "reply = #{reply,jdbcType=VARCHAR},", 
+          "replyType = #{replyType,jdbcType=INTEGER}",
         "where id = #{id,jdbcType=VARCHAR}"
     })
     int updateByPrimaryKey(TalkRecord record);
