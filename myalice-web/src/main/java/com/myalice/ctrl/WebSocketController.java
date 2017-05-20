@@ -64,18 +64,17 @@ public class WebSocketController {
 		if(null != answer){
 			record.setReplyType(1);
 			responseMsg.put("anwser", answer.get("anwser"));
-			messagingTemplate.convertAndSendToUser(principal.getName()
-				, "/queue/notifications",JSON.toJSONStringWithDateFormat(responseMsg, "yyyy-MM-dd HH:mm:ss") );
 		}else{
 			record.setReplyType(0);
 			responseMsg.put("anwser", "请重新描述您的问题");
-			messagingTemplate.convertAndSendToUser(principal.getName()
-					, "/queue/notifications",JSON.toJSONStringWithDateFormat(responseMsg, "yyyy-MM-dd HH:mm:ss") );   
 		}
 		
 		record.setReply( MyAliceUtils.toString(responseMsg.get("anwser")));
 		
 		talkRecordService.insert( record ); 
+		
+		messagingTemplate.convertAndSendToUser(principal.getName()
+				, "/queue/notifications",JSON.toJSONStringWithDateFormat(responseMsg, "yyyy-MM-dd HH:mm:ss") );   
 		/*
 		if (principal.getName().equals("admin")) {
 			// 通过convertAndSendToUser 向用户发送信息,
