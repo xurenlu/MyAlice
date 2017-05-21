@@ -48,7 +48,8 @@ function loadOrderType(){
 
 function initUpdate(){ 
 	var id = $.getParam("id") ;  
-	if(null == id){
+	
+	if(null == id || "" == id){
 		return ;
 	}
 	$.mypost("/admin/question/load" , {id:id} ,function(data){
