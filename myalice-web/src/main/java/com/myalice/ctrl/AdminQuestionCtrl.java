@@ -57,14 +57,15 @@ public class AdminQuestionCtrl {
 
 	@PostMapping("/add")
 	public ResponseMessageBody add(HttpServletRequest request,Authentication authentication) {
-		String orderType = MyAliceUtils.toString(request.getParameter("orderType"));
+		String questionType = MyAliceUtils.toString(request.getParameter("questionType"));
 		String question = MyAliceUtils.toString(request.getParameter("question"));
-		String anwser = MyAliceUtils.toString(request.getParameter("anwser"));
-		
+		String anwser = MyAliceUtils.toString(request.getParameter("anwser")); 
+		String id = MyAliceUtils.toString(request.getParameter("id"));
 		Map<String,Object> questionMap = new HashMap<>() ;
 		questionMap.put("title", question);
 		questionMap.put("state", 1); 
-		questionMap.put("orderType", orderType); 
+		questionMap.put("id", id);   
+		questionMap.put("questionType", questionType); 
 		questionMap.put("create_user", authentication.getName() ) ; 
 		questionMap.put("create_date", Tools.currentDate()); 
 		
@@ -76,4 +77,13 @@ public class AdminQuestionCtrl {
 		return new ResponseMessageBody("删除成功", true);
 	}
 	
+	@PostMapping("load")
+	public Map<String,Object> load(String id){
+		Map<String, Object> map = esQuestionService.get(id) ; 
+		Map<String, Object> queryAnswerOne = esQuestionService.queryAnswerOne(id) ; 
+		if(null != map){
+			map.putAll( queryAnswerOne ); 
+		}
+		return map;
+	}
 }

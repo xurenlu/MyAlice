@@ -14,6 +14,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.configurers.FormLoginConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
+import org.springframework.security.config.annotation.web.configurers.LogoutConfigurer;
 import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
@@ -55,6 +56,10 @@ public class SpringSecurity extends WebSecurityConfigurerAdapter {
 		formLogin.successForwardUrl("/admin/list").permitAll();
 		formLogin.failureForwardUrl(loginPage + "?error=true").permitAll();
 		formLogin.failureUrl(loginPage + "?error=true").permitAll();
+		
+		LogoutConfigurer<HttpSecurity> logout = http.logout();
+		logout.logoutSuccessUrl(loginPage);
+		logout.logoutUrl("/logout"); 
 	}
 
 	@Override
