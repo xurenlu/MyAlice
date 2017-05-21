@@ -1,9 +1,9 @@
-
+var isSubmit = false ;
 $( function(){
 	loadOrderType(); 
 	
 	$("#btnSubmit").click(function(){
-		
+		if(isSubmit){return;}
 		var questionType = $("#questionType").val();
 		var question = $("#question").val();
 		var answer = $("#answer").val();
@@ -20,11 +20,15 @@ $( function(){
 			bootbox.alert("请输入答案"); 
 			return ;
 		}
-		
+		isSubmit = true;
 		$.mypost("/admin/question/add" , {questionType:questionType , question:question ,
 			anwser:answer,"id":id } , function(json){
+				isSubmit=false ; 
 			if(json.suc){
-				window.location="/admin/question/listData.html";
+				
+				window.setTimeout(function(){
+					window.location="/admin/question/listData.html";
+				},1000)
 				return ;
 			}
 			bootbox.alert(json.msg); 
