@@ -30,3 +30,8 @@ Question.prototype = {
 		}});
 	}
 }
+
+
+function update(id){
+	window.location="/admin/question/addData.html?id=" + id ; 
+}
