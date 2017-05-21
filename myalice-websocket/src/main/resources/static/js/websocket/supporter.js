@@ -26,6 +26,10 @@ var otherImageAppend2 = "</p><div class='dialog'><i class='i_arr'></i><span clas
 var otherImageAppend3 = "'><img class='message-img' src='";
 var otherImageAppend4 = "'></a></div></div></td><td class='rm'></td></tr><tr><td class='lb'></td><td class='bm'></td><td class='rb'></td></tr></tbody></table></div></div></div>";
 
+var faqAppend1 = "<li><p class='bg-1'><strong>问题：</strong><span class='s-3'><a target='_blank' href='";
+	faqAppend2 = "'>";
+	faqAppend3 = "</a></span></p></li>";
+
 var userMsgs = {};
 var userNames = {};
 
@@ -69,7 +73,7 @@ function removeUser(id) {
 }
 
 function connect() {
-    socket = new SockJS('http://localhost:8080/supporter', undefined, connOptions);
+    socket = new SockJS('/supporter', undefined, connOptions);
     socket.onopen = function() {
         console.log('open');
     };
@@ -229,6 +233,31 @@ function e(e) {
     i.readAsDataURL(t);
 }
 
+function addFAQItem(data) {
+	$("#faq").append(faqAppend1 + data.url + faqAppend2 + data.summary + faqAppend3);
+}
+
+document.addEventListener("dragenter", function (win) {
+    win.stopPropagation();
+    win.preventDefault();
+}, false);
+document.addEventListener("dragleave", function (win) {
+    win.stopPropagation();
+    win.preventDefault();
+}, false);
+
+document.addEventListener("dragover", function (win) {
+    win.stopPropagation();
+    win.preventDefault();
+}, false);
+document.addEventListener("drop", function (win) {
+    win.stopPropagation();
+    win.preventDefault();
+
+    e(win.dataTransfer.files[0]);
+
+}, false);
+
 $(function () {
     connect();
     $("form").on('submit', function (e) {
@@ -267,27 +296,14 @@ $(function () {
                 return true;
             }
         }
-    })
+    });
+    console.log("get begin")
+    $.get("/websocket/faq/list",function(data,status){
+    	console.log(data.length)
+    	for (i = 0; i< data.length; i++) {
+    		addFAQItem(data[i]);
+    	}
+      });
+    console.log("get end")
 });
-
-document.addEventListener("dragenter", function (win) {
-    win.stopPropagation();
-    win.preventDefault();
-}, false);
-document.addEventListener("dragleave", function (win) {
-    win.stopPropagation();
-    win.preventDefault();
-}, false);
-
-document.addEventListener("dragover", function (win) {
-    win.stopPropagation();
-    win.preventDefault();
-}, false);
-document.addEventListener("drop", function (win) {
-    win.stopPropagation();
-    win.preventDefault();
-
-    e(win.dataTransfer.files[0]);
-
-}, false);
 

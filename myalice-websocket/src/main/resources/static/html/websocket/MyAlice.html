@@ -6,15 +6,12 @@
     <meta name="description" content="">
     <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
     <title>在线客服</title>
-    <link rel="stylesheet" type="text/css" href="http://localhost:9876/alice/css/websocket/skin-min.css">
-    <!--<link href="http://localhost:8080/webjars/bootstrap/bootstrap.min.css" rel="stylesheet" type="text/css">-->
-    <!--<script type="text/javascript" src="http://localhost:8080/webjars/bootstrap/bootstrap.min.js"></script>-->
+    <link rel="stylesheet" type="text/css" href="/css/websocket/skin-min.css">
     <script type="text/javascript">window.jdpts={};jdpts._st=new Date().getTime();</script>
-    <script type="text/javascript" src="http://localhost:9876/alice/js/websocket/joya.js"></script>
-    <script type="text/javascript" src="http://localhost:8080/webjars/jquery/jquery.min.js"></script>
-    <script type="text/javascript" src="http://localhost:8080/webjars/sockjs-client/sockjs.js"></script>
-    <script type="text/javascript" src="http://localhost:9876/alice/js/websocket/util.js"></script>
-    <script type="text/javascript" src="http://localhost:9876/alice/js/websocket/supporter.js"></script>
+    <script type="text/javascript" src="/js/websocket/joya.js"></script>
+    <script type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
+    <script type="text/javascript" src="/webjars/sockjs-client/sockjs.js"></script>
+    <script type="text/javascript" src="/js/websocket/util.js"></script>
 </head>
 <body>
 <div class="wrapper">
@@ -119,9 +116,8 @@
                     </ul>
                     <div class="im-tab-contents">
                         <div class="im-tab-content im-my-order im-show">
-                            <ul class="im-list01 im-list03">
-                                <li><p class="bg-1"><strong>问题：</strong><span class="s-3"><a href="#">你是谁，你从哪里来，要到哪里去？</a></span></p>
-                                </li>
+                            <ul id="faq" class="im-list01 im-list03">
+                                
                             </ul>
                             <div class="comonMore"><p><span class="icon"></span><span class="txt">点击加载更多</span></p></div>
                         </div>
@@ -132,6 +128,6 @@
     </div>
 </div>
 <input type="hidden" value="radarzw" id="userName">
-</div>
+<script type="text/javascript" src="/js/websocket/supporter.js"></script>
 </body>
 </html>

@@ -2,11 +2,14 @@ package org.myalice.websocket.conf;
 
 import org.myalice.websocket.handler.CustomerHandler;
 import org.myalice.websocket.handler.SupporterHandler;
+import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
 import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
 import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
@@ -16,6 +19,9 @@ import org.springframework.web.socket.server.support.HttpSessionHandshakeInterce
 @Configuration
 @EnableWebSocket
 @PropertySource("classpath:/websocket.properties")
+@EnableScheduling
+@MapperScan("org.myalice.mapping.websocket")
+@EnableTransactionManagement
 public class WebSocketConfig implements WebSocketConfigurer {
 	
 	@Autowired
