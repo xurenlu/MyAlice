@@ -75,16 +75,6 @@ public class WebSocketController {
 		
 		messagingTemplate.convertAndSendToUser(principal.getName()
 				, "/queue/notifications",JSON.toJSONStringWithDateFormat(responseMsg, "yyyy-MM-dd HH:mm:ss") );   
-		/*
-		if (principal.getName().equals("admin")) {
-			// 通过convertAndSendToUser 向用户发送信息,
-			// 第一个参数是接收消息的用户,第二个参数是浏览器订阅的地址,第三个参数是消息本身
-			messagingTemplate.convertAndSendToUser("basara", "/queue/notifications",
-					principal.getName() + "-send:" + message.getName());
-		} else {
-			messagingTemplate.convertAndSendToUser("admin", "/queue/notifications",
-					principal.getName() + "-send:" + message.getName());
-		}
-		*/
+		
 	}
 }
