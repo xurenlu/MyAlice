@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.util.StringUtils;
@@ -27,25 +28,31 @@ public class AdminQuestionCtrl {
 	@Autowired
 	protected ESQuestionService esQuestionService;
 
+	protected static Logger logger = org.slf4j.LoggerFactory.getLogger("ctrl");
+
 	@RequestMapping("/list")
 	public ElasticsearchData list(HttpServletRequest request) {
 		String title = MyAliceUtils.toString(request.getParameter("title"));
 		String id = MyAliceUtils.toString(request.getParameter("id"));
 		int pageId = MyAliceUtils.toInt(request.getParameter("pageId"));
 		ElasticsearchData searchData = new ElasticsearchData();
-		BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
-		if (!StringUtils.isEmpty(title)) { 
-			queryBuilder.must(QueryBuilders.matchQuery("title", title));
+		try {
+			BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
+			if (!StringUtils.isEmpty(title)) { 
+				queryBuilder.must(QueryBuilders.matchQuery("title", title));
+			}
+			
+			if (!StringUtils.isEmpty(id)) { 
+				queryBuilder.must(QueryBuilders.idsQuery().addIds(id));
+			}
+			searchData.setBuilder(queryBuilder);
+			
+			searchData.setPageId(pageId);
+			searchData.setSize(10);
+			esQuestionService.query(searchData);
+		} catch (Exception e) {
+			logger.error(" question es query ", e);
 		}
-		
-		if (!StringUtils.isEmpty(id)) { 
-			queryBuilder.must(QueryBuilders.idsQuery().addIds(id));
-		}
-		searchData.setBuilder(queryBuilder);
-		
-		searchData.setPageId(pageId);
-		searchData.setSize(10);
-		esQuestionService.query(searchData);
 		return searchData;
 	}
 
