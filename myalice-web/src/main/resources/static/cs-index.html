@@ -28,10 +28,19 @@
     	var height = document.body.scrollHeight - 90 ; 
     	$("#myalice_iframe").css("height" , height+"px");  
     } 
+	
+	function logout(){
+		var token = Cookies.get("XSRF-TOKEN");
+		$("#myalice_token").val(token);
+		$("#logout").submit() ; 
+	}
 </script>
 </head>
 
 <body>
+<form action="/logout" method="post" id="logout">
+	<input name="_csrf" style="display:none;" id="myalice_token"/>
+</form>
 <nav class="nav navbar-default navbar-mystyle navbar-fixed-top">
   <div class="navbar-header">
     <button class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
@@ -54,7 +63,7 @@
       </li>
       <li class="dropdown li-border"><a href="#" class="dropdown-toggle mystyle-color" data-toggle="dropdown"><span id="index_user_name"></span><span class="caret"></span></a>
         <ul class="dropdown-menu">
-          <li><a href="admin/login.html">退出</a></li>
+          <li><a onclick="logout()">退出</a></li>
         </ul>
       </li>
     </ul>
