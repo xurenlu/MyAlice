@@ -52,7 +52,7 @@ public class WebSocketController {
 			responseMsg.put("anwser", message.getName());
 			record.setContent( message.getName() ); ;
 			messagingTemplate.convertAndSendToUser(principal.getName()
-					, "/queue/notifications",JSON.toJSONStringWithDateFormat(responseMsg, "yyyy-MM-dd HH:mm:ss") );
+					, "/queue/notifications",JSON.toJSONStringWithDateFormat(responseMsg, "MM-dd HH:mm") );
 		}
 		record.setUserId(principal.getName());
 		record.setUserType("");
@@ -74,7 +74,7 @@ public class WebSocketController {
 		talkRecordService.insert( record ); 
 		
 		messagingTemplate.convertAndSendToUser(principal.getName()
-				, "/queue/notifications",JSON.toJSONStringWithDateFormat(responseMsg, "yyyy-MM-dd HH:mm:ss") );   
+				, "/queue/notifications",JSON.toJSONStringWithDateFormat(responseMsg, "MM-dd HH:mm") );   
 		
 	}
 }
