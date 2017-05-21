@@ -17,9 +17,9 @@ public class AdminTalkRecordCtrl {
 	protected TalkRecordService talkRecordService ;
 	
 	@RequestMapping("data")
-	public PageInfo<TalkRecord> data(Integer pageId,TalkRecord record){
-		pageId = null == pageId ? 1 : pageId ;
-		Page<TalkRecord> list = talkRecordService.list(pageId, record) ;
+	public PageInfo<TalkRecord> data(Integer pageNum,TalkRecord record){
+		pageNum = null == pageNum ? 1 : pageNum ;
+		Page<TalkRecord> list = talkRecordService.list(pageNum, record) ;
 		return new PageInfo<>(list) ; 
 	}
 }

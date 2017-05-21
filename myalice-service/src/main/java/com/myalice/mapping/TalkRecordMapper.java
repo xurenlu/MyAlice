@@ -71,7 +71,7 @@ public interface TalkRecordMapper {
 			"id, content, user_id, user_type, create_time, connection_id, reply,replyType ",
 			"from talk_record", "<trim prefix=\"WHERE\" prefixOverrides=\"AND\">",
 			"<if test=\"replyType != null\">AND replyType=#{replyType,jdbcType=VARCHAR}</if>",
-			"<if test=\"userId != null\">AND user_id=#{userType,jdbcType=VARCHAR}</if>",
+			"<if test=\"userId != null and userId != ''\">AND user_id=#{userType,jdbcType=VARCHAR}</if>",
 			"<if test=\"content != null\">AND content like CONCAT('%' , #{content,jdbcType=VARCHAR} , '%')</if>",
 			"</trim> order by create_time desc", "</script>" }) 
 	@Results({ @Result(column = "id", property = "id", jdbcType = JdbcType.VARCHAR, id = true),

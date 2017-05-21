@@ -2,6 +2,8 @@ package com.myalice.domain;
 
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 public class TalkRecord {
     /**
      *
@@ -46,6 +48,7 @@ public class TalkRecord {
      *
      * @mbg.generated
      */
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private Date createTime;
 
     /**
