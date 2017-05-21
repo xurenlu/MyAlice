@@ -35,7 +35,7 @@ var userMsgs = {};
 var userNames = {};
 
 function connect() {
-    socket = new SockJS('http://localhost:8080/customer', undefined, connOptions);
+    socket = new SockJS('/customer', undefined, connOptions);
     socket.onopen = function() {
         console.log('open');
     };
