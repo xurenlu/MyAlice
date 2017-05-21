@@ -1,5 +1,8 @@
 $(function(){
-	 btnSearch($.getWellParam("page")) ;
+	$.mypost("/pub/orderType" , {} , function(text){
+		$("#questionType").attr("fun" , text );
+		btnSearch($.getWellParam("page")) ; 
+	},"text")
 })
 
 function btnSearch(page){
