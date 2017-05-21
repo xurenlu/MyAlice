@@ -7,6 +7,7 @@ $( function(){
 		var questionType = $("#questionType").val();
 		var question = $("#question").val();
 		var answer = $("#answer").val();
+		var id = $("#id").val();
 		if("" ==  questionType){
 			bootbox.alert("请选择问题类型"); 
 			return ;
@@ -21,7 +22,7 @@ $( function(){
 		}
 		
 		$.mypost("/admin/question/add" , {questionType:questionType , question:question ,
-			anwser:answer} , function(json){
+			anwser:answer,"id":id } , function(json){
 			if(json.suc){
 				window.location="/admin/question/listData.html";
 				return ;
