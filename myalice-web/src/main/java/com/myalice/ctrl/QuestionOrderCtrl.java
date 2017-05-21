@@ -17,7 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -35,6 +34,7 @@ import com.myalice.services.QuestionOrderAttachmentService;
 import com.myalice.services.QuestionOrderService;
 import com.myalice.services.QuestionRecordService;
 import com.myalice.services.UsersService;
+import com.myalice.util.AuthorityUtils;
 import com.myalice.utils.ResponseMessageBody;
 import com.myalice.utils.Tools;
 
@@ -82,7 +82,7 @@ public class QuestionOrderCtrl {
 		}
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
-		boolean isAdmin = isAdmin(authorities);
+		boolean isAdmin = AuthorityUtils.isAdmin(authorities);
 		if (!isAdmin) {
 			qo.setCreateUser(authentication.getName());
 		}
@@ -90,18 +90,7 @@ public class QuestionOrderCtrl {
 		return new PageInfo<QuestionOrder>(questionOrderService.list(pageNum, qo, sTime, eTime));
 	}
 
-	private boolean isAdmin(Collection<? extends GrantedAuthority> authorities) {
-		boolean isAdmin = false;
-		if (!CollectionUtils.isEmpty(authorities)) {
-			for (GrantedAuthority authority : authorities) {
-				isAdmin = authority.getAuthority().indexOf("admin") > 0;
-				if (isAdmin) {
-					break;
-				}
-			}
-		}
-		return isAdmin;
-	}
+	
 
 	@PostMapping("addRecord")
 	public ResponseMessageBody addRecord(String questionOrderId, String content, Authentication authentication) {
@@ -118,7 +107,7 @@ public class QuestionOrderCtrl {
 			questionRecord.setCommitUser(authentication.getName());
 			questionRecord.setContent(content);
 			questionRecord.setQuestionOrderId(questionOrderId);
-			questionRecord.setUsertype(isAdmin(authentication.getAuthorities()) ? Tools.ONE : Tools.ZORE);
+			questionRecord.setUsertype(AuthorityUtils.isAdmin(authentication.getAuthorities()) ? Tools.ONE : Tools.ZORE);
 			questionRecord.setCreateTime(Tools.currentDate());
 			questionRecord.setId(Tools.uuid());
 
@@ -181,8 +170,7 @@ public class QuestionOrderCtrl {
 				return new ResponseMessageBody("获取订单为空", false);
 			}
 			if (order.getState() == 2) {
-
-				if (!isAdmin(authentication.getAuthorities())) {
+				if (!AuthorityUtils.isAdmin(authentication.getAuthorities())) {
 					return new ResponseMessageBody("非管理员不能受理", false);
 				}
 				order.setAccept(authentication.getName());

@@ -8,6 +8,7 @@ import javax.validation.Valid;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
@@ -21,6 +22,7 @@ import com.github.pagehelper.PageInfo;
 import com.myalice.domain.Users;
 import com.myalice.security.BindingResultUtils;
 import com.myalice.services.UsersService;
+import com.myalice.util.AuthorityUtils;
 import com.myalice.utils.ResponseMessageBody;
 import com.myalice.utils.Tools;
 import com.myalice.utils.ValidGroup;
@@ -35,8 +37,13 @@ public class AdminUserCtrl {
 	UsersService userService;
 
 	@RequestMapping("/list")
-	public String list() {
-		return "redirect:/index.html";
+	public String list(Authentication authentication) {
+		if(null != authentication){
+			if(AuthorityUtils.isAdmin(authentication.getAuthorities())){
+				return  "redirect:/index.html" ;
+			}
+		}
+		return "redirect:/cs-index.html" ;
 	}
 
 	@RequestMapping("/loadUserinfo")

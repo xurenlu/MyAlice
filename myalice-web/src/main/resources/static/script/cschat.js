@@ -18,7 +18,7 @@ $(function(){
 		$("#message").val("");	
 	});
 	
-	$.mypost("/admin/loadUserinfo" , {} , function(data){
+	$.mypost("/pub/loadUserinfo" , {} , function(data){
 		stomp.connect(data.username, data.username, function(frame){
 		    stomp.subscribe("/user/queue/notifications", handleNotification);
 		});
@@ -36,7 +36,7 @@ function appendContent(clazz , date , anwser , name){
 	oddItemHtml = oddItemHtml.replace("\{class\}" , clazz);
 	oddItemHtml = oddItemHtml.replace("\{date\}" , date);
 	oddItemHtml = oddItemHtml.replace("\{content\}" , anwser);
-	oddItemHtml = oddItemHtml.replace("\{name\}" , anwser);
+	oddItemHtml = oddItemHtml.replace("\{name\}" , name); 
 	$("#online_content").append(oddItemHtml);
 	$("#nurse").scrollTop( $("#nurse")[0].scrollHeight ) ; 
 }

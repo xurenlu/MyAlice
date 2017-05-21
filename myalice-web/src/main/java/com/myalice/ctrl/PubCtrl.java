@@ -2,6 +2,7 @@ package com.myalice.ctrl;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.security.Principal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,6 +47,16 @@ public class PubCtrl {
 	@Autowired
 	protected SysDictionariesService dictionariesService;
 
+	
+	@RequestMapping("/loadUserinfo")
+	public Map<String, Object> loadUserinfo(Principal principal) {
+		Map<String, Object> principalMap = new HashMap<>();
+		if(null != principal){
+			principalMap.put("username", principal.getName());
+		}
+		return principalMap;
+	}
+	
 	@RequestMapping("/orderType")
 	public Map<Integer, String> list(String type) {
 		if(StringUtils.isEmpty(type)){
