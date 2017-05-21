@@ -1,4 +1,4 @@
-package org.myalice.websocket;
+package org.myalice.websocket.pool;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -7,6 +7,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import javax.annotation.PostConstruct;
 
+import org.myalice.websocket.Constant;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.WebSocketSession;
@@ -37,7 +38,7 @@ public class CustomerPool {
 		if (customerMap.size() >= customerConnectionLimit) {
 			return false;
 		}
-		session.getAttributes().put(Constant.WS_SESSION_KEY.SESSION_KEY_UNSET_MESSAGES, 
+		session.getAttributes().put(Constant.WS_SESSION_KEY.SESSION_KEY_UNSENT_MESSAGES, 
 				new ArrayBlockingQueue<String>(cunsendLimit));
 		unassignedCustomerQueue.add(session);
 		customerMap.put(session.getId(), session);
@@ -59,6 +60,7 @@ public class CustomerPool {
 			while ((session == null || !session.isOpen()) 
 					&& unassignedCustomerQueue.size() > 0) {
 				session = unassignedCustomerQueue.poll();
+				break;
 			}
 			if (session != null && session.isOpen()) {
 				return session;
@@ -73,5 +75,9 @@ public class CustomerPool {
 		}
 		unassignedCustomerQueue.add(session);
 		return true;
+	}
+	
+	public int size() {
+		return unassignedCustomerQueue.size();
 	}
 }

@@ -106,7 +106,7 @@ public interface TalkRecordMapper {
         "content, from_user_name, type, create_time ",
         "from talk_record",
         "where (from_ip = #{ip,jdbcType=VARCHAR} or to_ip = #{ip,jdbcType=VARCHAR}) ",
-        "order by create_time limit #{limit}"
+        "order by create_time desc limit #{limit}"
     })
     @Results({
         @Result(column="content", property="content", jdbcType=JdbcType.VARCHAR),

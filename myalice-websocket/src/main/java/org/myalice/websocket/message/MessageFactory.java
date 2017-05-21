@@ -11,6 +11,7 @@ import org.myalice.websocket.Constant;
 import org.myalice.websocket.Util;
 import org.myalice.websocket.service.TalkService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
@@ -32,6 +33,10 @@ public class MessageFactory {
 	
 	public static final String MESSAGE_TYPE_TALK_TO_SUPPORTER = "supporter_talk";
 	
+	public static final String MESSAGE_TYPE_IMAGE_TALK_TO_CUSTOMER = "customer_image_talk";
+	
+	public static final String MESSAGE_TYPE_IMAGE_TALK_TO_SUPPORTER = "supporter_image_talk";
+	
 	public static final String MESSAGE_TYPE_ASSIGN_TO_CUSTOMER = "customer_assign";
 	
 	public static final String MESSAGE_TYPE_ASSIGN_TO_SUPPORTER = "supporter_assign";
@@ -40,6 +45,9 @@ public class MessageFactory {
 	
 	@Autowired
 	private TalkService talkService;
+	
+	@Value("${websocket.img.url}")
+	private String imageUrlPrefix;
 	
 	public TextMessage generateMessage(WebSocketSession customerSession, 
 			WebSocketSession supporterSession, String type, String message) throws JsonProcessingException {
@@ -58,6 +66,18 @@ public class MessageFactory {
 					Util.formatMessage(
 							createMessage(generateTalkMessage(customerSession, message), 
 									MESSAGE_TYPE_TALK_TO_SUPPORTER)));
+		} else if (type.equals(MESSAGE_TYPE_IMAGE_TALK_TO_CUSTOMER)) {
+			Map<String, String> contentMap = new HashMap<String, String>();
+			contentMap.put(Message.CONTENT_KEY_TALK_CONTENT, imageUrlPrefix + message);
+			return new TextMessage(
+					Util.formatMessage(
+							createMessage(contentMap, 
+									MESSAGE_TYPE_IMAGE_TALK_TO_CUSTOMER)));
+		} else if (type.equals(MESSAGE_TYPE_IMAGE_TALK_TO_SUPPORTER)) {
+			return new TextMessage(
+					Util.formatMessage(
+							createMessage(generateTalkMessage(customerSession, imageUrlPrefix + message), 
+									MESSAGE_TYPE_IMAGE_TALK_TO_SUPPORTER)));
 		} else if (type.equals(MESSAGE_TYPE_ASSIGN_TO_CUSTOMER)) {
 			return new TextMessage(
 					Util.formatMessage(
@@ -112,17 +132,20 @@ public class MessageFactory {
 		return reValue;
 	}
 	
-	private Map<String, String> generateAssignMessage(WebSocketSession otherSession) {
-		String userName = (String)otherSession.getAttributes().get(Constant.WS_SESSION_KEY.SESSION_KEY_USER_NAME);
+	private Map<String, String> generateAssignMessage(WebSocketSession supporterSession) {
+		String userName = (String)supporterSession.getAttributes().get(Constant.WS_SESSION_KEY.SESSION_KEY_USER_NAME);
 		if (StringUtils.isEmpty(userName)) {
-			userName = otherSession.getId();
+			userName = supporterSession.getId();
 		}
-		String logoUrl =  (String)otherSession.getAttributes().get(Constant.WS_SESSION_KEY.SESSION_KEY_LOGO_URL);
+		String logoUrl =  (String)supporterSession.getAttributes().get(Constant.WS_SESSION_KEY.SESSION_KEY_LOGO_URL);
 		if (StringUtils.isEmpty(logoUrl)) {
 			logoUrl = Constant.USER_LOGO_DEFAULT_ADDRESS;
 		}
+		Message message = new Message();
+		message.setType(MESSAGE_TYPE_ASSIGN_TO_CUSTOMER);
+		
 		Map<String, String> reValue = new HashMap<String, String>();
-		reValue.put(Message.CONTENT_KEY_SESSIONID, otherSession.getId());
+		reValue.put(Message.CONTENT_KEY_SESSIONID, supporterSession.getId());
 		reValue.put(Message.CONTENT_KEY_USERNAME, userName);
 		reValue.put(Message.CONTENT_KEY_USERLOGO, logoUrl);
 		return reValue;
@@ -152,7 +175,11 @@ public class MessageFactory {
 			for (TalkRecord talk : historyTalk) {
 				SimpleTalk item = new SimpleTalk();
 				item.setType(talk.getType());
-				item.setContent(talk.getContent());
+				if (Constant.DOMAIN_TYPE.TALK_TYPE_IMAGE_CUSTOMER_TO_SUPPORTER.equals(talk.getType()) || Constant.DOMAIN_TYPE.TALK_TYPE_IMAGE_SUPPORTER_TO_CUSTOMER.equals(talk.getType())) {
+					item.setContent(imageUrlPrefix + talk.getContent());
+				} else {
+					item.setContent(talk.getContent());
+				}
 				reHistory.add(item);
 			}
 			message.setHistory(reHistory);
@@ -170,7 +197,11 @@ public class MessageFactory {
 			for (TalkRecord talk : historyTalk) {
 				SimpleTalk item = new SimpleTalk();
 				item.setType(talk.getType());
-				item.setContent(talk.getContent());
+				if (Constant.DOMAIN_TYPE.TALK_TYPE_IMAGE_CUSTOMER_TO_SUPPORTER.equals(talk.getType()) || Constant.DOMAIN_TYPE.TALK_TYPE_IMAGE_SUPPORTER_TO_CUSTOMER.equals(talk.getType())) {
+					item.setContent(imageUrlPrefix + talk.getContent());
+				} else {
+					item.setContent(talk.getContent());
+				}
 				reValue.add(item);
 			}
 			Message orgMessage = new Message();

@@ -10,7 +10,7 @@ public class Constant {
 		
 		public static final String SESSION_KEY_SUPPORTER_WORKLOAD = "WS_SUPPORTER_WORKLOAD";
 		
-		public static final String SESSION_KEY_UNSET_MESSAGES = "UNSET_MESSAGES";
+		public static final String SESSION_KEY_UNSENT_MESSAGES = "UNSENT_MESSAGES";
 		
 		//需要外部传入WebSocketSession的参数
 		public static final String SESSION_KEY_USER_NAME = "USER_NAME";
@@ -45,7 +45,15 @@ public class Constant {
 		public static final String TALK_TYPE_CUSTOMER_TO_SUPPORTER = "0";
 		
 		public static final String TALK_TYPE_SUPPORTER_TO_CUSTOMER = "1";
+		
+		public static final String TALK_TYPE_IMAGE_CUSTOMER_TO_SUPPORTER = "2";
+		
+		public static final String TALK_TYPE_IMAGE_SUPPORTER_TO_CUSTOMER = "3";
 	}
 	
-	public static final String USER_LOGO_DEFAULT_ADDRESS = "/images/websocket/defaultUserLogo.png";
+	public static final String USER_LOGO_DEFAULT_ADDRESS = "/img/websocket/defaultUserLogo.png";
+	
+	public static final String IMAGE_UPLOAD_PATH = "/static/upload/";
+	
+	public static final String IMAGE_ACCESS_PATH = "/upload/";
 }

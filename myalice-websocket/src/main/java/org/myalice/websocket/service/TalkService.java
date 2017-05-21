@@ -1,5 +1,6 @@
 package org.myalice.websocket.service;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -109,12 +110,17 @@ public class TalkService {
 			return null;
 		}
 		String userId = Util.getUserId(session);
+		List<TalkRecord> history = null;
 		if (StringUtils.isNotEmpty(userId)) {
-			return this.getHistoryTalkByUserId(userId);
+			history = this.getHistoryTalkByUserId(userId);
+			Collections.reverse(history);
+			return history;
 		} else {
 			String remoteIp = Util.getRemoteIp(session);
 			if (StringUtils.isNotEmpty(remoteIp)) {
-				return this.getHistoryTalkByIp(remoteIp);
+				history = this.getHistoryTalkByIp(remoteIp);
+				Collections.reverse(history);
+				return history;
 			}
 			return null;
 		}
@@ -124,7 +130,8 @@ public class TalkService {
 		if (StringUtils.isEmpty(ip)) {
 			return null;
 		}
-		return talkMapper.selectLastTalkByIp(ip, laskTalkNumberLimit);
+		List<TalkRecord> history = talkMapper.selectLastTalkByIp(ip, laskTalkNumberLimit);
+		return history;
 	}
 	
 	private List<TalkRecord> getHistoryTalkByUserId(String userId) {

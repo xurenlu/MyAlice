@@ -1,11 +1,17 @@
-package org.myalice.websocket;
+package org.myalice.websocket.manager;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 
+import org.apache.commons.lang3.StringUtils;
+import org.myalice.websocket.Constant;
+import org.myalice.websocket.Util;
 import org.myalice.websocket.message.MessageFactory;
+import org.myalice.websocket.pool.CustomerPool;
+import org.myalice.websocket.pool.CustomerWaitingPool;
+import org.myalice.websocket.pool.SupporterPool;
 import org.myalice.websocket.service.TalkService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +36,9 @@ public class AssignManager {
 	@Value("${websocket.customer.unset.limit:100}")
 	private int unsetMessageLimit;
 	
+	@Value("${websocket.assign.limit:10}")
+	private int assignLimit;
+	
 	@Value("${websocket.assign.frequence:1000}")
 	private int assignFrequence;
 	
@@ -37,7 +46,13 @@ public class AssignManager {
 	private CustomerPool customerPool;
 	
 	@Autowired
+	private CustomerWaitingPool customerWaitingPool;
+	
+	@Autowired
 	private SupporterPool supporterPool;
+	
+	@Autowired
+	private SessionMappingManager sessionMappingManager;
 	
 	@Autowired
 	private TalkService talkService;
@@ -50,22 +65,41 @@ public class AssignManager {
 		assignSession();
 	}
 	
-	@Scheduled(fixedRate = 5000)
-	public void saveAssignInfo() {
-		/*WebSocketSession customer = null;
-		WebSocketSession supporter = null;
-		while (assignCustomerInfo.size() > 0 && assignSupporterInfo.size() > 0) {
-			customer = assignCustomerInfo.poll();
-			supporter = assignSupporterInfo.poll();
-			talkService.assign(customer, supporter);
-		}*/
+	@Scheduled(fixedRate = 1000)
+	public void waitTimeArrived() {
+		WebSocketSession customer = customerWaitingPool.getTimeoutElement();
+		while (customer != null && customer.isOpen()) {
+			String supporterSessionId = sessionMappingManager.getLastSupporterHttpSession(Util.getHttpSessionId(customer));
+			WebSocketSession supporter = sessionMappingManager.getLastSupporter(supporterSessionId);
+			if (supporter == null || !supporter.isOpen()) {
+				sessionMappingManager.unassignMapping(Util.getHttpSessionId(customer));
+			}			
+		}
 	}
 	
 	private void assignSession() throws IOException, InterruptedException {
 		try {
+			int count = customerPool.size();
 			WebSocketSession customer = customerPool.getUnassignedCustomer();
-			while (customer != null && customer.isOpen()) {
-				WebSocketSession supporter = supporterPool.getFreeSupporter();
+			while (customer != null && customer.isOpen() && count > 0) {
+				count--;
+				WebSocketSession supporter = null;
+				//判断是否需要连接原客服
+				String lastSupporterHttpSessionId = sessionMappingManager.getLastSupporterHttpSession(Util.getHttpSessionId(customer));
+				if (StringUtils.isNotEmpty(lastSupporterHttpSessionId)) {
+					WebSocketSession lastSupporter = sessionMappingManager.getLastSupporter(lastSupporterHttpSessionId);
+					if (lastSupporter != null && lastSupporter.isOpen()) {
+						supporter = lastSupporter;
+					} else {
+						//判断是否需要等待
+						customerWaitingPool.wait(customer);
+						customerPool.addCustomer(customer);
+						customer = customerPool.getUnassignedCustomer();
+						continue;
+					}
+				} else {
+					supporter = supporterPool.getFreeSupporter();
+				}
 				//在找不到空闲的客服人员时，客户继续等待
 				if (supporter == null) {
 					customerPool.freeCustomer(customer);
@@ -74,6 +108,7 @@ public class AssignManager {
 				
 				//设置客户、客服关联关系
 				setMapping(customer, supporter);
+				sessionMappingManager.assigned(Util.getHttpSessionId(customer), Util.getHttpSessionId(supporter));
 				//发送分配消息
 				sendAssignMessage(customer, supporter);
 				//发送历史信息
@@ -134,7 +169,7 @@ public class AssignManager {
 		}
 		
 		@SuppressWarnings("unchecked")
-		ArrayBlockingQueue<String> unsendMessages = (ArrayBlockingQueue<String>)customerSession.getAttributes().get(Constant.WS_SESSION_KEY.SESSION_KEY_UNSET_MESSAGES);
+		ArrayBlockingQueue<String> unsendMessages = (ArrayBlockingQueue<String>)customerSession.getAttributes().get(Constant.WS_SESSION_KEY.SESSION_KEY_UNSENT_MESSAGES);
 		if (unsendMessages != null && unsendMessages.size() > 0) {
 			for (String message : unsendMessages) {
 				try {

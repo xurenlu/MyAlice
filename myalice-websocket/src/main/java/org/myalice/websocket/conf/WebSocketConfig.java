@@ -1,4 +1,4 @@
-package org.myalice.websocket;
+package org.myalice.websocket.conf;
 
 import org.myalice.websocket.handler.CustomerHandler;
 import org.myalice.websocket.handler.SupporterHandler;
@@ -40,11 +40,11 @@ public class WebSocketConfig implements WebSocketConfigurer {
     }
 	
 	@Bean
-    public ServletServerContainerFactoryBean createWebSocketContainer() {
-        ServletServerContainerFactoryBean container = new ServletServerContainerFactoryBean();
-        container.setMaxTextMessageBufferSize(8192);
-        container.setMaxBinaryMessageBufferSize(8192);
-        container.setMaxSessionIdleTimeout(1000 * 60 * 5);
-        return container;
-    }
+	public ServletServerContainerFactoryBean createServletServerContainerFactoryBean() {
+	    ServletServerContainerFactoryBean container = new ServletServerContainerFactoryBean();
+	    container.setMaxTextMessageBufferSize(1024*1024*3);
+	    container.setMaxBinaryMessageBufferSize(1024*1024*3);
+	    container.setMaxSessionIdleTimeout(1000 * 60 * 3);
+	    return container;
+	}
 }
