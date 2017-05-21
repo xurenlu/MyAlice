@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50629
 File Encoding         : 65001
 
-Date: 2017-04-20 09:04:49
+Date: 2017-05-21 10:20:07
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -57,6 +57,19 @@ CREATE TABLE `evaluation` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
+-- Table structure for faq
+-- ----------------------------
+DROP TABLE IF EXISTS `faq`;
+CREATE TABLE `faq` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `summary` varchar(255) DEFAULT NULL COMMENT '标题',
+  `url` varchar(255) DEFAULT NULL COMMENT '资源地址',
+  `status` char(255) DEFAULT NULL COMMENT '状态（0：正常，1：失效）',
+  `remarks` varchar(255) DEFAULT NULL COMMENT '备注',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+
+-- ----------------------------
 -- Table structure for talk_record
 -- ----------------------------
 DROP TABLE IF EXISTS `talk_record`;
@@ -67,7 +80,7 @@ CREATE TABLE `talk_record` (
   `from_user_name` varchar(32) NOT NULL,
   `to_user_id` varchar(36) DEFAULT NULL,
   `to_user_name` varchar(32) DEFAULT NULL,
-  `type` char(255) NOT NULL COMMENT '用户类型（0：客户，1：客服）',
+  `type` char(255) NOT NULL COMMENT '用户类型（0：客户，1：客服， 2：客户图片，3：客服图片）',
   `create_time` datetime NOT NULL COMMENT '创建时间',
   `connection_id` varchar(36) NOT NULL COMMENT '连接ID',
   `from_ip` varchar(128) NOT NULL,
