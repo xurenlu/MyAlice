@@ -20,7 +20,7 @@ $( function(){
 			return ;
 		}
 		
-		$.mypost("/admin/question/add" , {orderType:questionType , question:question ,
+		$.mypost("/admin/question/add" , {questionType:questionType , question:question ,
 			anwser:answer} , function(json){
 			if(json.suc){
 				window.location="/admin/question/listData.html";
@@ -29,6 +29,7 @@ $( function(){
 			bootbox.alert(json.msg); 
 		},"json")
 	});
+	
 })
 
 function loadOrderType(){
@@ -38,5 +39,21 @@ function loadOrderType(){
 			html+="<option value='"+i+"'>"+json[i]+"</option>";
 		}
 		$("#questionType").html(html); 
+		
+		initUpdate() ;
+	},"json")
+}
+
+
+function initUpdate(){ 
+	var id = $.getParam("id") ;  
+	if(null == id){
+		return ;
+	}
+	$.mypost("/admin/question/load" , {id:id} ,function(data){
+		$("#questionType").val(data.questionType); 
+		$("#question").val(data.title); 
+		$("#answer").val(data.anwser);
+		$("#id").val(data.question_id);
 	},"json")
 }
