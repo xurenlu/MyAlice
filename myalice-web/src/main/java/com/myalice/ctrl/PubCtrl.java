@@ -57,7 +57,7 @@ public class PubCtrl {
 		return principalMap;
 	}
 	
-	@RequestMapping("/orderType")
+	@PostMapping("/orderType")
 	public Map<Integer, String> list(String type) {
 		if(StringUtils.isEmpty(type)){
 			type="orderType" ;
@@ -114,7 +114,7 @@ public class PubCtrl {
 		}
 	}
 
-	@RequestMapping("/orderTypes")
+	@PostMapping("/orderTypes")
 	public Map<String, String> list(String[] dtypes) {
 		Map<String, String> returnResult = new HashMap<>();
 		try {
