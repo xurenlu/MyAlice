@@ -6,6 +6,7 @@
 		<artifactId>myalice</artifactId>
 		<version>1.0</version>
 	</parent>
+	<packaging>war</packaging>
 	<groupId>myalice-web</groupId>
 	<artifactId>myalice-web</artifactId>
 
