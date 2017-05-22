@@ -8,7 +8,6 @@
 	<modules>
 		<module>myalice-web</module>
 		<module>myalice-service</module>
-		<module>myalice-test</module>
 		<module>myalice-websocket</module>
 	</modules>
 
