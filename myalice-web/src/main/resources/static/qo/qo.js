@@ -41,8 +41,12 @@ function loadData(url,param){
 }
 
 function loadDict(callback){
+	var token = Cookies.get("XSRF-TOKEN");
 	$.ajax({url:"/pub/orderTypes" ,
 				traditional:true,
+				headers: {
+			    	"X-XSRF-TOKEN":token 
+			    },type:"POST",
 				dataType:"json" ,
 			data:{dtypes:["orderType","orderState"]}
 	,success:function(json){
