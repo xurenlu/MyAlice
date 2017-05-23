@@ -28,7 +28,7 @@ startPage.getResult() //获取查询结果
 
 ## es 分词插件
 ```
-curl -XPUT 'http://127.0.0.1:1234/myalice?pretty' -d '{
+curl -XPUT 'http://127.0.0.1:19200/myalice?pretty' -d '{
   "settings": {
     "analysis": {
       "analyzer": {
