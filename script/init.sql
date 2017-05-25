@@ -1,6 +1,5 @@
 ﻿
-
-
+set character set utf8 ;
 
 create database if not exists myalice ;
 
