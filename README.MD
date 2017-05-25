@@ -1,11 +1,11 @@
 ## 项目参与人
 
 项目初始成员,排名不分先后:
-杨林林 (github:ylinlin)
-杜国龙  (github:guduey)
-唐亚峰 github:levin950825
-赵巍   github:
-黄飞   github:garyhuang
+杨林林 github:ylinlin <br>
+杜国龙  github:guduey <br>
+唐亚峰 github:levin950825 <br>
+赵巍   github:radarxn <br>
+黄飞   github:garyhuang <br>
 
 ## PageHelper mybatis 分页插件
 ```
