@@ -1,6 +1,6 @@
 ## 项目参与人
 
-项目初始成员,排名不分先后:
+项目初始成员,排名不分先后:<br>
 杨林林 github:ylinlin <br>
 杜国龙  github:guduey <br>
 唐亚峰 github:levin950825 <br>
