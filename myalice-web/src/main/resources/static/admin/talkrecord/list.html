@@ -34,10 +34,10 @@
 				</div>
 			 </div>
 			 <div class="form-group col-md-3 col-sm-3" >
-			   <label class="col-sm-3" style="padding-right:0px;width:20%;">是否自动回复：</label> 
+			   <label class="col-sm-3" style="padding-right:0px;width:20%;">是否回复问题：</label> 
      	  		<div class="col-sm-8" style="margin-left:0px">
 				    <select name="replyType" id="replyType">
-				    	<option value="">请选择</option>
+				    	<option value="">请选择</option> 
 				    	<option value="1">已回复</option>
 				    	<option value="0">未回复</option>
 				    </select>
@@ -56,15 +56,10 @@
                 <th data-field="content" class="td_wd" >提问内容</th>
                 <th data-field="createTime"  >创建时间</th>
                 <th data-field="reply" class="td_wd" >回复内容</th>
-                <th data-field="replyType"  fun="{1:'已回复' , 0:'未回复'}">用户类型</th>
+                <th data-field="replyType"  fun="{1:'已回复' , 0:'未回复'}">回复状态</th>
               </tr>
               <tbody class="data"></tbody>
-              <tr>
-              	<td colspan="8">
-              		<button type="button" onclick="enableUser(1)" class="btn btn-info">启用</button>
-              		<button type="button" onclick="enableUser(0)" class="btn btn-info">禁用</button> 
-              	</td>
-              </tr>
+              
             </table>
             <div id="pageToolbar"></div>
           </div>
