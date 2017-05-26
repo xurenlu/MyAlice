@@ -1,12 +1,28 @@
-﻿
+-- MySQL dump 10.13  Distrib 5.6.36, for linux-glibc2.5 (x86_64)
+--
+-- Host: localhost    Database: myalice
+-- ------------------------------------------------------
+-- Server version	5.6.36
 set character set utf8 ;
-
-create database if not exists myalice ;
-
-use myalice ;
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8 */;
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+create database myalice ;
+use myalice;
+--
+-- Table structure for table `assign_record`
+--
 
 DROP TABLE IF EXISTS `assign_record`;
-
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `assign_record` (
   `id` varchar(36) DEFAULT NULL COMMENT '主键',
   `customer_id` varchar(36) DEFAULT NULL COMMENT '客户ID',
@@ -15,30 +31,49 @@ CREATE TABLE `assign_record` (
   `supporter_conn_id` varchar(36) DEFAULT NULL COMMENT '客服连接ID',
   `assign_time` datetime DEFAULT NULL COMMENT '分配时间'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
-/*Data for the table `assign_record` */
+--
+-- Dumping data for table `assign_record`
+--
 
-/*Table structure for table `authorities` */
+LOCK TABLES `assign_record` WRITE;
+/*!40000 ALTER TABLE `assign_record` DISABLE KEYS */;
+/*!40000 ALTER TABLE `assign_record` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `authorities`
+--
 
 DROP TABLE IF EXISTS `authorities`;
-
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `authorities` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `username` varchar(20) NOT NULL,
   `authority` varchar(50) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
-/*Data for the table `authorities` */
+--
+-- Dumping data for table `authorities`
+--
 
-insert  into `authorities`(`id`,`username`,`authority`) values (5,'admin','manager');
-insert  into `authorities`(`id`,`username`,`authority`) values (6,'admin','op_createuser');
-insert  into `authorities`(`id`,`username`,`authority`) values (7,'admin','admin');
+LOCK TABLES `authorities` WRITE;
+/*!40000 ALTER TABLE `authorities` DISABLE KEYS */;
+INSERT INTO `authorities` VALUES (5,'admin','manager'),(6,'admin','op_createuser'),(7,'admin','admin');
+/*!40000 ALTER TABLE `authorities` ENABLE KEYS */;
+UNLOCK TABLES;
 
-/*Table structure for table `connection_record` */
+--
+-- Table structure for table `connection_record`
+--
 
 DROP TABLE IF EXISTS `connection_record`;
-
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `connection_record` (
   `id` varchar(36) NOT NULL COMMENT '主键',
   `client_address` varchar(128) NOT NULL COMMENT '客户端地址',
@@ -50,17 +85,25 @@ CREATE TABLE `connection_record` (
   `close_time` datetime DEFAULT NULL COMMENT '关闭时间',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
-/*Data for the table `connection_record` */
+--
+-- Dumping data for table `connection_record`
+--
 
-insert  into `connection_record`(`id`,`client_address`,`server_address`,`type`,`status`,`user_id`,`open_time`,`close_time`) values ('31F573E1AC634045B6D063F21C5B55E6','0:0:0:0:0:0:0:1','0:0:0:0:0:0:0:1','1','1',NULL,'2017-05-08 16:37:54','2017-05-08 16:38:36');
-insert  into `connection_record`(`id`,`client_address`,`server_address`,`type`,`status`,`user_id`,`open_time`,`close_time`) values ('4433CA76213AE83DD9D6C6EAAC3B2D18','0:0:0:0:0:0:0:1','0:0:0:0:0:0:0:1','1','0',NULL,'2017-05-08 16:38:38',NULL);
-insert  into `connection_record`(`id`,`client_address`,`server_address`,`type`,`status`,`user_id`,`open_time`,`close_time`) values ('50A83586998A30FBD9332D0FE8B9A0BC','0:0:0:0:0:0:0:1','0:0:0:0:0:0:0:1','1','1',NULL,'2017-05-08 16:37:55','2017-05-08 16:39:10');
+LOCK TABLES `connection_record` WRITE;
+/*!40000 ALTER TABLE `connection_record` DISABLE KEYS */;
+INSERT INTO `connection_record` VALUES ('31F573E1AC634045B6D063F21C5B55E6','0:0:0:0:0:0:0:1','0:0:0:0:0:0:0:1','1','1',NULL,'2017-05-08 16:37:54','2017-05-08 16:38:36'),('4433CA76213AE83DD9D6C6EAAC3B2D18','0:0:0:0:0:0:0:1','0:0:0:0:0:0:0:1','1','0',NULL,'2017-05-08 16:38:38',NULL),('50A83586998A30FBD9332D0FE8B9A0BC','0:0:0:0:0:0:0:1','0:0:0:0:0:0:0:1','1','1',NULL,'2017-05-08 16:37:55','2017-05-08 16:39:10');
+/*!40000 ALTER TABLE `connection_record` ENABLE KEYS */;
+UNLOCK TABLES;
 
-/*Table structure for table `evaluation` */
+--
+-- Table structure for table `evaluation`
+--
 
 DROP TABLE IF EXISTS `evaluation`;
-
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `evaluation` (
   `id` varchar(36) DEFAULT NULL COMMENT '主键',
   `customer_id` varchar(36) DEFAULT NULL COMMENT '客户ID',
@@ -68,13 +111,24 @@ CREATE TABLE `evaluation` (
   `score` int(1) DEFAULT NULL COMMENT '分数',
   `create_time` datetime DEFAULT NULL COMMENT '创建时间'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
-/*Data for the table `evaluation` */
+--
+-- Dumping data for table `evaluation`
+--
 
-/*Table structure for table `persistent_logins` */
+LOCK TABLES `evaluation` WRITE;
+/*!40000 ALTER TABLE `evaluation` DISABLE KEYS */;
+/*!40000 ALTER TABLE `evaluation` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `persistent_logins`
+--
 
 DROP TABLE IF EXISTS `persistent_logins`;
-
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `persistent_logins` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `username` varchar(50) DEFAULT '' COMMENT '用户名',
@@ -84,17 +138,25 @@ CREATE TABLE `persistent_logins` (
   KEY `id` (`id`),
   KEY `series` (`series`)
 ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
-/*Data for the table `persistent_logins` */
+--
+-- Dumping data for table `persistent_logins`
+--
 
-insert  into `persistent_logins`(`id`,`username`,`series`,`token`,`last_used`) values (2,'admin2','Xq7MNv2JWg/1/t4Q2irznw==','NXjcqBVYEHfNQoQmy3INtw==','2017-03-22 13:59:26');
-insert  into `persistent_logins`(`id`,`username`,`series`,`token`,`last_used`) values (3,'admin2','W5mmwWakwEYTffUVFHfTKg==','UuXpZ4xzILO/VSaq+pH28w==','2017-03-22 14:04:51');
-insert  into `persistent_logins`(`id`,`username`,`series`,`token`,`last_used`) values (4,'admin2','qB1Tkyy9WVo4AcRLo5bnmQ==','d5dCjQ+Wj3r2A8FUuWOXyA==','2017-03-22 14:10:00');
+LOCK TABLES `persistent_logins` WRITE;
+/*!40000 ALTER TABLE `persistent_logins` DISABLE KEYS */;
+INSERT INTO `persistent_logins` VALUES (2,'admin2','Xq7MNv2JWg/1/t4Q2irznw==','NXjcqBVYEHfNQoQmy3INtw==','2017-03-22 13:59:26'),(3,'admin2','W5mmwWakwEYTffUVFHfTKg==','UuXpZ4xzILO/VSaq+pH28w==','2017-03-22 14:04:51'),(4,'admin2','qB1Tkyy9WVo4AcRLo5bnmQ==','d5dCjQ+Wj3r2A8FUuWOXyA==','2017-03-22 14:10:00');
+/*!40000 ALTER TABLE `persistent_logins` ENABLE KEYS */;
+UNLOCK TABLES;
 
-/*Table structure for table `question_order` */
+--
+-- Table structure for table `question_order`
+--
 
 DROP TABLE IF EXISTS `question_order`;
-
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `question_order` (
   `id` varchar(32) NOT NULL COMMENT '主键（UUID）',
   `create_time` datetime DEFAULT NULL COMMENT '创建日起',
@@ -109,15 +171,25 @@ CREATE TABLE `question_order` (
   PRIMARY KEY (`id`),
   KEY `create_user` (`create_user`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='工单表';
+/*!40101 SET character_set_client = @saved_cs_client */;
 
-/*Data for the table `question_order` */
+--
+-- Dumping data for table `question_order`
+--
 
-insert  into `question_order`(`id`,`create_time`,`create_user`,`solved_time`,`state`,`question_type`,`question_summary`,`question_content`,`email`,`accept`) values ('ff31496635b54d65aed5e6824862ce96','2017-05-09 09:42:29','hf',NULL,2,1,'','ces ','ca',NULL);
+LOCK TABLES `question_order` WRITE;
+/*!40000 ALTER TABLE `question_order` DISABLE KEYS */;
+INSERT INTO `question_order` VALUES ('ff31496635b54d65aed5e6824862ce96','2017-05-09 09:42:29','hf',NULL,2,1,'','ces ','ca',NULL);
+/*!40000 ALTER TABLE `question_order` ENABLE KEYS */;
+UNLOCK TABLES;
 
-/*Table structure for table `question_order_attachment` */
+--
+-- Table structure for table `question_order_attachment`
+--
 
 DROP TABLE IF EXISTS `question_order_attachment`;
-
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `question_order_attachment` (
   `id` varchar(32) NOT NULL COMMENT 'id',
   `question_order_id` varchar(32) DEFAULT NULL COMMENT '问题工单ID',
@@ -127,17 +199,25 @@ CREATE TABLE `question_order_attachment` (
   PRIMARY KEY (`id`),
   KEY `question_order_id` (`question_order_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='工单附件';
+/*!40101 SET character_set_client = @saved_cs_client */;
 
-/*Data for the table `question_order_attachment` */
+--
+-- Dumping data for table `question_order_attachment`
+--
 
-insert  into `question_order_attachment`(`id`,`question_order_id`,`create_time`,`status`,`url`) values ('60274aa638d648a892a6894d2598a1c1','ff31496635b54d65aed5e6824862ce96','2017-05-09 09:42:30',1,'201705/f695c71100774a40a04029a685b70be1.jpg');
-insert  into `question_order_attachment`(`id`,`question_order_id`,`create_time`,`status`,`url`) values ('6d526fb65e774ee091414a7e3348f151','ff31496635b54d65aed5e6824862ce96','2017-05-09 09:42:30',1,'201705/94d2e05caf70444c985195199b584450.jpg');
-insert  into `question_order_attachment`(`id`,`question_order_id`,`create_time`,`status`,`url`) values ('bcbe829059274181879033a7571fbd9c','ff31496635b54d65aed5e6824862ce96','2017-05-09 09:42:30',1,'201705/a5b95df1add74e3ab26ecbe6cb8b41c6.jpg');
+LOCK TABLES `question_order_attachment` WRITE;
+/*!40000 ALTER TABLE `question_order_attachment` DISABLE KEYS */;
+INSERT INTO `question_order_attachment` VALUES ('60274aa638d648a892a6894d2598a1c1','ff31496635b54d65aed5e6824862ce96','2017-05-09 09:42:30',1,'201705/f695c71100774a40a04029a685b70be1.jpg'),('6d526fb65e774ee091414a7e3348f151','ff31496635b54d65aed5e6824862ce96','2017-05-09 09:42:30',1,'201705/94d2e05caf70444c985195199b584450.jpg'),('bcbe829059274181879033a7571fbd9c','ff31496635b54d65aed5e6824862ce96','2017-05-09 09:42:30',1,'201705/a5b95df1add74e3ab26ecbe6cb8b41c6.jpg');
+/*!40000 ALTER TABLE `question_order_attachment` ENABLE KEYS */;
+UNLOCK TABLES;
 
-/*Table structure for table `question_record` */
+--
+-- Table structure for table `question_record`
+--
 
 DROP TABLE IF EXISTS `question_record`;
-
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `question_record` (
   `id` varchar(32) NOT NULL COMMENT 'id',
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
@@ -147,16 +227,26 @@ CREATE TABLE `question_record` (
   `question_order_id` varchar(32) DEFAULT NULL COMMENT '工单id',
   PRIMARY KEY (`id`),
   KEY `commit_user` (`commit_user`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='工单' ;    
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='工单';
+/*!40101 SET character_set_client = @saved_cs_client */;
 
-/*Data for the table `question_record` */
+--
+-- Dumping data for table `question_record`
+--
 
-insert  into `question_record`(`id`,`create_time`,`content`,`commit_user`,`userType`,`question_order_id`) values ('06cffd26cc4f4b618e26f894f270ac21','2017-05-09 09:54:26','fdsa','hf',0,'ff31496635b54d65aed5e6824862ce96');
+LOCK TABLES `question_record` WRITE;
+/*!40000 ALTER TABLE `question_record` DISABLE KEYS */;
+INSERT INTO `question_record` VALUES ('06cffd26cc4f4b618e26f894f270ac21','2017-05-09 09:54:26','fdsa','hf',0,'ff31496635b54d65aed5e6824862ce96');
+/*!40000 ALTER TABLE `question_record` ENABLE KEYS */;
+UNLOCK TABLES;
 
-/*Table structure for table `sys_dictionaries` */
+--
+-- Table structure for table `sys_dictionaries`
+--
 
 DROP TABLE IF EXISTS `sys_dictionaries`;
-
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `sys_dictionaries` (
   `id` varchar(32) NOT NULL COMMENT 'id',
   `tname` varchar(50) DEFAULT '' COMMENT '类型',
@@ -166,19 +256,25 @@ CREATE TABLE `sys_dictionaries` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `dtype` (`dtype`,`tindex`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
-/*Data for the table `sys_dictionaries` */
+--
+-- Dumping data for table `sys_dictionaries`
+--
 
-insert  into `sys_dictionaries`(`id`,`tname`,`createTime`,`dtype`,`tindex`) values ('1','咨询类','2017-04-24 15:29:48','orderType',1);
-insert  into `sys_dictionaries`(`id`,`tname`,`createTime`,`dtype`,`tindex`) values ('2','其他类','2017-04-24 15:31:33','orderType',2);
-insert  into `sys_dictionaries`(`id`,`tname`,`createTime`,`dtype`,`tindex`) values ('3','待受理','2017-04-24 16:17:51','orderState',1);
-insert  into `sys_dictionaries`(`id`,`tname`,`createTime`,`dtype`,`tindex`) values ('4','已受理','2017-04-24 16:15:34','orderState',2);
-insert  into `sys_dictionaries`(`id`,`tname`,`createTime`,`dtype`,`tindex`) values ('5','已确认','2017-04-24 16:17:29','orderState',3);
+LOCK TABLES `sys_dictionaries` WRITE;
+/*!40000 ALTER TABLE `sys_dictionaries` DISABLE KEYS */;
+INSERT INTO `sys_dictionaries` VALUES ('1','咨询类','2017-04-24 15:29:48','orderType',1),('2','其他类','2017-04-24 15:31:33','orderType',2),('3','待受理','2017-04-24 16:17:51','orderState',1),('4','已受理','2017-04-24 16:15:34','orderState',2),('5','已确认','2017-04-24 16:17:29','orderState',3);
+/*!40000 ALTER TABLE `sys_dictionaries` ENABLE KEYS */;
+UNLOCK TABLES;
 
-/*Table structure for table `talk_record` */
+--
+-- Table structure for table `talk_record`
+--
 
 DROP TABLE IF EXISTS `talk_record`;
-
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `talk_record` (
   `id` varchar(36) NOT NULL COMMENT '主键',
   `content` varchar(500) NOT NULL COMMENT '提问内容',
@@ -189,14 +285,25 @@ CREATE TABLE `talk_record` (
   `reply` varchar(500) DEFAULT NULL COMMENT '回复内容',
   `replyType` tinyint(2) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='沟通记录' ; 
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='沟通记录';
+/*!40101 SET character_set_client = @saved_cs_client */;
 
-/*Data for the table `talk_record` */
+--
+-- Dumping data for table `talk_record`
+--
 
-/*Table structure for table `users` */
+LOCK TABLES `talk_record` WRITE;
+/*!40000 ALTER TABLE `talk_record` DISABLE KEYS */;
+/*!40000 ALTER TABLE `talk_record` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `users`
+--
 
 DROP TABLE IF EXISTS `users`;
-
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `users` (
   `id` varchar(32) NOT NULL,
   `username` varchar(32) DEFAULT NULL COMMENT '用户名',
@@ -212,11 +319,29 @@ CREATE TABLE `users` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `user_name` (`username`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
-insert  into `users`(`id`,`username`,`password`,`name`,`email`,`mobile_phone`,`create_time`,`remarks`,`user_type`,`portrait_url`,`enabled`) values ('f985db77928b412e9f307547f0b1df56','admin','admin','admin1','admin1','','2017-05-05 14:47:24','','1','',1);
+--
+-- Dumping data for table `users`
+--
 
+LOCK TABLES `users` WRITE;
+/*!40000 ALTER TABLE `users` DISABLE KEYS */;
+INSERT INTO `users` VALUES ('f985db77928b412e9f307547f0b1df56','admin','admin','admin1','admin1','','2017-05-05 14:47:24','','1','',1);
+/*!40000 ALTER TABLE `users` ENABLE KEYS */;
+UNLOCK TABLES;
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+
+-- Dump completed on 2017-05-26  2:50:15
 use mysql ;
 delete from user where host != '127.0.0.1' ; 
 update user set password=password('123456'),host='%' ; 
-flush privileges ;
+flush privileges ; 
