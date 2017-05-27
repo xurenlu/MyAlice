@@ -57,7 +57,7 @@ tar -xvf /usr/local/src/myalice.tar.gz -C /usr/local/apps/
 cd /usr/local/apps/MyAlice
 mvn package -DskipTests -Djar
 
-java -jar myalice-web/target/myalice-web-1.0.jar
+nohup java -jar myalice-web/target/myalice-web-1.0.jar > myalice.out 2>&1 &
 
 
 
