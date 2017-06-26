@@ -7,7 +7,8 @@ import java.util.Vector;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.math.NumberUtils;
-import org.elasticsearch.action.admin.indices.analyze.AnalyzeResponse;
+import org.elasticsearch.action.admin.indices.analyze.AnalyzeAction;
+import org.elasticsearch.action.admin.indices.analyze.AnalyzeRequestBuilder;
 import org.elasticsearch.action.admin.indices.analyze.AnalyzeResponse.AnalyzeToken;
 import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.get.GetResponse;
@@ -15,6 +16,7 @@ import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
+import org.elasticsearch.client.IndicesAdminClient;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.rest.RestStatus;
@@ -47,11 +49,13 @@ public class ElasticsearchService implements IElasticsearch {
 	public List<AnalyzeToken> ik(String text) {
 		try {
 			TransportClient client = elasticsearchProporties.createTransportClient();
-
-			AnalyzeResponse response = client.admin().indices().prepareAnalyze(text).setAnalyzer("ik").execute()
-					.actionGet();
-			List<AnalyzeToken> tokens = response.getTokens();
-
+			IndicesAdminClient indices = client.admin().indices() ;
+			AnalyzeRequestBuilder requestBuilder = new AnalyzeRequestBuilder(indices,AnalyzeAction.INSTANCE, index, text) ;
+			
+			requestBuilder.setAnalyzer("ik_smart");
+			
+			List<AnalyzeToken> tokens = requestBuilder.execute().actionGet().getTokens();
+			System.out.println(tokens.size());
 			return tokens;
 		} catch (Exception e) {
 			throw new RuntimeException(e.getMessage());
@@ -66,7 +70,9 @@ public class ElasticsearchService implements IElasticsearch {
 			int sameInt = 0;
 			for (AnalyzeToken titleToken : titleTokens) {
 				for (AnalyzeToken textToken : textTokens) {
-					if (MyAliceUtils.toString(textToken.getTerm()).equals(titleToken.getTerm())) {
+					if (MyAliceUtils.toString( titleToken.getTerm()).equalsIgnoreCase(textToken.getTerm())) {
+						sameInt++;
+					}else if (MyAliceUtils.toString(titleToken.getTerm()).indexOf(textToken.getTerm()) > -1){
 						sameInt++;
 					}
 				}
@@ -85,7 +91,6 @@ public class ElasticsearchService implements IElasticsearch {
 			}
 			return 1;
 		});
-
 		return datas;
 	}
 

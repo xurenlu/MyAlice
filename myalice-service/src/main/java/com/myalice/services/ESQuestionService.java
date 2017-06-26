@@ -19,6 +19,7 @@ public class ESQuestionService {
 	protected ElasticsearchService questionEsService;
 	protected ElasticsearchService anwserEsService;
 
+
 	public ESQuestionService(ElasticsearchProporties elasticsearchProporties) {
 		questionEsService = new ElasticsearchService("myalice", "question");
 		questionEsService.setElasticsearchProporties(elasticsearchProporties);
@@ -73,8 +74,7 @@ public class ESQuestionService {
 		List<Map<String, Object>> datas = questionEsService.queryList(QueryBuilders.boolQuery().must(QueryBuilders.matchQuery("title", question))
 				.must(QueryBuilders.matchPhraseQuery("state", 1))) ; 
 		if(!CollectionUtils.isEmpty(datas)){
-			
-			
+			questionEsService.sort(datas, question) ; 
 			Map<String, Object> data = datas.get( 0 ) ;
 			String id = MyAliceUtils.toString(data.get("id"));
 			List<Map<String, Object>> answers = queryAnswer(QueryBuilders.boolQuery().must(QueryBuilders.matchQuery("question_id", id))); 
@@ -84,4 +84,10 @@ public class ESQuestionService {
 		}
 		return null ;
 	}
+	
+
+	public ElasticsearchService getQuestionEsService() {
+		return questionEsService;
+	}
+
 }

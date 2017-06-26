@@ -102,4 +102,9 @@ public class SpringMvcTestCase {
 		System.out.println("-------------");
 	}
 	
+	
+	@Test
+	public void testIK()throws Exception{
+		
+	}
 }
