@@ -24,6 +24,8 @@
 	</properties>
 
 	<dependencies>
+		
+		
 		<dependency>
 			<groupId>org.codelibs.elasticsearch.module</groupId>
 			<artifactId>transport-netty3</artifactId>

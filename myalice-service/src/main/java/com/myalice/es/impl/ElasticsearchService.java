@@ -5,6 +5,8 @@ import java.util.Map;
 import java.util.Vector;
 import java.util.stream.Stream;
 
+import org.elasticsearch.action.admin.indices.analyze.AnalyzeResponse;
+import org.elasticsearch.action.admin.indices.analyze.AnalyzeResponse.AnalyzeToken;
 import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexResponse;
@@ -38,6 +40,20 @@ public class ElasticsearchService implements IElasticsearch {
 	public ElasticsearchService(String index, String type) {
 		this.index = index;
 		this.type = type;
+	}
+
+	public List<AnalyzeToken>  ik(String text) {
+		try {
+			TransportClient client = elasticsearchProporties.createTransportClient();
+
+			AnalyzeResponse response = client.admin().indices().prepareAnalyze(text).setAnalyzer("ik").execute()
+					.actionGet();
+			List<AnalyzeToken> tokens = response.getTokens(); 
+			
+			return tokens; 
+		} catch (Exception e) {
+			throw new RuntimeException( e.getMessage() ) ;
+		}
 	}
 
 	@Override
@@ -82,9 +98,10 @@ public class ElasticsearchService implements IElasticsearch {
 	@Override
 	public void query(ElasticsearchData searchData) {
 		TransportClient client = elasticsearchProporties.createTransportClient();
-		
-		SearchRequestBuilder requestBuilder = client.prepareSearch(index).setTypes(type).setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
-				.setFrom(searchData.getFrom()).setSize(searchData.getSize());
+
+		SearchRequestBuilder requestBuilder = client.prepareSearch(index).setTypes(type)
+				.setSearchType(SearchType.DFS_QUERY_THEN_FETCH).setFrom(searchData.getFrom())
+				.setSize(searchData.getSize());
 		if (null != searchData.getBuilder()) {
 			requestBuilder.setQuery(searchData.getBuilder());
 		}
@@ -99,12 +116,13 @@ public class ElasticsearchService implements IElasticsearch {
 		}
 		searchData.setDocs(docs);
 	}
-	
+
 	@Override
 	public List<Map<String, Object>> queryList(QueryBuilder builder) {
-		TransportClient client = elasticsearchProporties.createTransportClient(); 
-		SearchRequestBuilder requestBuilder = client.prepareSearch(index).setTypes(type).setFrom(0).setSize(5).setSearchType(SearchType.DFS_QUERY_THEN_FETCH) ;
-		requestBuilder.setQuery(builder) ;
+		TransportClient client = elasticsearchProporties.createTransportClient();
+		SearchRequestBuilder requestBuilder = client.prepareSearch(index).setTypes(type).setFrom(0).setSize(5)
+				.setSearchType(SearchType.DFS_QUERY_THEN_FETCH);
+		requestBuilder.setQuery(builder);
 		SearchResponse response = requestBuilder.execute().actionGet();
 		SearchHits hits = response.getHits();
 		List<Map<String, Object>> docs = new Vector<>();
@@ -113,7 +131,7 @@ public class ElasticsearchService implements IElasticsearch {
 			source.put("id", hit.getId());
 			docs.add(source);
 		}
-		return docs ;
+		return docs;
 	}
 
 	public String getIndex() {

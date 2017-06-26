@@ -26,6 +26,7 @@ public class ESQuestionService {
 		anwserEsService = new ElasticsearchService("myalice", "anwser");
 		anwserEsService.setElasticsearchProporties(elasticsearchProporties);
 	}
+	
 
 	public void addQuestion(Map<String, Object> question, Map<String, Object> anwser) {
 		questionEsService.add(question);
