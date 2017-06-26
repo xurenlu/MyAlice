@@ -52,7 +52,7 @@ public class ElasticsearchService implements IElasticsearch {
 			IndicesAdminClient indices = client.admin().indices() ;
 			AnalyzeRequestBuilder requestBuilder = new AnalyzeRequestBuilder(indices,AnalyzeAction.INSTANCE, index, text) ;
 			
-			requestBuilder.setAnalyzer("ik_smart");
+			requestBuilder.setAnalyzer("ik_max_word"); 
 			
 			List<AnalyzeToken> tokens = requestBuilder.execute().actionGet().getTokens();
 			System.out.println(tokens.size());
