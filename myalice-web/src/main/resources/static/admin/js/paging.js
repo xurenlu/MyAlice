@@ -433,7 +433,9 @@ function mkdirControl(td , value , dataField){
 			html+="<button onclick='"+data['fun']+"(\""+value+"\")' class=\"btn btn-default\" type='button'>" + data['text'] + "</button>" ; 
 		}
 	}else{
-		html= value ;
+		value = value.replace(new RegExp("<","gm") , "&lt;") ;
+		value = value.replace(new RegExp(">","gm") , "&gt;") ; 
+		html = value ;
 	} 
 	return html;
 }
