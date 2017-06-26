@@ -92,6 +92,7 @@ public class PubCtrl {
 			
 			Object verifyCodeObj = request.getSession().getAttribute("VerifyCode");
 			String verifyCode = null==verifyCodeObj?"":verifyCodeObj.toString() ;
+			System.out.println(verifyCode + "--->" + code);
 			if(!verifyCode.equalsIgnoreCase(code)){
 				return new ResponseMessageBody("验证码输入不正确" , false);
 			}
