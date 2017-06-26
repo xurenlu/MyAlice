@@ -1,10 +1,12 @@
 package com.myalice.es.impl;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 import java.util.stream.Stream;
 
+import org.apache.commons.lang3.math.NumberUtils;
 import org.elasticsearch.action.admin.indices.analyze.AnalyzeResponse;
 import org.elasticsearch.action.admin.indices.analyze.AnalyzeResponse.AnalyzeToken;
 import org.elasticsearch.action.delete.DeleteResponse;
@@ -42,18 +44,49 @@ public class ElasticsearchService implements IElasticsearch {
 		this.type = type;
 	}
 
-	public List<AnalyzeToken>  ik(String text) {
+	public List<AnalyzeToken> ik(String text) {
 		try {
 			TransportClient client = elasticsearchProporties.createTransportClient();
 
 			AnalyzeResponse response = client.admin().indices().prepareAnalyze(text).setAnalyzer("ik").execute()
 					.actionGet();
-			List<AnalyzeToken> tokens = response.getTokens(); 
-			
-			return tokens; 
+			List<AnalyzeToken> tokens = response.getTokens();
+
+			return tokens;
 		} catch (Exception e) {
-			throw new RuntimeException( e.getMessage() ) ;
+			throw new RuntimeException(e.getMessage());
 		}
+	}
+
+	public List<Map<String, Object>> sort(List<Map<String, Object>> datas, String text) {
+		List<AnalyzeToken> textTokens = ik(text);
+		for (Map<String, Object> data : datas) {
+			String title = MyAliceUtils.toString(data.get("title"));
+			List<AnalyzeToken> titleTokens = ik(title);
+			int sameInt = 0;
+			for (AnalyzeToken titleToken : titleTokens) {
+				for (AnalyzeToken textToken : textTokens) {
+					if (MyAliceUtils.toString(textToken.getTerm()).equals(titleToken.getTerm())) {
+						sameInt++;
+					}
+				}
+			}
+			data.put("tokenSameCount", sameInt);
+		}
+
+		Collections.sort(datas, (v1, v2) -> {
+			int tokenSameCount1 = NumberUtils.toInt(MyAliceUtils.toString(v1.get("tokenSameCount")));
+			int tokenSameCount2 = NumberUtils.toInt(MyAliceUtils.toString(v2.get("tokenSameCount")));
+			if (tokenSameCount1 == tokenSameCount2) {
+				return 0;
+			}
+			if (tokenSameCount1 > tokenSameCount2) {
+				return -1;
+			}
+			return 1;
+		});
+
+		return datas;
 	}
 
 	@Override

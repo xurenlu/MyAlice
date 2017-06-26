@@ -73,6 +73,8 @@ public class ESQuestionService {
 		List<Map<String, Object>> datas = questionEsService.queryList(QueryBuilders.boolQuery().must(QueryBuilders.matchQuery("title", question))
 				.must(QueryBuilders.matchPhraseQuery("state", 1))) ; 
 		if(!CollectionUtils.isEmpty(datas)){
+			
+			
 			Map<String, Object> data = datas.get( 0 ) ;
 			String id = MyAliceUtils.toString(data.get("id"));
 			List<Map<String, Object>> answers = queryAnswer(QueryBuilders.boolQuery().must(QueryBuilders.matchQuery("question_id", id))); 
