@@ -44,7 +44,7 @@ public class AdminQuestionCtrl {
 	public CoolQResponse pull(HttpServletRequest request,@RequestBody CoolQMessage cqMessage) {
 		CoolQResponse response = new CoolQResponse();
 		TalkRecord record = new TalkRecord();
-		String message = cqMessage.getMessage().substring(cqMessage.getMessage().indexOf("]"));
+		String message = cqMessage.getMessage().substring(cqMessage.getMessage().indexOf("]") + 1); 
 		try {
 			Map<String, Object> answer = esQuestionService.searchAnswer(message);
 			CoolQMessageType messageType = CoolQMessageType.getCoolQMessageType(cqMessage.getMessage_type());
