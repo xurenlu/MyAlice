@@ -130,7 +130,7 @@ public class AdminQuestionCtrl {
 		anwserMap.put("create_time", Tools.currentDate()); 
 		anwserMap.put("source", 0 ) ;
 		esQuestionService.addQuestion(questionMap, anwserMap) ;
-		return new ResponseMessageBody("删除成功", true);
+		return new ResponseMessageBody("保存成功", true);
 	}
 	
 	@PostMapping("load")

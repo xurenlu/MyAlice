@@ -7,6 +7,7 @@ import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import com.myalice.config.ElasticsearchProporties;
 import com.myalice.domain.ElasticsearchData;
@@ -30,6 +31,17 @@ public class ESQuestionService {
 	
 
 	public void addQuestion(Map<String, Object> question, Map<String, Object> anwser) {
+		
+		String id = MyAliceUtils.toString(question.get("id")) ;
+		
+		if(!StringUtils.isEmpty(id)){
+			List<Map<String, Object>> queryAnswer = queryAnswer( QueryBuilders.matchQuery("question_id", id) ) ;
+			queryAnswer.forEach(v->{
+				String answerId = MyAliceUtils.toString(v.get("id")) ;
+				anwserEsService.remove(  answerId );
+			}) ;
+		}
+		
 		questionEsService.add(question);
 		anwser.put("question_id", question.get("id"));
 		anwserEsService.add(anwser);
