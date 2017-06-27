@@ -7,6 +7,7 @@ import java.util.Vector;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.math.NumberUtils;
+import org.apache.commons.lang3.time.DateFormatUtils;
 import org.elasticsearch.action.admin.indices.analyze.AnalyzeAction;
 import org.elasticsearch.action.admin.indices.analyze.AnalyzeRequestBuilder;
 import org.elasticsearch.action.admin.indices.analyze.AnalyzeResponse.AnalyzeToken;
@@ -22,6 +23,7 @@ import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.rest.RestStatus;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
+import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.util.StringUtils;
 
 import com.myalice.config.ElasticsearchProporties;
@@ -140,6 +142,7 @@ public class ElasticsearchService implements IElasticsearch {
 		SearchRequestBuilder requestBuilder = client.prepareSearch(index).setTypes(type)
 				.setSearchType(SearchType.DFS_QUERY_THEN_FETCH).setFrom(searchData.getFrom())
 				.setSize(searchData.getSize());
+		requestBuilder.addSort("create_date" , SortOrder.DESC) ;
 		if (null != searchData.getBuilder()) {
 			requestBuilder.setQuery(searchData.getBuilder());
 		}
@@ -150,6 +153,10 @@ public class ElasticsearchService implements IElasticsearch {
 		for (SearchHit hit : hits.getHits()) {
 			Map<String, Object> source = hit.getSource();
 			source.put("id", hit.getId());
+			if(source.get("create_date") instanceof java.util.Date && null != source.get("create_date")){
+				source.put("createDateStr", DateFormatUtils.format((java.util.Date)
+						source.get("create_date"), "yyyy-MM-dd HH:mm:ss"));
+			}
 			docs.add(source);
 		}
 		searchData.setDocs(docs);

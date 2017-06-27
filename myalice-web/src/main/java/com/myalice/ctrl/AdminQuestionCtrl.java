@@ -98,6 +98,8 @@ public class AdminQuestionCtrl {
 			
 			searchData.setPageId(pageId);
 			searchData.setSize(10);
+			
+			
 			esQuestionService.query(searchData);
 		} catch (Exception e) {
 			logger.error(" question es query ", e);
