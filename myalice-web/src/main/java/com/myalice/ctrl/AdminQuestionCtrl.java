@@ -21,7 +21,9 @@ import com.myalice.beans.CoolQMessage;
 import com.myalice.beans.CoolQMessageType;
 import com.myalice.beans.CoolQResponse;
 import com.myalice.domain.ElasticsearchData;
+import com.myalice.domain.TalkRecord;
 import com.myalice.services.ESQuestionService;
+import com.myalice.services.TalkRecordService;
 import com.myalice.utils.MyAliceUtils;
 import com.myalice.utils.ResponseMessageBody;
 import com.myalice.utils.Tools;
@@ -29,6 +31,9 @@ import com.myalice.utils.Tools;
 @RequestMapping("/admin/question")
 @RestController
 public class AdminQuestionCtrl {
+	
+	@Autowired
+	protected TalkRecordService talkRecordService;
 
 	@Autowired
 	protected ESQuestionService esQuestionService;
@@ -38,11 +43,24 @@ public class AdminQuestionCtrl {
 	@RequestMapping(path="/pull",produces = "application/json; charset=UTF-8",method={RequestMethod.GET,RequestMethod.POST})
 	public CoolQResponse pull(HttpServletRequest request,@RequestBody CoolQMessage cqMessage) {
 		CoolQResponse response = new CoolQResponse();
+		TalkRecord record = new TalkRecord();
 		String message = cqMessage.getMessage().substring(cqMessage.getMessage().indexOf("]"));
 		try {
 			Map<String, Object> answer = esQuestionService.searchAnswer(message);
 			CoolQMessageType messageType = CoolQMessageType.getCoolQMessageType(cqMessage.getMessage_type());
-			response.setReply(MyAliceUtils.toString(answer.get("anwser"))) ;  
+			if(null != answer){
+				response.setReply(MyAliceUtils.toString(answer.get("anwser"))) ;
+			}else{
+				response.setReply( "暂未收录该问题" ) ; 
+			}
+			record.setContent( message ); ;
+			record.setReply( response.getReply() ) ;  
+			record.setUserId( "QQ" );
+			record.setUserType("");
+			record.setConnectionId( "" );
+			record.setCreateTime(Tools.currentDate());
+			record.setReplyType( null == answer ? 0 : 1 ); 
+			talkRecordService.insert( record ) ; 
 			switch(messageType){
 			case PRIVATE:
 				break;
