@@ -7,7 +7,6 @@ import java.util.Vector;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.math.NumberUtils;
-import org.apache.commons.lang3.time.DateFormatUtils;
 import org.elasticsearch.action.admin.indices.analyze.AnalyzeAction;
 import org.elasticsearch.action.admin.indices.analyze.AnalyzeRequestBuilder;
 import org.elasticsearch.action.admin.indices.analyze.AnalyzeResponse.AnalyzeToken;
@@ -153,9 +152,13 @@ public class ElasticsearchService implements IElasticsearch {
 		for (SearchHit hit : hits.getHits()) {
 			Map<String, Object> source = hit.getSource();
 			source.put("id", hit.getId());
-			if(source.get("create_date") instanceof java.util.Date && null != source.get("create_date")){
-				source.put("createDateStr", DateFormatUtils.format((java.util.Date)
-						source.get("create_date"), "yyyy-MM-dd HH:mm:ss"));
+			String dateStr = MyAliceUtils.toString(source.get("create_date"));
+			try {
+				String newDateStr = dateStr.substring(0 , 10) ;
+				newDateStr += " " + dateStr.substring(11 , 19) ;
+				source.put("createDateStr", newDateStr);
+			} catch (Exception e) {
+				source.put("createDateStr", dateStr); 
 			}
 			docs.add(source);
 		}
