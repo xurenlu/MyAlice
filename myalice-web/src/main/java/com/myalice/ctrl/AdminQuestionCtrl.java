@@ -12,9 +12,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.myalice.beans.CoolQMessage;
+import com.myalice.beans.CoolQMessageType;
+import com.myalice.beans.CoolQResponse;
 import com.myalice.domain.ElasticsearchData;
 import com.myalice.services.ESQuestionService;
 import com.myalice.utils.MyAliceUtils;
@@ -29,7 +34,33 @@ public class AdminQuestionCtrl {
 	protected ESQuestionService esQuestionService;
 
 	protected static Logger logger = org.slf4j.LoggerFactory.getLogger("ctrl");
-
+	
+	@RequestMapping(path="/pull",produces = "application/json; charset=UTF-8",method={RequestMethod.GET,RequestMethod.POST})
+	public CoolQResponse pull(HttpServletRequest request,@RequestBody CoolQMessage cqMessage) {
+		CoolQResponse response = new CoolQResponse();
+		String message = cqMessage.getMessage().substring(cqMessage.getMessage().indexOf("]"));
+		try {
+			Map<String, Object> answer = esQuestionService.searchAnswer(message);
+			CoolQMessageType messageType = CoolQMessageType.getCoolQMessageType(cqMessage.getMessage_type());
+			response.setReply(MyAliceUtils.toString(answer.get("anwser"))) ;  
+			switch(messageType){
+			case PRIVATE:
+				break;
+			case DISCUSS:
+				response.setAt_sender(true);
+				break;
+			case GROUP:
+				response.setAt_sender(true);
+				response.setBan(false);
+				response.setKick(false);
+				break;
+			}
+		} catch (Exception e) {
+			logger.error(" question es query ", e);
+		}
+		return response;
+	}
+	
 	@RequestMapping("/list")
 	public ElasticsearchData list(HttpServletRequest request) {
 		String title = MyAliceUtils.toString(request.getParameter("title"));

@@ -38,7 +38,7 @@ public class SpringSecurity extends WebSecurityConfigurerAdapter {
 	protected void configure(HttpSecurity http) throws Exception {
 
 		CookieCsrfTokenRepository withHttpOnlyFalse = CookieCsrfTokenRepository.withHttpOnlyFalse();
-		http.csrf().csrfTokenRepository(withHttpOnlyFalse);
+		http.csrf().csrfTokenRepository(withHttpOnlyFalse).ignoringAntMatchers("/admin/question/pull") ; 
 		
 		HeadersConfigurer<HttpSecurity> headers = http.headers();
 		headers.addHeaderWriter(new HstsHeaderWriter());
