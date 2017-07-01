@@ -175,9 +175,11 @@ public class ElasticsearchService implements IElasticsearch {
 		SearchHits hits = response.getHits();
 		List<Map<String, Object>> docs = new Vector<>();
 		for (SearchHit hit : hits.getHits()) {
-			Map<String, Object> source = hit.getSource();
-			source.put("id", hit.getId());
-			docs.add(source);
+			if(hit.getScore() > 0.15){
+				Map<String, Object> source = hit.getSource();
+				source.put("id", hit.getId());
+				docs.add(source);
+			}
 		}
 		return docs;
 	}

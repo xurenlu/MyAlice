@@ -18,10 +18,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.myalice.beans.CoolQMessage;
-import com.myalice.beans.CoolQMessageType;
 import com.myalice.beans.CoolQResponse;
 import com.myalice.domain.ElasticsearchData;
 import com.myalice.domain.TalkRecord;
+import com.myalice.service.CoolQMessageService;
 import com.myalice.services.ESQuestionService;
 import com.myalice.services.TalkRecordService;
 import com.myalice.utils.MyAliceUtils;
@@ -36,6 +36,9 @@ public class AdminQuestionCtrl {
 	protected TalkRecordService talkRecordService;
 
 	@Autowired
+	protected CoolQMessageService coolQMessageService ;
+	
+	@Autowired
 	protected ESQuestionService esQuestionService;
 
 	protected static Logger logger = org.slf4j.LoggerFactory.getLogger("ctrl");
@@ -43,16 +46,10 @@ public class AdminQuestionCtrl {
 	@RequestMapping(path="/pull",produces = "application/json; charset=UTF-8",method={RequestMethod.GET,RequestMethod.POST})
 	public CoolQResponse pull(HttpServletRequest request,@RequestBody CoolQMessage cqMessage) {
 		CoolQResponse response = new CoolQResponse();
-		TalkRecord record = new TalkRecord();
-		String message = cqMessage.getMessage().substring(cqMessage.getMessage().indexOf("]") + 1) ; 
 		try {
-			Map<String, Object> answer = esQuestionService.searchAnswer(message);
-			CoolQMessageType messageType = CoolQMessageType.getCoolQMessageType(cqMessage.getMessage_type());
-			if(null != answer){
-				response.setReply(MyAliceUtils.toString(answer.get("anwser"))) ;
-			}else{
-				response.setReply( "很抱歉，我还不知道答案，群里知道此问题答案的请 @机器猫 @提问者 建议答案：xxxxx" ) ; 
-			}
+			String message = MyAliceUtils.trimQQ( cqMessage.getMessage() ) ;
+			response = coolQMessageService.getMessageType(cqMessage) ;
+			TalkRecord record = new TalkRecord();
 			record.setContent( message );
 			record.setReply( response.getReply() ) ;  
 			record.setUserId( MyAliceUtils.toString(cqMessage.getUser_id()) );
@@ -60,20 +57,23 @@ public class AdminQuestionCtrl {
 			record.setUserType(""); 
 			record.setConnectionId( "" );
 			record.setCreateTime(Tools.currentDate());
-			record.setReplyType( null == answer ? 0 : 1 ); 
+			record.setReplyType( !response.isSearchContent() ? 0 : 1 ) ;
 			talkRecordService.insert( record ) ; 
+			/*
+			CoolQMessageType messageType = CoolQMessageType.getCoolQMessageType(cqMessage.getMessage_type());
 			switch(messageType){
-			case PRIVATE:
-				break;
-			case DISCUSS:
-				response.setAt_sender(true);
-				break;
-			case GROUP:
-				response.setAt_sender(true);
-				response.setBan(false);
-				response.setKick(false);
-				break;
-			}
+				case PRIVATE:
+					response.setAt_sender(true);
+					break;
+				case DISCUSS:
+					response.setAt_sender(true);
+					break;
+				case GROUP:
+					response.setAt_sender(true);
+					response.setBan(false);
+					response.setKick(false);
+					break;
+			}*/
 		} catch (Exception e) {
 			logger.error(" question es query ", e);
 		}
@@ -122,7 +122,7 @@ public class AdminQuestionCtrl {
 		String id = MyAliceUtils.toString(request.getParameter("id"));
 		Map<String,Object> questionMap = new HashMap<>() ;
 		questionMap.put("title", question);
-		questionMap.put("state", 1); 
+		questionMap.put("state", 1);
 		questionMap.put("id", id);   
 		questionMap.put("questionType", questionType); 
 		questionMap.put("create_user", authentication.getName() ) ; 

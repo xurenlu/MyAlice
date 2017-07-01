@@ -4,6 +4,7 @@ import com.myalice.domain.TalkRecord;
 import java.util.List;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Result;
 import org.apache.ibatis.annotations.Results;
 import org.apache.ibatis.annotations.Select;
@@ -27,9 +28,9 @@ public interface TalkRecordMapper {
 	 * @mbg.generated
 	 */
 	@Insert({ "insert into talk_record (id, content, ", "user_id, user_type, create_time, ",
-			"connection_id, reply,replyType)", "values (#{id,jdbcType=VARCHAR}, #{content,jdbcType=VARCHAR}, ",
+			"connection_id, reply,replyType,groupId)", "values (#{id,jdbcType=VARCHAR}, #{content,jdbcType=VARCHAR}, ",
 			"#{userId,jdbcType=VARCHAR}, #{userType,jdbcType=CHAR}, #{createTime,jdbcType=TIMESTAMP}, ",
-			"#{connectionId,jdbcType=VARCHAR}, #{reply,jdbcType=VARCHAR},#{replyType,jdbcType=INTEGER})" })
+			"#{connectionId,jdbcType=VARCHAR}, #{reply,jdbcType=VARCHAR},#{replyType,jdbcType=INTEGER},#{groupId,jdbcType=VARCHAR})" })
 	int insert(TalkRecord record);
 
 	/**
@@ -38,7 +39,7 @@ public interface TalkRecordMapper {
 	 *
 	 * @mbg.generated
 	 */
-	@Select({ "select", "id, content, user_id, user_type, create_time, connection_id, reply", "from talk_record",
+	@Select({ "select", "id, content, user_id, user_type, create_time, connection_id, reply,groupId", "from talk_record",
 			"where id = #{id,jdbcType=VARCHAR}" })
 	@Results({ @Result(column = "id", property = "id", jdbcType = JdbcType.VARCHAR, id = true),
 			@Result(column = "content", property = "content", jdbcType = JdbcType.VARCHAR),
@@ -56,7 +57,7 @@ public interface TalkRecordMapper {
 	 *
 	 * @mbg.generated
 	 */
-	@Select({ "select", "id, content, user_id, user_type, create_time, connection_id, reply", "from talk_record" })
+	@Select({ "select", "id, content, user_id, user_type, create_time, connection_id, reply,groupId", "from talk_record" })
 	@Results({ @Result(column = "id", property = "id", jdbcType = JdbcType.VARCHAR, id = true),
 			@Result(column = "content", property = "content", jdbcType = JdbcType.VARCHAR),
 			@Result(column = "user_id", property = "userId", jdbcType = JdbcType.VARCHAR),
@@ -64,24 +65,26 @@ public interface TalkRecordMapper {
 			@Result(column = "create_time", property = "createTime", jdbcType = JdbcType.TIMESTAMP),
 			@Result(column = "connection_id", property = "connectionId", jdbcType = JdbcType.VARCHAR),
 			@Result(column = "reply", property = "reply", jdbcType = JdbcType.VARCHAR),
+			@Result(column = "groupId", property = "groupId", jdbcType = JdbcType.VARCHAR),
 			@Result(column = "replyType", property = "replyType", jdbcType = JdbcType.INTEGER) })
 	List<TalkRecord> selectAll();
 
 	@Select({ "<script>select",
-			"id, content, user_id, user_type, create_time, connection_id, reply,replyType ",
+			"id, content, user_id, user_type, create_time, connection_id, reply,replyType,groupId ",
 			"from talk_record", "<trim prefix=\"WHERE\" prefixOverrides=\"AND\">",
 			"<if test=\"replyType != null\">AND replyType=#{replyType,jdbcType=VARCHAR}</if>",
 			"<if test=\"userId != null and userId != ''\">AND user_id=#{userType,jdbcType=VARCHAR}</if>",
 			"<if test=\"content != null\">AND content like CONCAT('%' , #{content,jdbcType=VARCHAR} , '%')</if>",
 			"</trim> order by create_time desc", "</script>" }) 
 	@Results({ @Result(column = "id", property = "id", jdbcType = JdbcType.VARCHAR, id = true),
-			@Result(column = "content", property = "content", jdbcType = JdbcType.VARCHAR),
-			@Result(column = "user_id", property = "userId", jdbcType = JdbcType.VARCHAR),
-			@Result(column = "user_type", property = "userType", jdbcType = JdbcType.CHAR),
-			@Result(column = "create_time", property = "createTime", jdbcType = JdbcType.TIMESTAMP),
-			@Result(column = "connection_id", property = "connectionId", jdbcType = JdbcType.VARCHAR),
-			@Result(column = "reply", property = "reply", jdbcType = JdbcType.VARCHAR),
-			@Result(column = "replyType", property = "replyType", jdbcType = JdbcType.INTEGER) })
+		@Result(column = "content", property = "content", jdbcType = JdbcType.VARCHAR),
+		@Result(column = "user_id", property = "userId", jdbcType = JdbcType.VARCHAR),
+		@Result(column = "user_type", property = "userType", jdbcType = JdbcType.CHAR),
+		@Result(column = "create_time", property = "createTime", jdbcType = JdbcType.TIMESTAMP),
+		@Result(column = "connection_id", property = "connectionId", jdbcType = JdbcType.VARCHAR),
+		@Result(column = "reply", property = "reply", jdbcType = JdbcType.VARCHAR),
+		@Result(column = "groupId", property = "groupId", jdbcType = JdbcType.VARCHAR),
+		@Result(column = "replyType", property = "replyType", jdbcType = JdbcType.INTEGER) })
 	List<TalkRecord> select(TalkRecord record);
 
 	/**
@@ -96,4 +99,18 @@ public interface TalkRecordMapper {
 			"reply = #{reply,jdbcType=VARCHAR},", "replyType = #{replyType,jdbcType=INTEGER}",
 			"where id = #{id,jdbcType=VARCHAR}" })
 	int updateByPrimaryKey(TalkRecord record);
+	
+	
+	/**自定义方法*/
+	@Select({ "select", "id, content, user_id, user_type, create_time, connection_id, reply,groupId", "from talk_record",
+	"where user_id=#{userId,jdbcType=VARCHAR} and groupId=#{groupId,jdbcType=VARCHAR} order by create_time desc limit 1" })
+	@Results({ @Result(column = "id", property = "id", jdbcType = JdbcType.VARCHAR, id = true) ,
+	@Result(column = "content", property = "content", jdbcType = JdbcType.VARCHAR),
+	@Result(column = "user_id", property = "userId", jdbcType = JdbcType.VARCHAR),
+	@Result(column = "user_type", property = "userType", jdbcType = JdbcType.CHAR),
+	@Result(column = "create_time", property = "createTime", jdbcType = JdbcType.TIMESTAMP),
+	@Result(column = "connection_id", property = "connectionId", jdbcType = JdbcType.VARCHAR),
+	@Result(column = "reply", property = "reply", jdbcType = JdbcType.VARCHAR),
+	@Result(column = "replyType", property = "replyType", jdbcType = JdbcType.INTEGER) })
+	TalkRecord selectLastAsk(@Param("groupId") String groupId , @Param("userId") String userId);
 }

@@ -12,6 +12,16 @@ public class CoolQResponse {
 	private boolean kick;  /* 把发送者踢出群组（需要登录号权限足够），不拒绝此人后续加群请求，默认为 false，发送者是匿名用户时无效 */
 	
 	private boolean ban;   /* 把发送者禁言 30 分钟（需要登录号权限足够），对匿名用户也有效，不支持指定禁言时长（如需指定，请调用相应 API），默认为 false */
+	
+	private boolean isSearchContent ;
+	
+	public boolean isSearchContent() {
+		return isSearchContent;
+	}
+
+	public void setSearchContent(boolean isSearchContent) {
+		this.isSearchContent = isSearchContent;
+	}
 
 	public String getReply() {
 		return reply;

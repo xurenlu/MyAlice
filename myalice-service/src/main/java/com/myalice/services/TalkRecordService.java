@@ -20,10 +20,14 @@ public class TalkRecordService {
 		talkRecord.setCreateTime(Tools.currentDate());
 		talkRecordMapper.insert(talkRecord);
 	}
-	
+
 	public Page<TalkRecord> list(int pageId, TalkRecord record) {
 		Page<TalkRecord> startPage = PageHelper.startPage(pageId, 10);
-		talkRecordMapper.select(record) ; 
+		talkRecordMapper.select(record);
 		return startPage;
+	}
+
+	public TalkRecord selectLastAsk(String groupId, String userId) {
+		return talkRecordMapper.selectLastAsk(groupId, userId);
 	}
 }
