@@ -44,19 +44,20 @@ public class AdminQuestionCtrl {
 	public CoolQResponse pull(HttpServletRequest request,@RequestBody CoolQMessage cqMessage) {
 		CoolQResponse response = new CoolQResponse();
 		TalkRecord record = new TalkRecord();
-		String message = cqMessage.getMessage().substring(cqMessage.getMessage().indexOf("]") + 1); 
+		String message = cqMessage.getMessage().substring(cqMessage.getMessage().indexOf("]") + 1) ; 
 		try {
 			Map<String, Object> answer = esQuestionService.searchAnswer(message);
 			CoolQMessageType messageType = CoolQMessageType.getCoolQMessageType(cqMessage.getMessage_type());
 			if(null != answer){
 				response.setReply(MyAliceUtils.toString(answer.get("anwser"))) ;
 			}else{
-				response.setReply( "暂未收录该问题" ) ; 
+				response.setReply( "很抱歉，我还不知道答案，群里知道此问题答案的请 @机器猫 @提问者 建议答案：xxxxx" ) ; 
 			}
-			record.setContent( message ); ;
+			record.setContent( message );
 			record.setReply( response.getReply() ) ;  
-			record.setUserId( "QQ" );
-			record.setUserType("");
+			record.setUserId( MyAliceUtils.toString(cqMessage.getUser_id()) );
+			record.setGroupId(MyAliceUtils.toString(cqMessage.getGroup_id()));
+			record.setUserType(""); 
 			record.setConnectionId( "" );
 			record.setCreateTime(Tools.currentDate());
 			record.setReplyType( null == answer ? 0 : 1 ); 
