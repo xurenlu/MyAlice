@@ -4,7 +4,8 @@ param=$1
 
 if [ -z "$param" ] 
 then
-  param="myalice"
+  echo "请输入描述"
+  exit 0
 fi
 
 git add .

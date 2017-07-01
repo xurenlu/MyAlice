@@ -12,6 +12,7 @@ import com.myalice.beans.CoolQMessage;
 import com.myalice.beans.CoolQResponse;
 import com.myalice.domain.TalkRecord;
 import com.myalice.services.ESQuestionService;
+import com.myalice.services.SysDictionariesService;
 import com.myalice.services.TalkRecordService;
 import com.myalice.utils.MyAliceUtils;
 import com.myalice.utils.Tools;
@@ -24,10 +25,15 @@ public class CoolQMessageService {
 
 	@Autowired
 	protected TalkRecordService talkRecordService;
+	
+	@Autowired
+	protected SysDictionariesService dictionariesService ;
 
 	public CoolQResponse getMessageType(CoolQMessage cqMessage) {
 		String message = MyAliceUtils.trimQQ(cqMessage.getMessage());
 		String[] qqs = MyAliceUtils.parseQqs(cqMessage.getMessage());
+		qqs = dictionariesService.findQQ( qqs ) ;
+		
 		CoolQResponse response = new CoolQResponse();
 		response.setAt_sender(true);
 		response.setBan(false);
@@ -52,12 +58,20 @@ public class CoolQMessageService {
 					questionMap.put("questionType", 1);
 					questionMap.put("create_user", "QQ：" + qqs[0]);
 					questionMap.put("create_date", Tools.currentDate());
-
+					message = message.replaceAll("建议答案", "");
+					if(StringUtils.startsWithAny(message, "：" , ":")){
+						message = message.substring(0) ;
+					}
+					Map<String,Object> anwserMap = new HashMap<>() ;
+					anwserMap.put("anwser", message); 
+					anwserMap.put("create_time", Tools.currentDate()); 
+					anwserMap.put("source", 0 ) ;
+					esQuestionService.addQuestion(questionMap, anwserMap) ; 
 					response.setReply("非常感谢您的回答");
 				}
 			}
 		}
-		return null;
+		return response;
 	}
 	
 	private void searchAnswer(String message, CoolQResponse response) {
