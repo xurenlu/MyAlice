@@ -17,6 +17,16 @@ public class CoolQMessage {
 	private String anonymous_flag;
 	
 	private String message;
+	
+	private boolean isSearchData ;
+
+	public boolean isSearchData() {
+		return isSearchData;
+	}
+
+	public void setSearchData(boolean isSearchData) {
+		this.isSearchData = isSearchData;
+	}
 
 	public String getPost_type() {
 		return post_type;

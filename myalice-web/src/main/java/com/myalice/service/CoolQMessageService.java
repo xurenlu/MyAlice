@@ -35,17 +35,13 @@ public class CoolQMessageService {
 		qqs = dictionariesService.findQQ( qqs ) ;
 		
 		CoolQResponse response = new CoolQResponse();
-		response.setAt_sender(true);
-		response.setBan(false);
-		response.setKick(false);
-		// CoolQMessageType messageType =
-		// CoolQMessageType.getCoolQMessageType(cqMessage.getMessage_type()) ;
 		/* 如果没有AT其他QQ号，则是认为是提问 */
 		if (ArrayUtils.isEmpty(qqs)) {
-			searchAnswer(message, response);
+			cqMessage.setSearchData( searchAnswer(message, response) );
 		} else {
 			if (qqs.length > 1) {
-				searchAnswer(message, response);
+				
+				cqMessage.setSearchData( searchAnswer(message, response) );
 			} else {
 				TalkRecord talkRecord = talkRecordService.selectLastAsk(MyAliceUtils.toString(cqMessage.getGroup_id()),
 						MyAliceUtils.toString(cqMessage.getUser_id()));
@@ -56,9 +52,9 @@ public class CoolQMessageService {
 					questionMap.put("title", talkRecord.getContent());
 					questionMap.put("state", 2);
 					questionMap.put("questionType", 1);
-					questionMap.put("create_user", "QQ：" + qqs[0]);
+					questionMap.put("create_user", "网友：" + qqs[0]);
 					questionMap.put("create_date", Tools.currentDate());
-					message = message.replaceAll("建议答案", "");
+					message = message.replaceAll("建议答案", "") ;  
 					if(StringUtils.startsWithAny(message, "：" , ":")){
 						message = message.substring(0) ;
 					}
@@ -74,16 +70,19 @@ public class CoolQMessageService {
 		return response;
 	}
 	
-	private void searchAnswer(String message, CoolQResponse response) {
+	private boolean searchAnswer(String message, CoolQResponse response) {
 		Map<String, Object> answer = esQuestionService.searchAnswer(message);
 		if (null != answer) {
-			response.setSearchContent(true);
 			String anwser = MyAliceUtils.toString(answer.get("anwser")) ;
-			response.setReply(String.format("%s \n来源%s", anwser, StringUtils.equals("1", MyAliceUtils.toString(answer.get("state")))
-					? "官方" : MyAliceUtils.toString( answer.get("create_user") ))) ;
+			
+			String user=StringUtils.equalsAny("1", MyAliceUtils.toString(answer.get("state"))) ? "官方"
+					:MyAliceUtils.toString(answer.get("create_user")) ;
+			
+			response.setReply( anwser ) ;
+			return true ;
 		} else {
-			response.setSearchContent(false);
 			response.setReply("很抱歉，我还不知道答案，群里知道此问题答案的请 @机器猫 @提问者 建议答案：xxxxx");
+			return false ;
 		}
 	}
 }

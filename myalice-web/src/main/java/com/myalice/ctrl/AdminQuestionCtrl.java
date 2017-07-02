@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.myalice.beans.CoolQMessage;
+import com.myalice.beans.CoolQMessageType;
 import com.myalice.beans.CoolQResponse;
 import com.myalice.domain.ElasticsearchData;
 import com.myalice.domain.TalkRecord;
@@ -57,9 +58,9 @@ public class AdminQuestionCtrl {
 			record.setUserType(""); 
 			record.setConnectionId( "" );
 			record.setCreateTime(Tools.currentDate());
-			record.setReplyType( !response.isSearchContent() ? 0 : 1 ) ;
+			record.setReplyType( !cqMessage.isSearchData() ? 0 : 1 ) ;
 			talkRecordService.insert( record ) ; 
-			/*
+		
 			CoolQMessageType messageType = CoolQMessageType.getCoolQMessageType(cqMessage.getMessage_type());
 			switch(messageType){
 				case PRIVATE:
@@ -73,7 +74,7 @@ public class AdminQuestionCtrl {
 					response.setBan(false);
 					response.setKick(false);
 					break;
-			}*/
+			}
 		} catch (Exception e) {
 			logger.error(" question es query ", e);
 		}
