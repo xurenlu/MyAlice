@@ -49,6 +49,8 @@ public class AdminQuestionCtrl {
 		CoolQResponse response = new CoolQResponse();
 		try {
 			String message = MyAliceUtils.trimQQ( cqMessage.getMessage() ) ;
+			message = message.replaceAll("@机器猫", ""); 
+			cqMessage.setMessage(message);
 			response = coolQMessageService.getMessageType(cqMessage) ;
 			TalkRecord record = new TalkRecord();
 			record.setContent( message );

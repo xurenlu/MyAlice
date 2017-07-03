@@ -33,7 +33,6 @@ public class CoolQMessageService {
 		String message = MyAliceUtils.trimQQ(cqMessage.getMessage());
 		String[] qqs = MyAliceUtils.parseQqs(cqMessage.getMessage());
 		qqs = dictionariesService.findQQ( qqs ) ;
-		
 		CoolQResponse response = new CoolQResponse();
 		/* 如果没有AT其他QQ号，则是认为是提问 */
 		if (ArrayUtils.isEmpty(qqs)) {
@@ -81,7 +80,7 @@ public class CoolQMessageService {
 			response.setReply( anwser ) ;
 			return true ;
 		} else {
-			response.setReply("很抱歉，我还不知道答案，群里知道此问题答案的请 @机器猫 @提问者 建议答案：xxxxx");
+			response.setReply("很抱歉，我还不知道答案"); //，群里知道此问题答案的请 @机器猫 @提问者 建议答案：xxxxx
 			return false ;
 		}
 	}
