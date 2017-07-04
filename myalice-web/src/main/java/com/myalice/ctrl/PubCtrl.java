@@ -47,10 +47,10 @@ public class PubCtrl {
 	@Autowired
 	protected SysDictionariesService dictionariesService;
 
-	
+ 
 	@RequestMapping("/loadUserinfo")
 	public Map<String, Object> loadUserinfo(Principal principal) {
-		Map<String, Object> principalMap = new HashMap<>();
+		Map<String, Object> principalMap = new HashMap<>(); 
 		if(null != principal){
 			principalMap.put("username", principal.getName());
 		}

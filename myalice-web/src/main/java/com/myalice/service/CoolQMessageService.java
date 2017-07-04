@@ -2,12 +2,10 @@ package com.myalice.service;
 
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.elasticsearch.action.admin.indices.analyze.AnalyzeResponse.AnalyzeToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,10 +37,10 @@ public class CoolQMessageService {
 	public CoolQResponse getMessageType(CoolQMessage cqMessage) {
 		String message = MyAliceUtils.trimQQ(cqMessage.getMessage());
 		String[] qqs = MyAliceUtils.parseQqs(cqMessage.getMessage());
-		log.debug("AT的QQ号：" + Arrays.toString(qqs));
+		log.info("AT的QQ号：" + Arrays.toString(qqs));
 		
 		qqs = dictionariesService.findQQ( qqs ) ;
-		log.debug("过滤处理的QQ号：" + Arrays.toString(qqs));
+		log.info("过滤处理的QQ号：" + Arrays.toString(qqs));
 		CoolQResponse response = new CoolQResponse();
 		/* 如果没有AT其他QQ号，则是认为是提问 */
 		if (ArrayUtils.isEmpty(qqs)) {
@@ -80,8 +78,6 @@ public class CoolQMessageService {
 	}
 	
 	private boolean searchAnswer(String message, CoolQResponse response) {
-		
-		List<AnalyzeToken> ik = esQuestionService.getQuestionEsService().ik( message );
 		
 		Map<String, Object> answer = esQuestionService.searchAnswer(message);
 		if (null != answer) {

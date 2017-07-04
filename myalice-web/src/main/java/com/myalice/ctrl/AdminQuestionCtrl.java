@@ -82,7 +82,7 @@ public class AdminQuestionCtrl {
 		}
 		return response;
 	}
-	
+
 	@RequestMapping("/list")
 	public ElasticsearchData list(HttpServletRequest request) {
 		String title = MyAliceUtils.toString(request.getParameter("title"));
