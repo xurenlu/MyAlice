@@ -48,10 +48,10 @@ public class AdminQuestionCtrl {
 	public CoolQResponse pull(HttpServletRequest request,@RequestBody CoolQMessage cqMessage) {
 		CoolQResponse response = new CoolQResponse();
 		try {
-			String message = MyAliceUtils.trimQQ( cqMessage.getMessage() ) ;
-			message = message.replaceAll("@机器猫", ""); 
+			String message = cqMessage.getMessage().replaceAll("@机器猫", ""); 
 			cqMessage.setMessage(message);
-			response = coolQMessageService.getMessageType(cqMessage) ;
+			response = coolQMessageService.getMessageType(cqMessage) ; 
+			message = MyAliceUtils.trimQQ( cqMessage.getMessage() ) ;
 			TalkRecord record = new TalkRecord();
 			record.setContent( message );
 			record.setReply( response.getReply() ) ;  
