@@ -37,10 +37,10 @@ public class CoolQMessageService {
 	public CoolQResponse getMessageType(CoolQMessage cqMessage) {
 		String message = MyAliceUtils.trimQQ(cqMessage.getMessage());
 		String[] qqs = MyAliceUtils.parseQqs(cqMessage.getMessage());
-		log.info("AT的QQ号：" + Arrays.toString(qqs));
+		System.out.println("AT的QQ号：" + Arrays.toString(qqs));
 		
 		qqs = dictionariesService.findQQ( qqs ) ;
-		log.info("过滤处理的QQ号：" + Arrays.toString(qqs));
+		System.out.println("过滤处理的QQ号：" + Arrays.toString(qqs));
 		CoolQResponse response = new CoolQResponse();
 		/* 如果没有AT其他QQ号，则是认为是提问 */
 		if (ArrayUtils.isEmpty(qqs)) {
