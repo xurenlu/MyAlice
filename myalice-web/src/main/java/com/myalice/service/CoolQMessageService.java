@@ -1,6 +1,5 @@
 package com.myalice.service;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -37,41 +36,33 @@ public class CoolQMessageService {
 	public CoolQResponse getMessageType(CoolQMessage cqMessage) {
 		String message = MyAliceUtils.trimQQ(cqMessage.getMessage());
 		String[] qqs = MyAliceUtils.parseQqs(cqMessage.getMessage());
-		System.out.println("AT的QQ号：" + Arrays.toString(qqs));
-		
-		qqs = dictionariesService.findQQ( qqs ) ;
-		System.out.println("过滤处理的QQ号：" + Arrays.toString(qqs));
+		qqs = dictionariesService.findQQ( qqs ) ;  
 		CoolQResponse response = new CoolQResponse();
 		/* 如果没有AT其他QQ号，则是认为是提问 */
 		if (ArrayUtils.isEmpty(qqs)) {
 			cqMessage.setSearchData( searchAnswer(message, response) );
 		} else {
-			if (qqs.length > 1) {
-				
-				cqMessage.setSearchData( searchAnswer(message, response) );
+			TalkRecord talkRecord = talkRecordService.selectLastAsk(MyAliceUtils.toString(cqMessage.getGroup_id()),
+					MyAliceUtils.toString( qqs[0] ));
+			if (null == talkRecord) {
+				response.setReply("很抱歉，您AT的 [CQ:at,qq=" + qqs[0] + "] 没有提过未匹配的问题");
 			} else {
-				TalkRecord talkRecord = talkRecordService.selectLastAsk(MyAliceUtils.toString(cqMessage.getGroup_id()),
-						MyAliceUtils.toString(cqMessage.getUser_id()));
-				if (null == talkRecord) {
-					response.setReply("很抱歉，您AT的 [CQ:at,qq=" + qqs[0] + "] 没有提过未匹配的问题");
-				} else {
-					Map<String, Object> questionMap = new HashMap<>();
-					questionMap.put("title", talkRecord.getContent());
-					questionMap.put("state", 2);
-					questionMap.put("questionType", 1);
-					questionMap.put("create_user", "网友：" + qqs[0]);
-					questionMap.put("create_date", Tools.currentDate());
-					message = message.replaceAll("建议答案", "") ;  
-					if(StringUtils.startsWithAny(message, "：" , ":")){
-						message = message.substring(0) ;
-					}
-					Map<String,Object> anwserMap = new HashMap<>() ;
-					anwserMap.put("anwser", message); 
-					anwserMap.put("create_time", Tools.currentDate()); 
-					anwserMap.put("source", 0 ) ;
-					esQuestionService.addQuestion(questionMap, anwserMap) ; 
-					response.setReply("非常感谢您的回答");
+				Map<String, Object> questionMap = new HashMap<>();
+				questionMap.put("title", talkRecord.getContent());
+				questionMap.put("state", 2);
+				questionMap.put("questionType", 1);
+				questionMap.put("create_user", "网友：" + qqs[0]);
+				questionMap.put("create_date", Tools.currentDate());
+				message = message.replaceAll("建议答案", "") ;  
+				if(StringUtils.startsWithAny(message, "：" , ":")){
+					message = message.substring(0) ;
 				}
+				Map<String,Object> anwserMap = new HashMap<>() ;
+				anwserMap.put("anwser", message); 
+				anwserMap.put("create_time", Tools.currentDate()); 
+				anwserMap.put("source", 0 ) ;
+				esQuestionService.addQuestion(questionMap, anwserMap) ; 
+				response.setReply("非常感谢您的回答");
 			}
 		}
 		return response;
