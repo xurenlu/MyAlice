@@ -1,5 +1,6 @@
 package com.myalice.service;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -37,6 +38,7 @@ public class CoolQMessageService {
 		String message = MyAliceUtils.trimQQ(cqMessage.getMessage());
 		String[] qqs = MyAliceUtils.parseQqs(cqMessage.getMessage());
 		qqs = dictionariesService.findQQ( qqs ) ;  
+		System.out.println("qq:" + Arrays.toString(qqs)); 
 		CoolQResponse response = new CoolQResponse();
 		/* 如果没有AT其他QQ号，则是认为是提问 */
 		if (ArrayUtils.isEmpty(qqs)) {
