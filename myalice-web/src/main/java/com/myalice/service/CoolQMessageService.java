@@ -14,6 +14,8 @@ import org.springframework.stereotype.Service;
 import com.myalice.beans.CoolQMessage;
 import com.myalice.beans.CoolQResponse;
 import com.myalice.domain.TalkRecord;
+import com.myalice.party.BranchTuling;
+import com.myalice.party.InterBus.BusType;
 import com.myalice.services.ESQuestionService;
 import com.myalice.services.SysDictionariesService;
 import com.myalice.services.TalkRecordService;
@@ -47,7 +49,7 @@ public class CoolQMessageService {
 			TalkRecord talkRecord = talkRecordService.selectLastAsk(MyAliceUtils.toString(cqMessage.getGroup_id()),
 					MyAliceUtils.toString( qqs[0] ));
 			if (null == talkRecord) {
-				response.setReply("很抱歉，您AT的 [CQ:at,qq=" + qqs[0] + "] 没有提过未匹配的问题");
+				response.setReply( BranchTuling.getBus( BusType.TULING ).call( message ) ); 
 			} else {
 				Map<String, Object> questionMap = new HashMap<>();
 				questionMap.put("title", talkRecord.getContent());
@@ -82,7 +84,7 @@ public class CoolQMessageService {
 			response.setReply( anwser ) ;
 			return true ;
 		} else {
-			response.setReply("很抱歉，我还不知道答案"); //，群里知道此问题答案的请 @机器猫 @提问者 建议答案：xxxxx
+			response.setReply("很抱歉，我还不知道答案 群里知道此问题答案的请 @机器猫 @提问者 建议答案：xxxxx") ; 
 			return false ;
 		}
 	}
