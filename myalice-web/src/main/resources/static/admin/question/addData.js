@@ -6,10 +6,10 @@ $( function(){
 		if(isSubmit){return;}
 		var questionType = $("#questionType").val();
 		var question = $("#question").val();
-		var answer = $("#answer").val();
+		var answer = $("#subForm").find(".anwser").val();
 		var id = $("#id").val();
 		if("" ==  questionType){
-			bootbox.alert("请选择问题类型"); 
+			bootbox.alert("请选择问题类型");
 			return ;
 		}
 		if("" == question){

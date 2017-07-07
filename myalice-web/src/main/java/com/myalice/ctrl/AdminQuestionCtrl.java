@@ -154,6 +154,7 @@ public class AdminQuestionCtrl {
 		Map<String, Object> map = esQuestionService.get(id) ; 
 		List<Map<String, Object>> anwser = esQuestionService.queryAnswer(QueryBuilders.matchQuery("question_id", id)) ;
 		map.put("anwser", anwser) ; 
+		map.put("question_id", id); 
 		return map;
 	}
 }
