@@ -56,21 +56,23 @@ public class AdminQuestionCtrl {
 				return response ; 
 			}
 			
-			String message = cqMessage.getMessage().replaceAll("@机器猫", ""); 
+			String message = cqMessage.getMessage().trim() ; 
 			cqMessage.setMessage(message);
-			response = coolQMessageService.getMessageType(cqMessage) ; 
-			if(!cqMessage.isAnwser() && org.apache.commons.lang3.StringUtils.isNoneBlank(response.getReply())){
-				message = MyAliceUtils.trimQQ( cqMessage.getMessage() ) ;
-				TalkRecord record = new TalkRecord();
-				record.setContent( message );
-				record.setReply( response.getReply() ) ;  
-				record.setUserId( MyAliceUtils.toString(cqMessage.getUser_id()) );
-				record.setGroupId(MyAliceUtils.toString(cqMessage.getGroup_id()));
-				record.setUserType(""); 
-				record.setConnectionId( "" );
-				record.setCreateTime(Tools.currentDate());
-				record.setReplyType( !cqMessage.isSearchData() ? 0 : 1 ) ;
-				talkRecordService.insert( record ) ; 
+			response = coolQMessageService.getMessageType(cqMessage) ;  
+			if(!cqMessage.isAnwser() ){
+				if(!org.apache.commons.lang3.StringUtils.isEmpty(message)){
+					message = MyAliceUtils.trimQQ( cqMessage.getMessage() ) ;
+					TalkRecord record = new TalkRecord();
+					record.setContent( message );
+					record.setReply( response.getReply() ) ;  
+					record.setUserId( MyAliceUtils.toString(cqMessage.getUser_id()) );
+					record.setGroupId(MyAliceUtils.toString(cqMessage.getGroup_id()));
+					record.setUserType(""); 
+					record.setConnectionId( "" );
+					record.setCreateTime(Tools.currentDate());
+					record.setReplyType( !cqMessage.isSearchData() ? 0 : 1 ) ;
+					talkRecordService.insert( record ) ; 
+				}
 			}
 		
 			CoolQMessageType messageType = CoolQMessageType.getCoolQMessageType(cqMessage.getMessage_type());
