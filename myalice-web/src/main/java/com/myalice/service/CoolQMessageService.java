@@ -1,15 +1,17 @@
 package com.myalice.service;
 
-import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.elasticsearch.index.query.QueryBuilders;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import com.myalice.beans.CoolQMessage;
 import com.myalice.beans.CoolQResponse;
@@ -40,7 +42,6 @@ public class CoolQMessageService {
 		String message = MyAliceUtils.trimQQ(cqMessage.getMessage());
 		String[] qqs = MyAliceUtils.parseQqs(cqMessage.getMessage());
 		qqs = dictionariesService.findQQ( qqs ) ;  
-		System.out.println("qq:" + Arrays.toString(qqs) + "content: " + cqMessage.getMessage()); 
 		CoolQResponse response = new CoolQResponse();
 		/* 如果没有AT其他QQ号，则是认为是提问 */
 		if (ArrayUtils.isEmpty(qqs)) {
@@ -51,21 +52,35 @@ public class CoolQMessageService {
 			if (null == talkRecord) {
 				response.setReply( BranchTuling.getBus( BusType.TULING ).call( message ) ); 
 			} else {
-				Map<String, Object> questionMap = new HashMap<>();
-				questionMap.put("title", talkRecord.getContent());
-				questionMap.put("state", 2);
-				questionMap.put("questionType", 1);
-				questionMap.put("create_user", "网友：" + qqs[0]);
-				questionMap.put("create_date", Tools.currentDate());
-				message = message.replaceAll("建议答案", "") ;  
-				if(StringUtils.startsWithAny(message, "：" , ":")){
-					message = message.substring(0) ;
+				List<Map<String, Object>> datas = esQuestionService.getQuestionEsService().queryList(QueryBuilders.boolQuery().must(QueryBuilders.termQuery("talkId", talkRecord.getId()))) ;
+				if(CollectionUtils.isEmpty(datas)){
+					Map<String, Object> questionMap = new HashMap<>();
+					questionMap.put("title", talkRecord.getContent());
+					questionMap.put("state", 2);
+					questionMap.put("questionType", 1);
+					questionMap.put("create_user", cqMessage.getUser_id() );
+					questionMap.put("talkId", talkRecord.getId());
+					questionMap.put("create_date", Tools.currentDate());
+					message = message.replaceAll("建议答案", "") ;  
+					if(StringUtils.startsWithAny(message, "：" , ":")){
+						message = message.substring(0) ;
+					}
+					Map<String,Object> anwserMap = new HashMap<>() ;
+					anwserMap.put("anwser", message); 
+					anwserMap.put("create_time", Tools.currentDate()); 
+					anwserMap.put("create_user", cqMessage.getUser_id()) ;
+					anwserMap.put("source", 0 ) ;
+					esQuestionService.addQuestion(questionMap, anwserMap) ; 
+				}else{
+					Map<String, Object> question = datas.get(0) ;
+					Map<String,Object> anwserMap = new HashMap<>() ;
+					anwserMap.put("anwser", message); 
+					anwserMap.put("create_time", Tools.currentDate()); 
+					anwserMap.put("create_user", cqMessage.getUser_id()) ; 
+					anwserMap.put("source", 0 ) ;
+					anwserMap.put("question_id", question.get("id"));
+					esQuestionService.getAnwserEsService().add( anwserMap ) ; 
 				}
-				Map<String,Object> anwserMap = new HashMap<>() ;
-				anwserMap.put("anwser", message); 
-				anwserMap.put("create_time", Tools.currentDate()); 
-				anwserMap.put("source", 0 ) ;
-				esQuestionService.addQuestion(questionMap, anwserMap) ; 
 				response.setReply("非常感谢您的回答");
 			}
 		}
@@ -78,10 +93,10 @@ public class CoolQMessageService {
 		if (null != answer) {
 			String anwser = MyAliceUtils.toString(answer.get("anwser")) ;
 			
-			String user=StringUtils.equalsAny("1", MyAliceUtils.toString(answer.get("state"))) ? "官方"
-					:MyAliceUtils.toString(answer.get("create_user")) ;
+			String user=StringUtils.equalsAny("1", MyAliceUtils.toString(answer.get("state"))) ? "MyCat官方"
+					:MyAliceUtils.toString(answer.get("create_user") + " 仅供参考") ;
 			
-			response.setReply( anwser ) ;
+			response.setReply( anwser + " 来源：" + user) ;
 			return true ;
 		} else {
 			response.setReply("很抱歉，我还不知道答案 群里知道此问题答案的请 @机器猫 @提问者 建议答案：xxxxx") ; 

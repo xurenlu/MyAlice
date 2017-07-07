@@ -59,7 +59,19 @@ function initUpdate(){
 	$.mypost("/admin/question/load" , {id:id} ,function(data){
 		$("#questionType").val(data.questionType); 
 		$("#question").val(data.title); 
-		$("#answer").val(data.anwser);
+		//$("#answer").val(data.anwser);
+		var anwsers = data.anwser ; 
+		var html = $("#anwser_html").html();
+		var appendHtml = "" ; 
+		for(x=0;x<anwsers.length;x++){
+			var newhtml=html;
+			anwsers[x]['index'] = x+1; 
+			for(v in anwsers[x]){
+				newhtml = newhtml.replace(new RegExp("\{" + v + "\}","gm") , anwsers[x][v]);
+			}  
+			appendHtml+=newhtml ; 
+		}
+		$("#anwserList").html( appendHtml );
 		$("#id").val(data.question_id);
 	},"json")
 }

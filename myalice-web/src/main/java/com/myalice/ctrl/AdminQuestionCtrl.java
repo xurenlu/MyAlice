@@ -1,6 +1,7 @@
 package com.myalice.ctrl;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -58,17 +59,20 @@ public class AdminQuestionCtrl {
 			String message = cqMessage.getMessage().replaceAll("@机器猫", ""); 
 			cqMessage.setMessage(message);
 			response = coolQMessageService.getMessageType(cqMessage) ; 
-			message = MyAliceUtils.trimQQ( cqMessage.getMessage() ) ;
-			TalkRecord record = new TalkRecord();
-			record.setContent( message );
-			record.setReply( response.getReply() ) ;  
-			record.setUserId( MyAliceUtils.toString(cqMessage.getUser_id()) );
-			record.setGroupId(MyAliceUtils.toString(cqMessage.getGroup_id()));
-			record.setUserType(""); 
-			record.setConnectionId( "" );
-			record.setCreateTime(Tools.currentDate());
-			record.setReplyType( !cqMessage.isSearchData() ? 0 : 1 ) ;
-			talkRecordService.insert( record ) ; 
+			if(!cqMessage.isAnwser()){
+				message = MyAliceUtils.trimQQ( cqMessage.getMessage() ) ;
+				TalkRecord record = new TalkRecord();
+				System.out.println( record.getReply() );
+				record.setContent( message );
+				record.setReply( response.getReply() ) ;  
+				record.setUserId( MyAliceUtils.toString(cqMessage.getUser_id()) );
+				record.setGroupId(MyAliceUtils.toString(cqMessage.getGroup_id()));
+				record.setUserType(""); 
+				record.setConnectionId( "" );
+				record.setCreateTime(Tools.currentDate());
+				record.setReplyType( !cqMessage.isSearchData() ? 0 : 1 ) ;
+				talkRecordService.insert( record ) ; 
+			}
 		
 			CoolQMessageType messageType = CoolQMessageType.getCoolQMessageType(cqMessage.getMessage_type());
 			switch(messageType){
@@ -149,10 +153,8 @@ public class AdminQuestionCtrl {
 	@PostMapping("load")
 	public Map<String,Object> load(String id){
 		Map<String, Object> map = esQuestionService.get(id) ; 
-		Map<String, Object> queryAnswerOne = esQuestionService.queryAnswerOne(id) ; 
-		if(null != map){
-			map.putAll( queryAnswerOne ); 
-		}
+		List<Map<String, Object>> anwser = esQuestionService.queryAnswer(QueryBuilders.matchQuery("question_id", id)) ;
+		map.put("anwser", anwser) ; 
 		return map;
 	}
 }

@@ -19,6 +19,16 @@ public class CoolQMessage {
 	private String message;
 	
 	private boolean isSearchData ;
+	
+	private boolean isAnwser ; 
+
+	public boolean isAnwser() {
+		return isAnwser;
+	}
+
+	public void setAnwser(boolean isAnwser) {
+		this.isAnwser = isAnwser;
+	}
 
 	public boolean isSearchData() {
 		return isSearchData;
