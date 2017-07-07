@@ -71,6 +71,11 @@ function initUpdate(){
 			}  
 			appendHtml+=newhtml ; 
 		}
+		if(appendHtml == ""){
+			html=html.replace(new RegExp("\{anwser\}","gm") , "");
+			html=html.replace(new RegExp("\{index\}","gm") , "1");
+			appendHtml=html; 
+		}
 		$("#anwserList").html( appendHtml );
 		$("#id").val(data.question_id);
 	},"json")
