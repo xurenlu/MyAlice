@@ -52,6 +52,7 @@ public class CoolQMessageService {
 			if (null == talkRecord) {
 				response.setReply( BranchTuling.getBus( BusType.TULING ).call( message ) ); 
 			} else {
+				cqMessage.setAnwser(true);
 				List<Map<String, Object>> datas = esQuestionService.getQuestionEsService().queryList(QueryBuilders.boolQuery().must(QueryBuilders.termQuery("talkId", talkRecord.getId()))) ;
 				if(CollectionUtils.isEmpty(datas)){
 					Map<String, Object> questionMap = new HashMap<>();

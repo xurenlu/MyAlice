@@ -56,7 +56,6 @@ public class ElasticsearchService implements IElasticsearch {
 			requestBuilder.setAnalyzer("ik_max_word"); 
 			
 			List<AnalyzeToken> tokens = requestBuilder.execute().actionGet().getTokens();
-			System.out.println(tokens.size());
 			return tokens;
 		} catch (Exception e) {
 			throw new RuntimeException(e.getMessage());

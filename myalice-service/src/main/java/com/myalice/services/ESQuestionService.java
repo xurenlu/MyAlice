@@ -88,9 +88,6 @@ public class ESQuestionService {
 		}
 
 		if (!CollectionUtils.isEmpty(datas)) {
-			for (Map<String, Object> data : datas) {
-				data.get("");
-			}
 			questionEsService.sort(datas, question);
 			Map<String, Object> data = datas.get(0);
 			String id = MyAliceUtils.toString(data.get("id"));
@@ -109,6 +106,10 @@ public class ESQuestionService {
 
 	public ElasticsearchService getQuestionEsService() {
 		return questionEsService;
+	}
+
+	public ElasticsearchService getAnwserEsService() {
+		return anwserEsService;
 	}
 
 }

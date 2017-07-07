@@ -62,7 +62,6 @@ public class AdminQuestionCtrl {
 			if(!cqMessage.isAnwser()){
 				message = MyAliceUtils.trimQQ( cqMessage.getMessage() ) ;
 				TalkRecord record = new TalkRecord();
-				System.out.println( record.getReply() );
 				record.setContent( message );
 				record.setReply( response.getReply() ) ;  
 				record.setUserId( MyAliceUtils.toString(cqMessage.getUser_id()) );
