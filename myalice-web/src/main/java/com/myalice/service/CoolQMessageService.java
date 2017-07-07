@@ -52,8 +52,8 @@ public class CoolQMessageService {
 			if (null == talkRecord) {
 				response.setReply( BranchTuling.getBus( BusType.TULING ).call( message ) ); 
 			} else {
+				cqMessage.setAnwser(true);
 				if(message.startsWith("建议答案")){
-					cqMessage.setAnwser(true);
 					List<Map<String, Object>> datas = esQuestionService.getQuestionEsService().queryList(QueryBuilders.boolQuery().must(QueryBuilders.termQuery("talkId", talkRecord.getId()))) ;
 					if(CollectionUtils.isEmpty(datas)){
 						Map<String, Object> questionMap = new HashMap<>();
@@ -65,7 +65,7 @@ public class CoolQMessageService {
 						questionMap.put("create_date", Tools.currentDate());
 						message = message.replaceAll("建议答案", "") ;  
 						if(StringUtils.startsWithAny(message, "：" , ":")){
-							message = message.substring(0) ;
+							message = message.substring(1) ;
 						}
 						Map<String,Object> anwserMap = new HashMap<>() ;
 						anwserMap.put("anwser", message); 
@@ -76,6 +76,10 @@ public class CoolQMessageService {
 					}else{
 						Map<String, Object> question = datas.get(0) ;
 						Map<String,Object> anwserMap = new HashMap<>() ;
+						message = message.replaceAll("建议答案", "") ;  
+						if(StringUtils.startsWithAny(message, "：" , ":")){
+							message = message.substring(1) ;
+						} 
 						anwserMap.put("anwser", message); 
 						anwserMap.put("create_time", Tools.currentDate()); 
 						anwserMap.put("create_user", cqMessage.getUser_id()) ; 
