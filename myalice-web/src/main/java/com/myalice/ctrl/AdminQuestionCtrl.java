@@ -48,6 +48,13 @@ public class AdminQuestionCtrl {
 	public CoolQResponse pull(HttpServletRequest request,@RequestBody CoolQMessage cqMessage) {
 		CoolQResponse response = new CoolQResponse();
 		try {
+			
+			if("2854196306".equalsIgnoreCase(MyAliceUtils.toString(cqMessage.getUser_id()))){
+				response = new CoolQResponse() ;
+				response.setAt_sender( false );  
+				return response ; 
+			}
+			
 			String message = cqMessage.getMessage().replaceAll("@机器猫", ""); 
 			cqMessage.setMessage(message);
 			response = coolQMessageService.getMessageType(cqMessage) ; 
