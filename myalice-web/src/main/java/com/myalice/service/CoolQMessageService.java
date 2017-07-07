@@ -97,7 +97,10 @@ public class CoolQMessageService {
 	}
 	
 	private boolean searchAnswer(String message, CoolQResponse response) {
-		
+		if(StringUtils.isEmpty(message)){
+			response.setReply("有什么可以帮助你的?") ; 
+			return true ;
+		}
 		Map<String, Object> answer = esQuestionService.searchAnswer(message);
 		if (null != answer) {
 			String anwser = MyAliceUtils.toString(answer.get("anwser")) ;

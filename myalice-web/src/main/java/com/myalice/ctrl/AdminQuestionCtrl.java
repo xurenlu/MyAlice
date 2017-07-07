@@ -60,8 +60,8 @@ public class AdminQuestionCtrl {
 			cqMessage.setMessage(message);
 			response = coolQMessageService.getMessageType(cqMessage) ;  
 			if(!cqMessage.isAnwser() ){
+				message = MyAliceUtils.trimQQ( cqMessage.getMessage() ) ;
 				if(!org.apache.commons.lang3.StringUtils.isEmpty(message)){
-					message = MyAliceUtils.trimQQ( cqMessage.getMessage() ) ;
 					TalkRecord record = new TalkRecord();
 					record.setContent( message );
 					record.setReply( response.getReply() ) ;  
