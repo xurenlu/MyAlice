@@ -39,7 +39,7 @@ public class CoolQMessageService {
 	protected SysDictionariesService dictionariesService ;
 
 	public CoolQResponse getMessageType(CoolQMessage cqMessage) {
-		String message = MyAliceUtils.trimQQ(cqMessage.getMessage());
+		String message = MyAliceUtils.trimQQ(cqMessage.getMessage()).trim();
 		String[] qqs = MyAliceUtils.parseQqs(cqMessage.getMessage());
 		qqs = dictionariesService.findQQ( qqs ) ;  
 		CoolQResponse response = new CoolQResponse();
