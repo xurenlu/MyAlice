@@ -59,7 +59,7 @@ public class AdminQuestionCtrl {
 			String message = cqMessage.getMessage().replaceAll("@机器猫", ""); 
 			cqMessage.setMessage(message);
 			response = coolQMessageService.getMessageType(cqMessage) ; 
-			if(!cqMessage.isAnwser()){
+			if(!cqMessage.isAnwser() && org.apache.commons.lang3.StringUtils.isNoneBlank(response.getReply())){
 				message = MyAliceUtils.trimQQ( cqMessage.getMessage() ) ;
 				TalkRecord record = new TalkRecord();
 				record.setContent( message );
