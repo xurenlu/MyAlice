@@ -52,45 +52,42 @@ public class CoolQMessageService {
 			if (null == talkRecord) {
 				response.setReply( BranchTuling.getBus( BusType.TULING ).call( message ) ); 
 			} else {
-				cqMessage.setAnwser(true);
-				if(message.startsWith("建议答案")){
-					List<Map<String, Object>> datas = esQuestionService.getQuestionEsService().queryList(QueryBuilders.boolQuery().must(QueryBuilders.termQuery("talkId", talkRecord.getId()))) ;
-					if(CollectionUtils.isEmpty(datas)){
-						Map<String, Object> questionMap = new HashMap<>();
-						questionMap.put("title", talkRecord.getContent());
-						questionMap.put("state", 2);
-						questionMap.put("questionType", 1);
-						questionMap.put("create_user", cqMessage.getUser_id() );
-						questionMap.put("talkId", talkRecord.getId());
-						questionMap.put("create_date", Tools.currentDate());
-						message = message.replaceAll("建议答案", "") ;  
-						if(StringUtils.startsWithAny(message, "：" , ":")){
-							message = message.substring(1) ;
-						}
-						Map<String,Object> anwserMap = new HashMap<>() ;
-						anwserMap.put("anwser", message); 
-						anwserMap.put("create_time", Tools.currentDate()); 
-						anwserMap.put("create_user", cqMessage.getUser_id()) ;
-						anwserMap.put("source", 0 ) ;
-						esQuestionService.addQuestion(questionMap, anwserMap) ; 
-					}else{
-						Map<String, Object> question = datas.get(0) ;
-						Map<String,Object> anwserMap = new HashMap<>() ;
-						message = message.replaceAll("建议答案", "") ;  
-						if(StringUtils.startsWithAny(message, "：" , ":")){
-							message = message.substring(1) ;
-						} 
-						anwserMap.put("anwser", message); 
-						anwserMap.put("create_time", Tools.currentDate()); 
-						anwserMap.put("create_user", cqMessage.getUser_id()) ; 
-						anwserMap.put("source", 0 ) ;
-						anwserMap.put("question_id", question.get("id"));
-						esQuestionService.getAnwserEsService().add( anwserMap ) ; 
+				cqMessage.setAnwser( false ); 
+				List<Map<String, Object>> datas = esQuestionService.getQuestionEsService().queryList(QueryBuilders.boolQuery().must(QueryBuilders.termQuery("talkId", talkRecord.getId()))) ;
+				if(CollectionUtils.isEmpty(datas)){
+					Map<String, Object> questionMap = new HashMap<>();
+					questionMap.put("title", talkRecord.getContent());
+					questionMap.put("state", 2);
+					questionMap.put("questionType", 1);
+					questionMap.put("create_user", cqMessage.getUser_id() );
+					questionMap.put("talkId", talkRecord.getId());
+					questionMap.put("create_date", Tools.currentDate());
+					message = message.replaceAll("建议答案", "") ;  
+					if(StringUtils.startsWithAny(message, "：" , ":")){
+						message = message.substring(1) ;
 					}
-					response.setReply("非常感谢您的回答");
+					Map<String,Object> anwserMap = new HashMap<>() ;
+					anwserMap.put("anwser", message); 
+					anwserMap.put("create_time", Tools.currentDate()); 
+					anwserMap.put("create_user", cqMessage.getUser_id()) ;
+					anwserMap.put("source", 0 ) ;
+					esQuestionService.addQuestion(questionMap, anwserMap) ; 
 				}else{
-					response.setReply("您AT这么多人是要做什么事情呢？");
+					Map<String, Object> question = datas.get(0) ;
+					Map<String,Object> anwserMap = new HashMap<>() ;
+					message = message.replaceAll("建议答案", "") ;  
+					if(StringUtils.startsWithAny(message, "：" , ":")){
+						message = message.substring(1) ;
+					} 
+					anwserMap.put("anwser", message); 
+					anwserMap.put("create_time", Tools.currentDate()); 
+					anwserMap.put("create_user", cqMessage.getUser_id()) ; 
+					anwserMap.put("source", 0 ) ;
+					anwserMap.put("question_id", question.get("id"));
+					esQuestionService.getAnwserEsService().add( anwserMap ) ; 
 				}
+				response.setReply("非常感谢您的回答");
+				
 			}
 		}
 		return response;
