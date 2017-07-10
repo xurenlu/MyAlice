@@ -41,6 +41,8 @@ public class CoolQMessageService {
 
 	public CoolQResponse getMessageType(CoolQMessage cqMessage) {
 		String message = MyAliceUtils.trimQQ(cqMessage.getMessage()).trim();
+		message = message.replaceAll("@机器猫", "");
+		message = message.replaceAll("机器猫", "");
 		String[] qqs = MyAliceUtils.parseQqs(cqMessage.getMessage());
 		qqs = dictionariesService.findQQ( qqs ) ;  
 		CoolQResponse response = new CoolQResponse();
