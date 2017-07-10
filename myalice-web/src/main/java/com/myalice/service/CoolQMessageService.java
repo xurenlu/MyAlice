@@ -53,7 +53,9 @@ public class CoolQMessageService {
 			if (null == talkRecord) {
 				String json = BranchTuling.getBus( BusType.TULING ).call( message );
 				Map<String, Object> jsonMap = ParseJson.parseToObj(json);
-				response.setReply( MyAliceUtils.toString(jsonMap.get("text")) );
+				String text = MyAliceUtils.toString(jsonMap.get("text"));
+				text.replaceAll("图灵", "Myalice");
+				response.setReply( text );
 			} else {
 				cqMessage.setAnwser( false ); 
 				List<Map<String, Object>> datas = esQuestionService.getQuestionEsService().queryList(QueryBuilders.boolQuery().must(QueryBuilders.termQuery("talkId", talkRecord.getId()))) ;
