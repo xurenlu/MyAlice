@@ -16,8 +16,6 @@ import org.springframework.util.CollectionUtils;
 import com.myalice.beans.CoolQMessage;
 import com.myalice.beans.CoolQResponse;
 import com.myalice.domain.TalkRecord;
-import com.myalice.party.BranchTuling;
-import com.myalice.party.InterBus.BusType;
 import com.myalice.services.ESQuestionService;
 import com.myalice.services.SysDictionariesService;
 import com.myalice.services.TalkRecordService;
@@ -50,7 +48,11 @@ public class CoolQMessageService {
 			TalkRecord talkRecord = talkRecordService.selectLastAsk(MyAliceUtils.toString(cqMessage.getGroup_id()),
 					MyAliceUtils.toString( qqs[0] ));
 			if (null == talkRecord) {
-				response.setReply( BranchTuling.getBus( BusType.TULING ).call( message ) ); 
+				
+				response.setReply("");
+				cqMessage.setAnwser(false );
+				response.setAt_sender(false);
+				//response.setReply( BranchTuling.getBus( BusType.TULING ).call( message ) ); 
 			} else {
 				cqMessage.setAnwser( false ); 
 				List<Map<String, Object>> datas = esQuestionService.getQuestionEsService().queryList(QueryBuilders.boolQuery().must(QueryBuilders.termQuery("talkId", talkRecord.getId()))) ;
