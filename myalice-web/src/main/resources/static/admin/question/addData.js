@@ -12,7 +12,7 @@ $( function(){
 		for(var x=0;x<answers.length;x++){
 			answerText.push( $(answers[x]).val() );  
 		}
-		alert( answerText );
+		//alert( answerText );
 		var id = $("#id").val();
 		if("" ==  questionType){
 			bootbox.alert("请选择问题类型");
