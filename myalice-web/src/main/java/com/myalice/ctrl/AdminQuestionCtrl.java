@@ -134,7 +134,7 @@ public class AdminQuestionCtrl {
 		String questionType = MyAliceUtils.toString(request.getParameter("questionType"));
 		String question = MyAliceUtils.toString(request.getParameter("question"));
 		
-		String[]anwsers = request.getParameterValues("anwser");
+		String[]anwsers = request.getParameterValues("anwser[]");
 		String id = MyAliceUtils.toString(request.getParameter("id"));
 		Map<String,Object> questionMap = new HashMap<>() ;
 		questionMap.put("title", question);

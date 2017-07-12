@@ -12,6 +12,7 @@ $( function(){
 		for(var x=0;x<answers.length;x++){
 			answerText.push( $(answers[x]).val() );  
 		}
+		alert( answerText );
 		var id = $("#id").val();
 		if("" ==  questionType){
 			bootbox.alert("请选择问题类型");
@@ -94,8 +95,8 @@ function addAnwser(){
 }
 
 function deleteAnwser(v){
-	if($("#anwserList").find(".anwser").length == 1){
-		alert("至少保留一个答案");
+	if($("#anwserList").find(".anwser").length == 1){ 
+		bootbox.alert("至少保留一个答案"); 
 		return ;
 	}
 	if(confirm("是否确认删除该答案")){
