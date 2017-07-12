@@ -314,6 +314,7 @@
 		},
 		format: function() {
 			var html = '<ul>'
+				html += '<li>共' + this.settings.count + '条记录</li>' ;
 			html += '<li class="js-page-first js-page-action ui-pager" >' + this.settings.firstTpl + '</li>';
 			html += '<li class="js-page-prev js-page-action ui-pager">' + this.settings.prevTpl + '</li>';
 			if (this.pagecount > 6) {

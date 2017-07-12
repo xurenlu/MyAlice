@@ -1,8 +1,10 @@
 package com.myalice.services;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.springframework.stereotype.Service;
@@ -13,6 +15,7 @@ import com.myalice.config.ElasticsearchProporties;
 import com.myalice.domain.ElasticsearchData;
 import com.myalice.es.impl.ElasticsearchService;
 import com.myalice.utils.MyAliceUtils;
+import com.myalice.utils.Tools;
 
 @Service
 public class ESQuestionService {
@@ -45,6 +48,32 @@ public class ESQuestionService {
 		anwserEsService.add(anwser);
 	}
 
+	
+	public void addQuestions(Map<String, Object> question, String[]anwsers) {
+
+		String id = MyAliceUtils.toString(question.get("id"));
+
+		if (!StringUtils.isEmpty(id)) {
+			List<Map<String, Object>> queryAnswer = queryAnswer(QueryBuilders.matchQuery("question_id", id));
+			queryAnswer.forEach(v -> {
+				String answerId = MyAliceUtils.toString(v.get("id"));
+				anwserEsService.remove(answerId);
+			});
+		}
+
+		questionEsService.add(question);
+		if(ArrayUtils.isNotEmpty(anwsers)){
+			for(String anwser:anwsers){
+				Map<String,Object> anwserMap = new HashMap<>() ;
+				anwserMap.put("anwser", anwser); 
+				anwserMap.put("create_time", Tools.currentDate()); 
+				anwserMap.put("source", 0 ) ;
+				anwserMap.put("question_id", question.get("id"));
+				anwserEsService.add(anwserMap);
+			}
+		}
+	}
+	
 	public boolean add(Map<String, Object> data) {
 		return questionEsService.add(data);
 	}

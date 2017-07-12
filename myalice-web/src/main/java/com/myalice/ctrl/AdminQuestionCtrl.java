@@ -133,7 +133,8 @@ public class AdminQuestionCtrl {
 	public ResponseMessageBody add(HttpServletRequest request,Authentication authentication) {
 		String questionType = MyAliceUtils.toString(request.getParameter("questionType"));
 		String question = MyAliceUtils.toString(request.getParameter("question"));
-		String anwser = MyAliceUtils.toString(request.getParameter("anwser")); 
+		
+		String[]anwsers = request.getParameterValues("anwser");
 		String id = MyAliceUtils.toString(request.getParameter("id"));
 		Map<String,Object> questionMap = new HashMap<>() ;
 		questionMap.put("title", question);
@@ -143,11 +144,7 @@ public class AdminQuestionCtrl {
 		questionMap.put("create_user", authentication.getName() ) ; 
 		questionMap.put("create_date", Tools.currentDate()); 
 		
-		Map<String,Object> anwserMap = new HashMap<>() ;
-		anwserMap.put("anwser", anwser); 
-		anwserMap.put("create_time", Tools.currentDate()); 
-		anwserMap.put("source", 0 ) ;
-		esQuestionService.addQuestion(questionMap, anwserMap) ;
+		esQuestionService.addQuestions(questionMap, anwsers) ;
 		return new ResponseMessageBody("保存成功", true);
 	}
 	
