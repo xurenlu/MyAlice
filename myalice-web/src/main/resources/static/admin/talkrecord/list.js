@@ -14,7 +14,8 @@ function loadData(url,param){
 		$('#pageToolbar').html(""); 
 		$('#pageToolbar').Paging({current:data.pageNum,pagesize:data.pageSize,count:data.total,callback:function(page,size,count){
 			console.log( '当前第 ' +page +'页,每页 '+size+'条,总页数：'+count+'页' ) ;
-			loadData(loadDataUrl , {pageNum:page});   
+			//loadData(loadDataUrl , {pageNum:page});
+			btnSearch(page);
 		}});
 	} , "json")
 }
