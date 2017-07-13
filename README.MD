@@ -53,7 +53,7 @@ curl -XPUT 'http://127.0.0.1:19200/myalice?pretty' -d '{
           "max_token_length": 150
         },
         "ik": {
-          "type": "ik_smart",
+          "type": "ik_max_word",
           "max_token_length": 150
         }
       }
