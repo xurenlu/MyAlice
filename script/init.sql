@@ -283,9 +283,12 @@ CREATE TABLE `talk_record` (
   `create_time` datetime NOT NULL COMMENT '创建时间',
   `connection_id` varchar(36) NOT NULL COMMENT '连接ID',
   `reply` varchar(500) DEFAULT NULL COMMENT '回复内容',
-  `replyType` tinyint(2) DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='沟通记录';
+  `replyType` tinyint(2) DEFAULT NULL COMMENT '1找到内容',
+  `groupId` varchar(20) DEFAULT NULL COMMENT 'QQ群ID',
+  PRIMARY KEY (`id`),
+  KEY `user_id` (`user_id`),
+  KEY `groupId` (`groupId`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='沟通记录' ; 
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
