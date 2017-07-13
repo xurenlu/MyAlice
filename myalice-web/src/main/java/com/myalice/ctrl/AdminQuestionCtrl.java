@@ -156,4 +156,21 @@ public class AdminQuestionCtrl {
 		map.put("question_id", id); 
 		return map;
 	}
+	
+	
+	@PostMapping("delete")
+	public ResponseMessageBody delete(String id){
+		
+		try {
+			List<Map<String, Object>> queryAnswer = esQuestionService.queryAnswer(QueryBuilders.matchQuery("question_id", id));
+			queryAnswer.forEach(v -> {
+				String answerId = MyAliceUtils.toString(v.get("id"));
+				esQuestionService.getAnwserEsService().remove(answerId);
+			});
+			esQuestionService.getQuestionEsService().remove(id); 
+		} catch (Exception e) {
+		}
+		
+		return new ResponseMessageBody("删除成功", true);
+	}
 }

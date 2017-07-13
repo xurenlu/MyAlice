@@ -38,3 +38,24 @@ Question.prototype = {
 function update(id){
 	window.location="/admin/question/addData.html?id=" + id ; 
 }
+
+
+function deleteFun(id){
+	
+	bootbox.confirm("是否确认删除该问题！" , function(result){
+		if(result){
+			$.mypost("/admin/question/delete" , { id:id } , function( json ){
+				bootbox.alert(json.msg); 
+				window.setTimeout(function(){
+					var pageid = $(".focus").attr("data-page");
+					if(pageid != null){
+						btnSearch(pageid);
+					}else{
+						btnSearch(1);
+					}
+				},1000)
+			} , "json")
+		}
+	})
+	
+}
