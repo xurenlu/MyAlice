@@ -56,7 +56,7 @@ public class CoolQMessageService {
 				Map<String, Object> jsonMap = ParseJson.parseToObj(json);
 				String text = MyAliceUtils.toString(jsonMap.get("text"));
 				text.replaceAll("图灵", "Myalice");
-				response.setReply( text );
+				response.setReply( text ) ;
 			} else {
 				cqMessage.setAnwser( false ); 
 				List<Map<String, Object>> datas = esQuestionService.getQuestionEsService().queryList(QueryBuilders.boolQuery().must(QueryBuilders.termQuery("talkId", talkRecord.getId()))) ;
