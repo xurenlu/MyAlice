@@ -21,6 +21,26 @@ public class CoolQMessage {
 	private boolean isSearchData ;
 	
 	private boolean isAnwser ; 
+	
+	private String answerId ;
+	
+	private String questionId ;
+	
+	public String getAnswerId() {
+		return answerId;
+	}
+
+	public void setAnswerId(String answerId) {
+		this.answerId = answerId;
+	}
+
+	public String getQuestionId() {
+		return questionId;
+	}
+
+	public void setQuestionId(String questionId) {
+		this.questionId = questionId;
+	}
 
 	public boolean isAnwser() {
 		return isAnwser;
