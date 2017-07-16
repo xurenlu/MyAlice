@@ -36,15 +36,23 @@ public class ElasticsearchAnswerAdapter extends ChatAdapter {
 		ESQuestionService esQuestionService = context.getBean(ESQuestionService.class);
 		String messageStr = MyAliceUtils.trimQQ(message.getMessage()).trim();
 		Map<String, Object> answer = esQuestionService.searchAnswer(messageStr);
+		message.setAnwser(true);
 		if (null != answer) {
+			message.setQuestionId(  MyAliceUtils.toString(answer.get("question_id")) ) ; 
+			message.setAnswerId(  MyAliceUtils.toString(answer.get("id")) ) ;
+			
 			String anwser = MyAliceUtils.toString(answer.get("anwser"));
-
 			String user = StringUtils.equalsAny("1", MyAliceUtils.toString(answer.get("state"))) ? "MyCat官方"
 					: MyAliceUtils.toString(answer.get("create_user") + " 仅供参考");
-
+			user = user.replaceAll("719867650", "Leader-us") ; 
+			
+			
+			
 			response.setReply(anwser + " 来源：" + user);
 			return response;
 		} else {
+			message.setQuestionId( "" ) ; 
+			message.setAnswerId( "" ) ;
 			response.setReply("很抱歉，我还不知道答案 群里知道此问题答案的请 @机器猫 @提问者 建议答案：xxxxx");
 			return response;
 		}

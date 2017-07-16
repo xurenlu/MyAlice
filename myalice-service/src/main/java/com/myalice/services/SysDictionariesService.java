@@ -29,10 +29,14 @@ public class SysDictionariesService {
 		List<SysDictionaries> dictionaries = dictionariesMapper.selectForDType("chatbot");
 		String[] returnQqs = new String[0] ; 
 		for(String qq : qqs){
+			boolean isFlag = false ;
 			for(SysDictionaries dictionary:dictionaries){
-				if(!StringUtils.equals(dictionary.getTname(), qq)){
-					returnQqs = ArrayUtils.add(returnQqs, qq) ;
+				if(StringUtils.equals(dictionary.getTname(), qq)){
+					isFlag = true ;  
 				}
+			}
+			if(!isFlag){
+				returnQqs = ArrayUtils.add(returnQqs, qq) ;
 			}
 		}
 		return returnQqs; 

@@ -70,7 +70,7 @@ public class AdminQuestionCtrl {
 				return response;
 			}
 
-			if (!cqMessage.isAnwser()) {
+			if (cqMessage.isAnwser()) {
 				String message = MyAliceUtils.trimQQ(cqMessage.getMessage());
 				if (!org.apache.commons.lang3.StringUtils.isEmpty(message)) {
 					TalkRecord record = new TalkRecord();
@@ -79,13 +79,14 @@ public class AdminQuestionCtrl {
 					record.setUserId(MyAliceUtils.toString(cqMessage.getUser_id()));
 					record.setGroupId(MyAliceUtils.toString(cqMessage.getGroup_id()));
 					record.setUserType("");
-					record.setConnectionId("");
+					record.setConnectionId(cqMessage.getAnswerId());
+					record.setQuestionId(cqMessage.getQuestionId());
 					record.setCreateTime(Tools.currentDate());
 					record.setReplyType(!cqMessage.isSearchData() ? 0 : 1);
 					talkRecordService.insert(record);
 				}
 			}
-			
+
 			CoolQMessageType messageType = CoolQMessageType.getCoolQMessageType(cqMessage.getMessage_type());
 			switch (messageType) {
 			case PRIVATE:
