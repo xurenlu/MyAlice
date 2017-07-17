@@ -28,6 +28,14 @@ public class TalkRecordService {
 	}
 
 	public TalkRecord selectLastAsk(String groupId, String userId,Integer replyType) {
-		return talkRecordMapper.selectLastAsk(groupId, userId , replyType);
+		TalkRecord record = talkRecordMapper.selectLastAsk(groupId, userId , replyType);
+		if(null == record){
+			return null ;
+		}
+		replyType = replyType == null ? 0 : replyType ; 
+		if(replyType.intValue() == (null == record.getReplyType() ? 0 : record.getReplyType())){
+			return record ;
+		}
+		return null ;
 	}
 }
