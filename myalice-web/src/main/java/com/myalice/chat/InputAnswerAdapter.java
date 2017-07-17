@@ -56,7 +56,7 @@ public class InputAnswerAdapter extends ChatAdapter {
 			if (null == talkRecord) {
 				cqResponse.setAt_sender(true);
 				cqResponse.setReply("感谢您的支持，该人员最近一次没有未回答的问题"); 
-				return null ;
+				return cqResponse ;
 			}
 			List<Map<String, Object>> datas = esQuestionService.getQuestionEsService().queryList(QueryBuilders.boolQuery().must(QueryBuilders.termQuery("talkId", talkRecord.getId()))) ;
 			if(CollectionUtils.isEmpty(datas)){
@@ -99,7 +99,7 @@ public class InputAnswerAdapter extends ChatAdapter {
 			if(talkRecord == null){
 				cqResponse.setAt_sender(true);
 				cqResponse.setReply("感谢您的支持，该人员最近一次没有已经回答的问题案") ; 
-				return null ;
+				return cqResponse ;
 			}
 			message = message.replaceAll("补充：", "") ;  
 			message = message.replaceAll("补充:", "") ;

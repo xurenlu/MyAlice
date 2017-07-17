@@ -7,8 +7,10 @@ import java.util.Vector;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.math.NumberUtils;
+import org.elasticsearch.action.ListenableActionFuture;
 import org.elasticsearch.action.admin.indices.analyze.AnalyzeAction;
 import org.elasticsearch.action.admin.indices.analyze.AnalyzeRequestBuilder;
+import org.elasticsearch.action.admin.indices.analyze.AnalyzeResponse;
 import org.elasticsearch.action.admin.indices.analyze.AnalyzeResponse.AnalyzeToken;
 import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.get.GetResponse;
@@ -55,7 +57,11 @@ public class ElasticsearchService implements IElasticsearch {
 			
 			requestBuilder.setAnalyzer("ik_max_word"); 
 			
-			List<AnalyzeToken> tokens = requestBuilder.execute().actionGet().getTokens();
+			ListenableActionFuture<AnalyzeResponse> execute = requestBuilder.execute();
+			
+			AnalyzeResponse actionGet = execute.actionGet(); 
+			
+			List<AnalyzeToken> tokens = actionGet.getTokens();
 			return tokens;
 		} catch (Exception e) {
 			throw new RuntimeException(e.getMessage());

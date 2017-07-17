@@ -1,12 +1,24 @@
 package org.hp.impl.client;
 
+import java.nio.charset.Charset;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
+import java.util.Arrays;
+import java.util.stream.Stream;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.*;
+import org.apache.http.client.methods.HttpDelete;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpHead;
+import org.apache.http.client.methods.HttpPatch;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
+import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -16,13 +28,8 @@ import org.apache.http.ssl.SSLContextBuilder;
 import org.apache.http.ssl.TrustStrategy;
 import org.hp.charset.SpiderCharset;
 import org.hp.client.SpiderHttp;
+import org.hp.request.SpiderRequestContentType;
 import org.hp.request.SpiderRequestUserAgent;
-
-import java.nio.charset.Charset;
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
-import java.util.Arrays;
-import java.util.stream.Stream;
 
 public class DefaultSpiderHttp implements SpiderHttp {
 
@@ -53,6 +60,7 @@ public class DefaultSpiderHttp implements SpiderHttp {
         }
         HttpClientBuilder create = HttpClientBuilder.create();
         create.addInterceptorFirst(new SpiderRequestUserAgent());
+        create.addInterceptorFirst(new SpiderRequestContentType());
         CloseableHttpClient build = create.build();
         return build;
     }

@@ -105,7 +105,7 @@ public interface TalkRecordMapper {
 	
 	
 	/**自定义方法*/
-	@Select({ "select", "id, content, user_id, user_type, create_time, connection_id, reply,groupId,questionId", "from talk_record",
+	@Select({ "select", "id, content, user_id, user_type, create_time, connection_id, reply,groupId,questionId,replyType", "from talk_record",
 	"where user_id=#{userId,jdbcType=VARCHAR} and groupId=#{groupId,jdbcType=VARCHAR} order by create_time desc limit 1" })
 	@Results({ @Result(column = "id", property = "id", jdbcType = JdbcType.VARCHAR, id = true) ,
 	@Result(column = "content", property = "content", jdbcType = JdbcType.VARCHAR),
