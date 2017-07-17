@@ -40,50 +40,64 @@ public class InputAnswerAdapter extends ChatAdapter {
 	@Override
 	public CoolQResponse chat(CoolQMessage cqMessage) {
 		TalkRecordService talkRecordService = context.getBean(TalkRecordService.class);
-		TalkRecord talkRecord = talkRecordService.selectLastAsk(MyAliceUtils.toString(cqMessage.getGroup_id()),qq);
-		if (null == talkRecord) {
-			return null ; 
-		}
+		
+		
+		
 		CoolQResponse cqResponse = new CoolQResponse();
 		ESQuestionService esQuestionService = context.getBean( ESQuestionService.class ) ;
-		String message = MyAliceUtils.trimQQ(cqMessage.getMessage() ) ;
-		cqMessage.setAnwser( false ); 
-		List<Map<String, Object>> datas = esQuestionService.getQuestionEsService().queryList(QueryBuilders.boolQuery().must(QueryBuilders.termQuery("talkId", talkRecord.getId()))) ;
-		if(CollectionUtils.isEmpty(datas)){
-			Map<String, Object> questionMap = new HashMap<>();
-			questionMap.put("title", talkRecord.getContent());
-			questionMap.put("state", 2);
-			questionMap.put("questionType", 1);
-			questionMap.put("create_user", MyAliceUtils.toString(cqMessage.getUser_id()) );
-			questionMap.put("talkId", talkRecord.getId());
-			questionMap.put("create_date", Tools.currentDate());
-			message = message.replaceAll("建议答案：", "") ;  
-			message = message.replaceAll("建议答案:", "") ;
-			message = message.replaceAll("建议答案", "") ;
-			Map<String,Object> anwserMap = new HashMap<>() ;
-			anwserMap.put("anwser", message); 
-			anwserMap.put("create_time", Tools.currentDate()); 
-			anwserMap.put("create_user", cqMessage.getUser_id()) ;
-			anwserMap.put("source", 0 ) ;
-			esQuestionService.addQuestion(questionMap, anwserMap) ; 
-		}else{
-			Map<String, Object> question = datas.get(0) ;
-			Map<String,Object> anwserMap = new HashMap<>() ;
-			message = message.replaceAll("建议答案：", "") ;  
-			message = message.replaceAll("建议答案:", "") ;
-			message = message.replaceAll("建议答案", "") ;
-			if(StringUtils.startsWithAny(message, "：" , ":")){
-				message = message.substring(1) ;
+		String message = MyAliceUtils.trimQQ(cqMessage.getMessage() ) ; 
+		message = message.replaceAll("　", " ");
+		message = message.trim() ;
+		
+		cqMessage.setAnwser( true );
+		cqMessage.setSearchData( true );
+		
+		if(StringUtils.startsWith(message, "建议答案")){
+			TalkRecord talkRecord = talkRecordService.selectLastAsk(MyAliceUtils.toString(cqMessage.getGroup_id()),qq , 0);
+			if (null == talkRecord) {
+				return null ; 
 			}
-			anwserMap.put("anwser", message); 
-			anwserMap.put("create_time", Tools.currentDate()); 
-			anwserMap.put("create_user", cqMessage.getUser_id()) ; 
-			anwserMap.put("source", 0 ) ;
-			anwserMap.put("question_id", question.get("id"));
-			esQuestionService.getAnwserEsService().add( anwserMap ) ; 
+			List<Map<String, Object>> datas = esQuestionService.getQuestionEsService().queryList(QueryBuilders.boolQuery().must(QueryBuilders.termQuery("talkId", talkRecord.getId()))) ;
+			if(CollectionUtils.isEmpty(datas)){
+				Map<String, Object> questionMap = new HashMap<>();
+				questionMap.put("title", talkRecord.getContent());
+				questionMap.put("state", 2);
+				questionMap.put("questionType", 1);
+				questionMap.put("create_user", MyAliceUtils.toString(cqMessage.getUser_id()) );
+				questionMap.put("talkId", talkRecord.getId());
+				questionMap.put("create_date", Tools.currentDate());
+				message = message.replaceAll("建议答案：", "") ;  
+				message = message.replaceAll("建议答案:", "") ;
+				message = message.replaceAll("建议答案", "") ;
+				Map<String,Object> anwserMap = new HashMap<>() ;
+				anwserMap.put("anwser", message); 
+				anwserMap.put("create_time", Tools.currentDate()); 
+				anwserMap.put("create_user", cqMessage.getUser_id()) ;
+				anwserMap.put("source", 0 ) ;
+				esQuestionService.addQuestion(questionMap, anwserMap) ; 
+			}else{
+				Map<String, Object> question = datas.get(0) ;
+				Map<String,Object> anwserMap = new HashMap<>() ;
+				message = message.replaceAll("建议答案：", "") ;  
+				message = message.replaceAll("建议答案:", "") ;
+				message = message.replaceAll("建议答案", "") ;
+				if(StringUtils.startsWithAny(message, "：" , ":")){
+					message = message.substring(1) ;
+				}
+				anwserMap.put("anwser", message); 
+				anwserMap.put("create_time", Tools.currentDate()); 
+				anwserMap.put("create_user", cqMessage.getUser_id()) ; 
+				anwserMap.put("source", 0 ) ;
+				anwserMap.put("question_id", question.get("id"));
+				esQuestionService.getAnwserEsService().add( anwserMap ) ; 
+			}
+			cqResponse.setAt_sender( true );
+			cqResponse.setReply("非常感谢您的回答");
+		}else if(StringUtils.startsWith(message, "补充")){
+			
+		}else if(StringUtils.startsWith(message, "评分")){
+			
 		}
-		cqResponse.setAt_sender( true );
-		cqResponse.setReply("非常感谢您的回答");
 		return cqResponse;
 	}
 

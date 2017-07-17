@@ -27,7 +27,7 @@ public class TalkRecordService {
 		return startPage;
 	}
 
-	public TalkRecord selectLastAsk(String groupId, String userId) {
-		return talkRecordMapper.selectLastAsk(groupId, userId);
+	public TalkRecord selectLastAsk(String groupId, String userId,Integer replyType) {
+		return talkRecordMapper.selectLastAsk(groupId, userId , replyType);
 	}
 }

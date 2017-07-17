@@ -106,7 +106,7 @@ public interface TalkRecordMapper {
 	
 	/**自定义方法*/
 	@Select({ "select", "id, content, user_id, user_type, create_time, connection_id, reply,groupId,questionId", "from talk_record",
-	"where user_id=#{userId,jdbcType=VARCHAR} and groupId=#{groupId,jdbcType=VARCHAR} order by create_time desc limit 1" })
+	"where user_id=#{userId,jdbcType=VARCHAR} and groupId=#{groupId,jdbcType=VARCHAR} and replyType = #{replyType,jdbcType=INTEGER} order by create_time desc limit 1" })
 	@Results({ @Result(column = "id", property = "id", jdbcType = JdbcType.VARCHAR, id = true) ,
 	@Result(column = "content", property = "content", jdbcType = JdbcType.VARCHAR),
 	@Result(column = "user_id", property = "userId", jdbcType = JdbcType.VARCHAR),
@@ -116,5 +116,5 @@ public interface TalkRecordMapper {
 	@Result(column = "reply", property = "reply", jdbcType = JdbcType.VARCHAR),
 	@Result(column = "questionId", property = "questionId", jdbcType = JdbcType.VARCHAR),
 	@Result(column = "replyType", property = "replyType", jdbcType = JdbcType.INTEGER) })
-	TalkRecord selectLastAsk(@Param("groupId") String groupId , @Param("userId") String userId);
+	TalkRecord selectLastAsk(@Param("groupId") String groupId , @Param("userId") String userId,@Param("replyType")Integer replyType);
 }

@@ -50,7 +50,7 @@ public class CoolQMessageService {
 			cqMessage.setSearchData( searchAnswer(message, response) );
 		} else {
 			TalkRecord talkRecord = talkRecordService.selectLastAsk(MyAliceUtils.toString(cqMessage.getGroup_id()),
-					MyAliceUtils.toString( qqs[0] ));
+					MyAliceUtils.toString( qqs[0] )  , 0);
 			if (null == talkRecord) {
 				String json = BranchTuling.getBus( BusType.TULING ).call( message );
 				Map<String, Object> jsonMap = ParseJson.parseToObj(json);
