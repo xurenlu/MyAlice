@@ -112,7 +112,7 @@ public class InputAnswerAdapter extends ChatAdapter {
 					// cqMessage
 					extend = StringUtils.isEmpty(extend) 
 							? "补充：" + message
-									+ "来源：" + cqMessage.getUser_id()
+									+ " 来源：" + cqMessage.getUser_id()
 									: StringUtils.LF + message + "来源：" + cqMessage.getUser_id();
 				   map.put("ext", extend);
 				   esQuestionService.getAnwserEsService().add( map ) ; 
