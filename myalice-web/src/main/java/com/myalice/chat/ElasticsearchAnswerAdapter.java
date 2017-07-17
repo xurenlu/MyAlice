@@ -46,11 +46,12 @@ public class ElasticsearchAnswerAdapter extends ChatAdapter {
 					: MyAliceUtils.toString(answer.get("create_user") + " 仅供参考");
 			user = user.replaceAll("719867650", "Leader-us") ; 
 			
-			
+			message.setSearchData(true);
 			
 			response.setReply(anwser + " 来源：" + user);
 			return response;
 		} else {
+			message.setSearchData( false );
 			message.setQuestionId( "" ) ; 
 			message.setAnswerId( "" ) ;
 			response.setReply("很抱歉，我还不知道答案 群里知道此问题答案的请 @机器猫 @提问者 建议答案：xxxxx");
