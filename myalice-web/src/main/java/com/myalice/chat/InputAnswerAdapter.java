@@ -42,7 +42,6 @@ public class InputAnswerAdapter extends ChatAdapter {
 		TalkRecordService talkRecordService = context.getBean(TalkRecordService.class);
 		
 		
-		
 		CoolQResponse cqResponse = new CoolQResponse();
 		ESQuestionService esQuestionService = context.getBean( ESQuestionService.class ) ;
 		String message = MyAliceUtils.trimQQ(cqMessage.getMessage() ) ; 
@@ -93,7 +92,7 @@ public class InputAnswerAdapter extends ChatAdapter {
 				anwserMap.put("question_id", question.get("id"));
 				esQuestionService.getAnwserEsService().add( anwserMap ) ; 
 			}
-			cqResponse.setAt_sender( true );
+			cqResponse.setAt_sender( true ); 
 			cqResponse.setReply("非常感谢您的回答");
 		}else if(StringUtils.startsWith(message, "补充")){
 			TalkRecord talkRecord = talkRecordService.selectLastAsk(MyAliceUtils.toString(cqMessage.getGroup_id()),qq , 1);
@@ -119,7 +118,7 @@ public class InputAnswerAdapter extends ChatAdapter {
 				   esQuestionService.getAnwserEsService().add( map ) ; 
 				}
 			}
-			cqResponse.setAt_sender( false );
+			cqResponse.setAt_sender( true );
 			cqResponse.setReply("感谢您补充答案") ; 
 			return cqResponse ;
 		}else if(StringUtils.startsWith(message, "评分")){
