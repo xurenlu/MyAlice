@@ -48,7 +48,8 @@ public class ElasticsearchAnswerAdapter extends ChatAdapter {
 			
 			message.setSearchData(true);
 			
-			response.setReply(anwser + " 来源：" + user);
+			response.setReply(anwser + " 来源：" + user
+					+ StringUtils.LF + MyAliceUtils.toString( answer.get("ext") )); 
 			return response;
 		} else {
 			message.setSearchData( false );
