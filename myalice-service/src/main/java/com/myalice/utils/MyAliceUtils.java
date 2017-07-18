@@ -48,7 +48,6 @@ public class MyAliceUtils {
 	}
 	
 	public static String parseQQ(String text){
-		System.out.println( text);
 		Matcher matcher = PATTERN_INTEGER.matcher(text);
 		if(matcher.find()){
 			return matcher.group();

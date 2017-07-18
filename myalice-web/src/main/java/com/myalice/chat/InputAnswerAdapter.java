@@ -93,8 +93,10 @@ public class InputAnswerAdapter extends ChatAdapter {
 				esQuestionService.getAnwserEsService().add( anwserMap ) ; 
 			}
 			cqResponse.setAt_sender( true ); 
+			cqMessage.setAnwser(true);
 			cqResponse.setReply("非常感谢您的回答");
 		}else if(StringUtils.startsWith(message, "补充")){
+			
 			TalkRecord talkRecord = talkRecordService.selectLastAsk(MyAliceUtils.toString(cqMessage.getGroup_id()),qq , 1);
 			if(talkRecord == null){
 				cqResponse.setAt_sender(true);
@@ -108,17 +110,20 @@ public class InputAnswerAdapter extends ChatAdapter {
 			if(!StringUtils.isEmpty(connectionId)){
 				Map<String, Object> map = esQuestionService.getAnwserEsService().get( connectionId ) ;   
 				if(null != map){
+					cqMessage.setQuestionId( MyAliceUtils.toString( map.get("question_id") ));
 					String extend = MyAliceUtils.toString( map.get("ext") ) ;
 					// cqMessage
 					extend = StringUtils.isEmpty(extend) 
 							? "补充：" + message
 									+ " 来源：" + cqMessage.getUser_id()
-									: StringUtils.LF + message + "来源：" + cqMessage.getUser_id();
+									: extend + StringUtils.LF + message + " 来源：" + cqMessage.getUser_id();
 				   map.put("ext", extend);
 				   map.put("id", connectionId);
 				   esQuestionService.getAnwserEsService().add( map ) ; 
 				}
 			}
+			cqMessage.setAnswerId( talkRecord.getConnectionId() ); 
+			cqMessage.setAnwser(true);
 			cqResponse.setAt_sender( true );
 			cqResponse.setReply("感谢您补充答案") ; 
 			return cqResponse ;
