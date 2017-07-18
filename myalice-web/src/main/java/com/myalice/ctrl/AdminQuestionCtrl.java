@@ -79,8 +79,8 @@ public class AdminQuestionCtrl {
 					record.setUserId(MyAliceUtils.toString(cqMessage.getUser_id()));
 					record.setGroupId(MyAliceUtils.toString(cqMessage.getGroup_id()));
 					record.setUserType("");
-					record.setConnectionId(cqMessage.getAnswerId());
-					record.setQuestionId(cqMessage.getQuestionId());
+					record.setConnectionId(StringUtils.isEmpty(cqMessage.getAnswerId()) ? "" : cqMessage.getAnswerId());
+					record.setQuestionId(StringUtils.isEmpty(cqMessage.getQuestionId())?"":cqMessage.getQuestionId());
 					record.setCreateTime(Tools.currentDate());
 					record.setReplyType(!cqMessage.isSearchData() ? 0 : 1);
 					talkRecordService.insert(record);
