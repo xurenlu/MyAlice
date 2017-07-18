@@ -21,8 +21,8 @@ public class ESClient21 {
 		paramMap.put("group_id", "0");
 		paramMap.put("user_id", "834865081");
 		// paramMap.put("message", "[CQ:at,qq=834865081]建议答案：大家都好");
-		paramMap.put("message", "[CQ:at,qq=834865081]补充:全世界人民都很好");
-		// paramMap.put("message", "你好");
+		// 	paramMap.put("message", "[CQ:at,qq=834865081]补充:全世界人民都很好");
+		paramMap.put("message", "你好");
 		paramMap.put("message_type", "discuss");
 		SpiderHttp spiderHttp = SpiderHttpFactory.createFactory();
 
