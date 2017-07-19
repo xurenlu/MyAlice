@@ -12,10 +12,11 @@ public interface Tools {
 	}
 	
 	public static Date currentDate(){
-		return Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant());
+		return Date.from(LocalDateTime.now().atZone(ZoneId.of("GMT+8")).toInstant());
 	}
 	
 	public static final Byte ZORE = (byte)0;
 	public static final Byte ONE = (byte)1;
+	
 	
 }
