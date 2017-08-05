@@ -1,11 +1,10 @@
 package com.myalice.es.impl;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Vector;
-import java.util.stream.Stream;
-
+import com.myalice.config.ElasticsearchProporties;
+import com.myalice.domain.ElasticsearchData;
+import com.myalice.es.IElasticsearch;
+import com.myalice.utils.MyAliceUtils;
+import com.myalice.utils.Tools;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.elasticsearch.action.ListenableActionFuture;
 import org.elasticsearch.action.admin.indices.analyze.AnalyzeAction;
@@ -27,189 +26,190 @@ import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.util.StringUtils;
 
-import com.myalice.config.ElasticsearchProporties;
-import com.myalice.domain.ElasticsearchData;
-import com.myalice.es.IElasticsearch;
-import com.myalice.utils.MyAliceUtils;
-import com.myalice.utils.Tools;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
+import java.util.stream.Stream;
 
 public class ElasticsearchService implements IElasticsearch {
 
-	protected String index;
+    protected String index;
 
-	protected String type;
+    protected String type;
 
-	protected ElasticsearchProporties elasticsearchProporties;
+    protected ElasticsearchProporties elasticsearchProporties;
 
-	public ElasticsearchService() {
-	}
+    public ElasticsearchService() {
+    }
 
-	public ElasticsearchService(String index, String type) {
-		this.index = index;
-		this.type = type;
-	}
+    public ElasticsearchService(String index, String type) {
+        this.index = index;
+        this.type = type;
+    }
 
-	public List<AnalyzeToken> ik(String text) {
-		try {
-			TransportClient client = elasticsearchProporties.createTransportClient();
-			IndicesAdminClient indices = client.admin().indices() ;
-			AnalyzeRequestBuilder requestBuilder = new AnalyzeRequestBuilder(indices,AnalyzeAction.INSTANCE, index, text) ;
-			
-			requestBuilder.setAnalyzer("ik_max_word"); 
-			
-			ListenableActionFuture<AnalyzeResponse> execute = requestBuilder.execute();
-			
-			AnalyzeResponse actionGet = execute.actionGet(); 
-			
-			List<AnalyzeToken> tokens = actionGet.getTokens();
-			return tokens;
-		} catch (Exception e) {
-			throw new RuntimeException(e.getMessage());
-		}
-	}
+    public List<AnalyzeToken> ik(String text) {
+        try {
+            TransportClient client = elasticsearchProporties.createTransportClient();
+            IndicesAdminClient indices = client.admin().indices();
+            AnalyzeRequestBuilder requestBuilder = new AnalyzeRequestBuilder(indices, AnalyzeAction.INSTANCE, index, text);
 
-	public List<Map<String, Object>> sort(List<Map<String, Object>> datas, String text) {
-		List<AnalyzeToken> textTokens = ik(text);
-		for (Map<String, Object> data : datas) {
-			String title = MyAliceUtils.toString(data.get("title"));
-			List<AnalyzeToken> titleTokens = ik(title);
-			int sameInt = 0;
-			for (AnalyzeToken titleToken : titleTokens) {
-				for (AnalyzeToken textToken : textTokens) {
-					if (MyAliceUtils.toString( titleToken.getTerm()).equalsIgnoreCase(textToken.getTerm())) {
-						sameInt++;
-					}else if (MyAliceUtils.toString(titleToken.getTerm()).indexOf(textToken.getTerm()) > -1){
-						sameInt++;
-					}
-				}
-			}
-			data.put("tokenSameCount", sameInt);
-		}
+            requestBuilder.setAnalyzer("ik_max_word");
 
-		Collections.sort(datas, (v1, v2) -> {
-			int tokenSameCount1 = NumberUtils.toInt(MyAliceUtils.toString(v1.get("tokenSameCount")));
-			int tokenSameCount2 = NumberUtils.toInt(MyAliceUtils.toString(v2.get("tokenSameCount")));
-			if (tokenSameCount1 == tokenSameCount2) {
-				return 0;
-			}
-			if (tokenSameCount1 > tokenSameCount2) {
-				return -1;
-			}
-			return 1;
-		});
-		return datas;
-	}
+            ListenableActionFuture<AnalyzeResponse> execute = requestBuilder.execute();
 
-	@Override
-	public boolean add(Map<String, Object> data) {
-		TransportClient client = elasticsearchProporties.createTransportClient();
-		String id = MyAliceUtils.toString(data.get("id"));
-		if (StringUtils.isEmpty(id)) {
-			id = Tools.uuid();
-		}
-		IndexResponse actionGet = client.prepareIndex(index, type, id).setSource(data).execute().actionGet();
-		data.put("id", id);
-		return actionGet.status() == RestStatus.OK;
-	}
+            AnalyzeResponse actionGet = execute.actionGet();
 
-	@Override
-	public boolean adds(List<Map<String, Object>> datas) {
-		datas.forEach(data -> add(data));
-		return true;
-	}
+            List<AnalyzeToken> tokens = actionGet.getTokens();
+            return tokens;
+        } catch (Exception e) {
+            throw new RuntimeException(e.getMessage());
+        }
+    }
 
-	@Override
-	public Map<String, Object> get(String id) {
-		TransportClient client = elasticsearchProporties.createTransportClient();
-		GetResponse actionGet = client.prepareGet(index, type, id).execute().actionGet();
+    public List<Map<String, Object>> sort(List<Map<String, Object>> datas, String text) {
+        List<AnalyzeToken> textTokens = ik(text);
+        for (Map<String, Object> data : datas) {
+            String title = MyAliceUtils.toString(data.get("title"));
+            List<AnalyzeToken> titleTokens = ik(title);
+            int sameInt = 0;
+            for (AnalyzeToken titleToken : titleTokens) {
+                for (AnalyzeToken textToken : textTokens) {
+                    if (MyAliceUtils.toString(titleToken.getTerm()).equalsIgnoreCase(textToken.getTerm())) {
+                        sameInt++;
+                    } else if (MyAliceUtils.toString(titleToken.getTerm()).indexOf(textToken.getTerm()) > -1) {
+                        sameInt++;
+                    }
+                }
+            }
+            data.put("tokenSameCount", sameInt);
+        }
 
-		return actionGet.getSource();
-	}
+        Collections.sort(datas, (v1, v2) -> {
+            int tokenSameCount1 = NumberUtils.toInt(MyAliceUtils.toString(v1.get("tokenSameCount")));
+            int tokenSameCount2 = NumberUtils.toInt(MyAliceUtils.toString(v2.get("tokenSameCount")));
+            if (tokenSameCount1 == tokenSameCount2) {
+                return 0;
+            }
+            if (tokenSameCount1 > tokenSameCount2) {
+                return -1;
+            }
+            return 1;
+        });
+        return datas;
+    }
 
-	@Override
-	public boolean remove(String id) {
-		TransportClient client = elasticsearchProporties.createTransportClient();
-		DeleteResponse actionGet = client.prepareDelete(index, type, id).execute().actionGet();
-		return actionGet.status() == RestStatus.OK;
-	}
+    @Override
+    public boolean add(Map<String, Object> data) {
+        TransportClient client = elasticsearchProporties.createTransportClient();
+        String id = MyAliceUtils.toString(data.get("id"));
+        if (StringUtils.isEmpty(id)) {
+            id = Tools.uuid();
+        }
+        IndexResponse actionGet = client.prepareIndex(index, type, id).setSource(data).execute().actionGet();
+        data.put("id", id);
+        return actionGet.status() == RestStatus.OK;
+    }
 
-	@Override
-	public boolean removes(String... ids) {
-		Stream.of(ids).forEach(id -> remove(id));
-		return true;
-	}
+    @Override
+    public boolean adds(List<Map<String, Object>> datas) {
+        datas.forEach(data -> add(data));
+        return true;
+    }
 
-	@Override
-	public void query(ElasticsearchData searchData) {
-		TransportClient client = elasticsearchProporties.createTransportClient();
+    @Override
+    public Map<String, Object> get(String id) {
+        TransportClient client = elasticsearchProporties.createTransportClient();
+        GetResponse actionGet = client.prepareGet(index, type, id).execute().actionGet();
 
-		SearchRequestBuilder requestBuilder = client.prepareSearch(index).setTypes(type)
-				.setSearchType(SearchType.DFS_QUERY_THEN_FETCH).setFrom(searchData.getFrom())
-				.setSize(searchData.getSize());
-		requestBuilder.addSort("create_date" , SortOrder.DESC) ;
-		if (null != searchData.getBuilder()) {
-			requestBuilder.setQuery(searchData.getBuilder());
-		}
-		SearchResponse response = requestBuilder.execute().actionGet();
-		SearchHits hits = response.getHits();
-		searchData.setDocCount(hits.getTotalHits());
-		List<Map<String, Object>> docs = new Vector<>();
-		for (SearchHit hit : hits.getHits()) {
-			Map<String, Object> source = hit.getSource();
-			source.put("id", hit.getId());
-			String dateStr = MyAliceUtils.toString(source.get("create_date"));
-			try {
-				String newDateStr = dateStr.substring(0 , 10) ;
-				newDateStr += " " + dateStr.substring(11 , 19) ;
-				source.put("createDateStr", newDateStr);
-			} catch (Exception e) {
-				source.put("createDateStr", dateStr); 
-			}
-			docs.add(source);
-		}
-		searchData.setDocs(docs);
-	}
+        return actionGet.getSource();
+    }
 
-	@Override
-	public List<Map<String, Object>> queryList(QueryBuilder builder) {
-		TransportClient client = elasticsearchProporties.createTransportClient();
-		SearchRequestBuilder requestBuilder = client.prepareSearch(index).setTypes(type).setFrom(0).setSize(5)
-				.setSearchType(SearchType.DFS_QUERY_THEN_FETCH);
-		requestBuilder.setQuery(builder);
-		SearchResponse response = requestBuilder.execute().actionGet();
-		SearchHits hits = response.getHits();
-		List<Map<String, Object>> docs = new Vector<>();
-		for (SearchHit hit : hits.getHits()) {
-			if(hit.getScore() > 0.15){
-				Map<String, Object> source = hit.getSource();
-				source.put("id", hit.getId());
-				docs.add(source);
-			}
-		}
-		return docs;
-	}
+    @Override
+    public boolean remove(String id) {
+        TransportClient client = elasticsearchProporties.createTransportClient();
+        DeleteResponse actionGet = client.prepareDelete(index, type, id).execute().actionGet();
+        return actionGet.status() == RestStatus.OK;
+    }
 
-	public String getIndex() {
-		return index;
-	}
+    @Override
+    public boolean removes(String... ids) {
+        Stream.of(ids).forEach(id -> remove(id));
+        return true;
+    }
 
-	public ElasticsearchProporties getElasticsearchProporties() {
-		return elasticsearchProporties;
-	}
+    @Override
+    public void query(ElasticsearchData searchData) {
+        TransportClient client = elasticsearchProporties.createTransportClient();
 
-	public void setElasticsearchProporties(ElasticsearchProporties elasticsearchProporties) {
-		this.elasticsearchProporties = elasticsearchProporties;
-	}
+        SearchRequestBuilder requestBuilder = client.prepareSearch(index).setTypes(type)
+                .setSearchType(SearchType.DFS_QUERY_THEN_FETCH).setFrom(searchData.getFrom())
+                .setSize(searchData.getSize());
+        requestBuilder.addSort("create_date", SortOrder.DESC);
+        if (null != searchData.getBuilder()) {
+            requestBuilder.setQuery(searchData.getBuilder());
+        }
+        SearchResponse response = requestBuilder.execute().actionGet();
+        SearchHits hits = response.getHits();
+        searchData.setDocCount(hits.getTotalHits());
+        List<Map<String, Object>> docs = new Vector<>();
+        for (SearchHit hit : hits.getHits()) {
+            Map<String, Object> source = hit.getSource();
+            source.put("id", hit.getId());
+            String dateStr = MyAliceUtils.toString(source.get("create_date"));
+            try {
+                String newDateStr = dateStr.substring(0, 10);
+                newDateStr += " " + dateStr.substring(11, 19);
+                source.put("createDateStr", newDateStr);
+            } catch (Exception e) {
+                source.put("createDateStr", dateStr);
+            }
+            docs.add(source);
+        }
+        searchData.setDocs(docs);
+    }
 
-	public void setIndex(String index) {
-		this.index = index;
-	}
+    @Override
+    public List<Map<String, Object>> queryList(QueryBuilder builder) {
+        TransportClient client = elasticsearchProporties.createTransportClient();
+        SearchRequestBuilder requestBuilder = client.prepareSearch(index).setTypes(type).setFrom(0).setSize(5)
+                .setSearchType(SearchType.DFS_QUERY_THEN_FETCH);
+        requestBuilder.setQuery(builder);
+        SearchResponse response = requestBuilder.execute().actionGet();
+        SearchHits hits = response.getHits();
+        List<Map<String, Object>> docs = new Vector<>();
+        for (SearchHit hit : hits.getHits()) {
+            if (hit.getScore() > 0.15) {
+                Map<String, Object> source = hit.getSource();
+                source.put("id", hit.getId());
+                source.put("score", hit.getScore());
+                docs.add(source);
+            }
+        }
+        return docs;
+    }
 
-	public String getType() {
-		return type;
-	}
+    public String getIndex() {
+        return index;
+    }
 
-	public void setType(String type) {
-		this.type = type;
-	}
+    public ElasticsearchProporties getElasticsearchProporties() {
+        return elasticsearchProporties;
+    }
+
+    public void setElasticsearchProporties(ElasticsearchProporties elasticsearchProporties) {
+        this.elasticsearchProporties = elasticsearchProporties;
+    }
+
+    public void setIndex(String index) {
+        this.index = index;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
 }
